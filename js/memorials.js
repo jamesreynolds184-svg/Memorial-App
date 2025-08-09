@@ -3,6 +3,11 @@
   const listEl = document.getElementById('memorial-list');
   const searchEl = document.getElementById('search');
 
+  if (!listEl || !searchEl) {
+    console.error('Required elements #memorial-list or #search missing on this page.');
+    return;
+  }
+
   // Dynamic data path (works in / and /pages/)
   const dataPath = location.pathname.includes('/pages/')
     ? '../data/memorials.json'
