@@ -3,15 +3,20 @@
   const name = params.get('name');
   const root = document.getElementById('memorial-detail');
 
+  if (!root) {
+    console.error('#memorial-detail not found');
+    return;
+  }
   if (!name) {
     root.innerHTML = '<p>Missing memorial name.</p>';
     return;
   }
 
-  const dataPath = (function() {
-    // If current page is in /pages/ go up one level
-    return location.pathname.includes('/pages/') ? '../data/memorials.json' : 'data/memorials.json';
-  })();
+  // JSON path (works from root or /pages/)
+  const dataPath = location.pathname.includes('/pages/')
+    ? '../data/memorials.json'
+    : 'data/memorials.json';
+
   fetch(dataPath)
     .then(r => {
       if (!r.ok) throw new Error('HTTP ' + r.status);
@@ -26,26 +31,67 @@
 
       window.currentMemorial = item;
 
-      document.getElementById('mem-name').textContent = item.name;
-      document.getElementById('mem-zone').textContent = item.zone ? `Zone ${item.zone}` : '';
-      document.getElementById('mem-desc').textContent = item.description || '';
+      const nameEl = document.getElementById('mem-name');
+      const zoneEl = document.getElementById('mem-zone');
+      const descEl = document.getElementById('mem-desc');
 
-      // Removed tags + static map image handling
+      if (nameEl) nameEl.textContent = item.name || '';
+      if (zoneEl) zoneEl.textContent = item.zone ? `Zone ${item.zone}` : '';
+      if (descEl) descEl.textContent = item.description || '';
 
-      // Background image attempt
+      // Background image (robust variants)
       if (item.zone && item.name) {
-        const bgPath = `/img/zone${item.zone}/${item.name}.JPEG`;
-        const testImg = new Image();
-        testImg.onload = () => {
-          document.body.style.backgroundImage = `url('${bgPath}')`;
-          document.body.style.backgroundSize = 'cover';
-          document.body.style.backgroundPosition = 'center center';
-          document.body.style.backgroundRepeat = 'no-repeat';
-        };
-        testImg.src = bgPath;
+        const zone = String(item.zone).replace(/[^0-9]/g, '');
+        const rawName = item.name.trim();
+
+        const punctRemoved = rawName.replace(/[:;,'"]/g, '');
+        const singleSpaced = punctRemoved.replace(/\s+/g, ' ');
+        const underscore = singleSpaced.replace(/\s+/g, '_');
+        const dash = singleSpaced.replace(/\s+/g, '-');
+        const encoded = encodeURIComponent(rawName);
+
+        const stems = Array.from(new Set([
+          underscore,
+          rawName,
+          singleSpaced,
+            punctRemoved,
+          dash,
+          encoded
+        ])).filter(Boolean);
+
+        const baseDir = location.pathname.toLowerCase().includes('/pages/')
+          ? '../img'
+          : 'img';
+
+        const exts = ['jpg','jpeg','png','webp','JPG','JPEG','PNG','WEBP'];
+        const candidates = [];
+        for (const s of stems) for (const e of exts)
+          candidates.push(`${baseDir}/zone${zone}/${s}.${e}`);
+
+        let applied = false;
+        function tryNext(i = 0) {
+          if (i >= candidates.length) {
+            console.warn('No background image found for', item.name, candidates);
+            return;
+          }
+          const url = candidates[i];
+          const img = new Image();
+          img.onload = () => {
+            applied = true;
+            document.body.style.backgroundImage = `url("${url}")`;
+            document.body.style.backgroundSize = 'cover';
+            document.body.style.backgroundPosition = 'center center';
+            document.body.style.backgroundRepeat = 'no-repeat';
+            console.log('Background image loaded:', url);
+          };
+          img.onerror = () => tryNext(i + 1);
+          img.src = url;
+        }
+        console.log('Trying background candidates:', candidates);
+        tryNext();
       }
 
-      // Leaflet map if location present
+      // Leaflet map
       if (item.location && typeof item.location === 'object') {
         const { lat, lng } = item.location;
         if (Number.isFinite(lat) && Number.isFinite(lng)) {
@@ -59,40 +105,14 @@
     });
 })();
 
-// Remove / ignore previous loadGoogleMapForMemorial + augmentMemorialWithMap if not needed.
-
-// Simple parser still OK for legacy strings:
-function parseMemorialLocation(raw) {
-  if (!raw) return null;
-  if (typeof raw === 'object' && Number.isFinite(raw.lat) && Number.isFinite(raw.lng)) {
-    return { lat: raw.lat, lng: raw.lng };
-  }
-  if (typeof raw !== 'string') return null;
-  const latHem = raw.match(/1:\s*'([NS])'/);
-  const latDms = raw.match(/2:\s*\(([\d.]+),\s*([\d.]+),\s*([\d.]+)\)/);
-  const lonHem = raw.match(/3:\s*'([EW])'/);
-  const lonDms = raw.match(/4:\s*\(([\d.]+),\s*([\d.]+),\s*([\d.]+)\)/);
-  if (!latHem || !latDms || !lonHem || !lonDms) return null;
-  const dmsToDec = (d, m, s, hem) => {
-    let v = +d + +m / 60 + +s / 3600;
-    if (hem === 'S' || hem === 'W') v = -v;
-    return v;
-  };
-  const lat = dmsToDec(latDms[1], latDms[2], latDms[3], latHem[1]);
-  const lng = dmsToDec(lonDms[1], lonDms[2], lonDms[3], lonHem[1]);
-  return (Number.isFinite(lat) && Number.isFinite(lng)) ? { lat, lng } : null;
-}
-
-// New: Leaflet map init (no API key)
+// Leaflet map init
 function initLeafletMemorialMap(coords) {
   const mapEl = document.getElementById('mem-gmap');
   if (!mapEl) return;
   mapEl.style.display = 'block';
 
-  // Wait until Leaflet script loaded
   function start() {
-    if (!window.L) { setTimeout(start, 50); return; }
-
+    if (!window.L) { setTimeout(start, 60); return; }
     const map = L.map(mapEl, { center: [coords.lat, coords.lng], zoom: 17 });
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       maxZoom: 19,
