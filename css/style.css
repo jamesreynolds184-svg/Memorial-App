@@ -481,3 +481,89 @@ body.home {
 }
 .back-btn:hover { background: rgba(255,255,255,0.7); }
 .back-btn:active { transform: translateY(1px); }
+
+/* --- Overrides / fixes for memorials list panel --- */
+.hero {
+  min-height: 100vh;
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-start;
+  padding: 24px 16px;
+}
+
+.memorials-panel {
+  background: rgba(255,255,255,0.55);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  box-shadow: 0 10px 26px rgba(0,0,0,0.20);
+  border-radius: 14px;
+  padding: 16px 18px 12px;
+  width: 100%;
+  max-width: 820px;
+  display: flex;
+  flex-direction: column;
+  max-height: calc(100vh - 48px);
+  overflow: hidden;
+}
+
+.memorials-panel .toolbar {
+  flex: 0 0 auto;
+  padding: 0 0 10px;
+}
+
+.search-input {
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  background: rgba(255,255,255,0.65);
+}
+
+#memorial-list {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+#memorial-list li {
+  background: rgba(255,255,255,0.55);
+  border: 1px solid rgba(0,0,0,0.07);
+  margin: 0 0 6px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+#memorial-list li:last-child {
+  margin-bottom: 2px;
+}
+
+.mem-link {
+  text-decoration: none;
+  color: var(--text);
+  font-weight: 600;
+  flex: 1;
+}
+
+.save-btn {
+  background: rgba(255,255,255,0.7);
+  border: 1px solid rgba(0,0,0,0.15);
+  border-radius: 8px;
+  cursor: pointer;
+  padding: 4px 10px;
+  font-size: .9rem;
+}
+.save-btn.saved {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+}
+
+/* Scrollbar look (optional) */
+#memorial-list::-webkit-scrollbar { width: 10px; }
+#memorial-list::-webkit-scrollbar-track { background: rgba(0,0,0,0.08); border-radius: 6px; }
+#memorial-list::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.30); border-radius: 6px; }
+#memorial-list::-webkit-scrollbar-thumb:hover { background: rgba(0,0,0,0.42); }
