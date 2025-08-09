@@ -3,6 +3,11 @@
   const listEl = document.getElementById('memorial-list');
   const searchEl = document.getElementById('search');
 
+  // Dynamic data path (works in / and /pages/)
+  const dataPath = location.pathname.includes('/pages/')
+    ? '../data/memorials.json'
+    : 'data/memorials.json';
+
   let all = [];
   let saved = new Set(loadSaved());
 
@@ -82,14 +87,18 @@
   });
 
   // Load data
-  fetch('/data/memorials.json')
-    .then(r => r.json())
+  fetch(dataPath)
+    .then(r => {
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      return r.json();
+    })
     .then(data => {
       all = (Array.isArray(data) ? data : []).filter(m => m && m.name);
       all.sort((a, b) => a.name.localeCompare(b.name));
       render('');
     })
-    .catch(() => {
+    .catch(err => {
+      console.error('Failed to load memorials.json', err);
       listEl.innerHTML = '<li class="empty">Failed to load memorials.</li>';
     });
 })();

@@ -8,8 +8,15 @@
     return;
   }
 
-  fetch('../data/memorials.json')
-    .then(r => r.json())
+  const dataPath = (function() {
+    // If current page is in /pages/ go up one level
+    return location.pathname.includes('/pages/') ? '../data/memorials.json' : 'data/memorials.json';
+  })();
+  fetch(dataPath)
+    .then(r => {
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      return r.json();
+    })
     .then(all => {
       const item = (Array.isArray(all) ? all : []).find(m => m && m.name === name);
       if (!item) {
@@ -46,7 +53,8 @@
         }
       }
     })
-    .catch(() => {
+    .catch(err => {
+      console.error('Failed to load data', err);
       root.innerHTML = '<p>Failed to load data.</p>';
     });
 })();
