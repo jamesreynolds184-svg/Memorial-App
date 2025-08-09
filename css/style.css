@@ -1,0 +1,592 @@
+body {
+  font-family: sans-serif;
+  margin: 0;
+  padding: 0;
+  background: #f4f4f4;
+}
+
+.container {
+  max-width: 700px;
+  margin: auto;
+  background: white;
+  padding: 1em;
+  border-radius: 8px;
+}
+
+input[type="text"] {
+  width: 100%;
+  padding: 0.5em;
+  font-size: 1em;
+  margin-bottom: 1em;
+}
+
+#filters {
+  margin-bottom: 1em;
+}
+
+#tag-filters button,
+#zone-filters button {
+  margin: 0.2em;
+  padding: 0.4em 0.8em;
+  font-size: 0.9em;
+  cursor: pointer;
+}
+
+#memorial-list {
+  list-style: none;
+  padding: 0;
+}
+
+#memorial-list li {
+  padding: 0.6em;
+  border-bottom: 1px solid #ddd;
+}
+
+.memorial-name {
+  font-weight: bold;
+}
+
+.memorial-zone {
+  font-style: italic;
+  color: #555;
+}
+
+/* Theme */
+:root {
+  --primary: #005969;
+  --accent:  #f16e34;
+  --text:    #123;
+  /* Make panels more see-through */
+  --panel-bg: rgba(255,255,255,0.60);
+  --shadow:  0 10px 25px rgba(0,0,0,0.15);
+  --radius:  12px;
+}
+
+/* Homepage background (will crop left/right on tall screens) */
+body {
+  background-image: url('../img/backgrounds/home.jpg');
+  background-size: cover;
+  background-position: center;
+}
+
+/* Burger button (fixed, top-left) */
+.burger-button {
+  position: fixed;
+  top: 16px;
+  left: 16px;
+  z-index: 1001;
+  background-color: var(--accent);
+  color: #fff;
+  border: none;
+  padding: 0.6em 0.8em;
+  border-radius: 999px;
+  font-size: 1.1em;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(241,110,52,0.28);
+  transition: transform .12s ease, box-shadow .2s ease, background-color .2s ease;
+}
+.burger-button:active { transform: scale(0.96); }
+.burger-button:hover {
+  background-color: #d65c2e;
+}
+
+/* Slide-out left menu */
+#menu-items {
+  display: block;              /* override the earlier display:none */
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  width: 260px;
+  background-color: var(--primary);
+  padding: 72px 16px 16px;
+  box-sizing: border-box;
+  transform: translateX(-100%);
+  transition: transform 0.3s ease;
+  z-index: 1000;
+  overflow-y: auto;
+  border-top-right-radius: 12px;
+  border-bottom-right-radius: 12px;
+  box-shadow: 8px 0 20px rgba(0,0,0,0.2);
+}
+#menu-items.active {
+  transform: translateX(0);
+}
+#menu-items a {
+  display: block;
+  color: #fff;
+  text-decoration: none;
+  padding: 12px 8px;
+  border-radius: 4px;
+  font-size: 1rem;
+}
+#menu-items a:hover {
+  background-color: rgba(255,255,255,0.12);
+  text-decoration: none;
+}
+
+/* Dark overlay behind the menu */
+#menu-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.35);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+  z-index: 999;
+}
+#menu-overlay.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* Welcome section */
+.hero {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+}
+
+/* Consistent sizing and prevent overflow pushing inputs off-center */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+/* Center panels and prevent horizontal scroll */
+.hero {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+}
+
+/* Ensure panels are centered and have a safe max width */
+.memorials-panel {
+  width: min(720px, 100% - 32px);
+  margin: 0 auto;
+}
+
+/* Center the search input and limit its width */
+.search-input {
+  display: block;
+  width: 100%;
+  max-width: 600px;
+  margin: 8px auto;
+  padding: 12px 14px;
+  background: rgba(255,255,255,0.55);
+  backdrop-filter: blur(3px);
+}
+
+/* Make the toolbar a single-column grid so the input spans full width */
+.toolbar {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 8px;
+  align-items: center;
+}
+
+/* Memorials page background with soft overlay for contrast */
+body.memorials-bg {
+  background-image:
+    linear-gradient(to bottom, rgba(0,0,0,0.15), rgba(0,0,0,0.15)),
+    url('../img/backgrounds/memorials.jpg');
+  background-size: cover;
+  background-position: center;
+}
+
+/* Translucent panel */
+.memorials-panel {
+  background: var(--panel-bg);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(3px);
+  padding: 16px 16px 8px;
+}
+
+/* Toolbar: sticky inside the panel */
+.toolbar {
+  position: sticky;
+  top: 0;
+  background: inherit;
+  padding-bottom: 8px;
+  z-index: 1;
+}
+
+/* Search input */
+.search-input {
+  display: block;
+  width: 100%;
+  max-width: 600px;
+  margin: 8px auto;
+  padding: 12px 14px;
+  border: 1px solid rgba(0,0,0,0.12);
+  border-radius: 10px;
+  font-size: 1rem;
+  outline: none;
+  transition: border-color .2s ease, box-shadow .2s ease;
+  background: rgba(255,255,255,0.55);
+  backdrop-filter: blur(3px);
+}
+.search-input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(241,110,52,0.18);
+}
+
+/* Results count */
+.results-count {
+  font-size: .9rem;
+  color: #555;
+  margin-top: 2px;
+}
+
+/* Horizontal zone picker (chips) */
+.zone-picker {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding: 4px 2px;
+  -webkit-overflow-scrolling: touch;
+}
+.zone-btn {
+  flex: 0 0 auto;
+  border: 1px solid var(--primary);
+  color: var(--primary);
+  background: rgba(255,255,255,0.9);
+  padding: 8px 12px;
+  border-radius: 999px;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: background-color .2s ease, color .2s ease, border-color .2s ease, transform .08s ease;
+}
+.zone-btn:active { transform: scale(0.98); }
+.zone-btn.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+.zone-btn:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* Horizontal tag picker (reuse zone styles) */
+.zone-picker, .tag-picker {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding: 4px 2px;
+  -webkit-overflow-scrolling: touch;
+}
+.zone-btn, .tag-btn {
+  flex: 0 0 auto;
+  border: 1px solid var(--primary);
+  color: var(--primary);
+  background: rgba(255,255,255,0.9);
+  padding: 8px 12px;
+  border-radius: 999px;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: background-color .2s ease, color .2s ease, border-color .2s ease, transform .08s ease;
+}
+.zone-btn:active, .tag-btn:active { transform: scale(0.98); }
+.zone-btn.active, .tag-btn.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+.zone-btn:focus-visible, .tag-btn:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* List */
+.memorials-list {
+  margin-top: 1rem;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background: #fff;
+  list-style: none;
+
+  /* Fixed viewport-based height with internal scroll */
+  height: min(65vh, 800px);
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+.memorials-list .empty {
+  color: #555;
+  padding: 12px 8px;
+  text-align: center;
+}
+
+/* Row as a soft card */
+.memorial-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 12px;
+  border-radius: 10px;
+  background: rgba(255,255,255,0.70);
+  backdrop-filter: blur(3px);
+  border: 1px solid #eee;
+  margin-bottom: 8px;
+  transition: box-shadow .2s ease, transform .06s ease, background-color .2s ease;
+}
+.memorial-row:hover {
+  box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+  transform: translateY(-1px);
+}
+
+/* Link styled like plain text with a subtle arrow */
+.mem-link {
+  flex: 1;
+  color: var(--text);
+  text-decoration: none;
+  font-size: 1rem;
+  line-height: 1.3;
+  padding: 6px 0;
+}
+.mem-link::after {
+  content: '›';
+  color: #bbb;
+  margin-left: 8px;
+  font-size: 1.2rem;
+}
+
+/* Star save button */
+.save-btn {
+  background: transparent;
+  border: none;
+  font-size: 1.3rem;
+  line-height: 1;
+  cursor: pointer;
+  color: #c2c2c2;
+  padding: 4px;
+  min-width: 1.6em;
+  transition: transform .08s ease, color .2s ease;
+}
+.save-btn:hover { color: #999; }
+.save-btn.saved { color: var(--accent); }
+.save-btn:active { transform: scale(0.95); }
+
+/* Default (other pages): top-right logo */
+.site-logo {
+  position: fixed;
+  top: 12px;
+  right: 16px;
+  z-index: 1001;
+  display: inline-block;
+  background: rgba(255,255,255,0.9);
+  padding: 6px 8px;
+  border-radius: 10px;
+  box-shadow: 0 6px 16px rgba(0,0,0,0.12);
+}
+.site-logo img {
+  display: block;
+  height: 32px;
+  width: auto;
+  border-radius: 6px;
+}
+@media (min-width: 480px) {
+  .site-logo img { height: 40px; }
+}
+
+/* Home page: center and enlarge the logo inside the welcome panel */
+.home .site-logo {
+  position: static;           /* participate in layout */
+  display: block;
+  margin: 0 auto 12px;        /* centered above text */
+  background: transparent;
+  box-shadow: none;
+  padding: 0;
+}
+.home .site-logo img {
+  height: 96px;               /* larger on home */
+  width: auto;
+  border-radius: 8px;
+}
+@media (min-width: 480px) {
+  .home .site-logo img { height: 120px; }
+}
+@media (min-width: 768px) {
+  .home .site-logo img { height: 140px; }
+}
+
+/* Home background (centered image, slight overlay) */
+body.home {
+  background-image:
+    linear-gradient(to bottom, rgba(0,0,0,0.12), rgba(0,0,0,0.12)),
+    url('../img/backgrounds/home.jpg');
+  background-size: cover;
+  background-position: center;
+}
+
+/* Center stack on home */
+.home .welcome {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  text-align: center;
+}
+
+/* Use inline logo on home (not fixed) */
+.home .site-logo {
+  position: static;
+  display: block;
+  margin: 0 auto;
+  background: transparent;
+  box-shadow: none;
+  padding: 0;
+}
+
+/* Larger, responsive logo */
+.home .site-logo img {
+  height: clamp(110px, 22vw, 200px);
+  width: auto;
+  border-radius: 10px;
+}
+
+/* Text box under the logo */
+.text-box {
+  background: rgba(255,255,255,0.60);
+  color: var(--text);
+  padding: 16px 18px;
+  border-radius: 12px;
+  box-shadow: 0 10px 24px rgba(0,0,0,0.15);
+  width: min(720px, 90vw);
+  margin-top: 4px;
+}
+.text-box h1 {
+  margin: 0 0 8px;
+  font-size: clamp(1.25rem, 2.8vw, 1.75rem);
+}
+.text-box p {
+  margin: 0;
+  line-height: 1.45;
+  font-size: clamp(0.95rem, 2.4vw, 1.05rem);
+}
+
+/* Tabs */
+.tabs { margin-top: 8px; }
+.tab-buttons {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+}
+.tab-button {
+  border: 1px solid var(--primary);
+  color: var(--primary);
+  background: rgba(255,255,255,0.9);
+  padding: 8px 12px;
+  border-radius: 999px;
+  cursor: pointer;
+}
+.tab-button.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+.tab-panel { display: none; }
+.tab-panel.active { display: block; }
+
+/* Form */
+.form-row { display: grid; gap: 6px; margin: 10px 0; }
+.form-row input[type="text"],
+.form-row input[type="number"],
+.form-row textarea {
+  padding: 10px 12px;
+  border: 1px solid rgba(0,0,0,0.12);
+  border-radius: 10px;
+  font-size: 1rem;
+  background: rgba(255,255,255,0.60);
+  backdrop-filter: blur(3px);
+}
+.form-row textarea { resize: vertical; }
+.button-row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin: 10px 0; }
+.button-row button {
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  padding: 10px 14px;
+  border-radius: 10px;
+  cursor: pointer;
+}
+.button-row button:hover { opacity: 0.95; }
+.info { font-size: 0.95rem; color: #333; margin-bottom: 8px; }
+.muted { color: #666; font-size: 0.92rem; }
+.status { margin-top: 8px; padding: 8px; border-radius: 8px; }
+.status.ok { background: #e8f5ee; color: #145c2e; }
+.status.warn { background: #fff6e5; color: #8a5a00; }
+.status.error { background: #fde7e9; color: #8a1f2b; }
+
+/* Delete button */
+.del-btn {
+  background: transparent;
+  border: 1px solid #d33;
+  color: #d33;
+  padding: 6px 10px;
+  border-radius: 10px;
+  cursor: pointer;
+}
+.del-btn:hover { background: #ffe9e9; }
+
+/* Raw JSON view */
+.raw-json {
+  background: #0b0b0c;
+  color: #d8f3dc;
+  padding: 12px;
+  border-radius: 10px;
+  max-height: 50vh;
+  overflow: auto;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.9rem;
+  border: 1px solid #111;
+}
+
+/* Preserve line breaks/newlines in memorial description */
+#mem-desc {
+  white-space: pre-line; /* or pre-wrap if you want to keep multiple spaces too */
+  line-height: 1.5;
+}
+
+/* Translucent memorial detail box */
+#memorial-detail {
+  background: rgba(255,255,255,0.45);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  border-radius: 12px;
+  box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+  padding: 16px;
+  margin: 16px auto; /* center horizontally */
+  max-width: 700px;  /* ensure width constraint if needed */
+  width: 100%;
+}
+
+#mem-gmap {
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+}
+#mem-gmap .leaflet-container, #mem-gmap {
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+/* Back button on memorial detail */
+.back-btn {
+  background: rgba(255,255,255,0.55);
+  backdrop-filter: blur(3px);
+  border: 1px solid rgba(0,0,0,0.15);
+  color: #123;
+  padding: 6px 14px;
+  border-radius: 30px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  margin: 0 0 12px 0;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.12);
+}
+.back-btn:hover { background: rgba(255,255,255,0.7); }
+.back-btn:active { transform: translateY(1px); }

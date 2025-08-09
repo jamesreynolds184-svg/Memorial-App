@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Memorial</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <link
+  rel="stylesheet"
+  href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+  integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+  crossorigin=""
+/>
+</head>
+<body>
+  <button id="burger-menu" class="burger-button" aria-label="Open menu">☰</button>
+
+  <nav id="menu-items" aria-label="Main">
+    <a href="../home.html">Home</a>
+    <a href="memorials.html">View all memorials</a>
+    <a href="search-by-zone.html">Search by zone</a>
+    <a href="saved.html">Saved</a>
+    <a href="pages/manage-memorials.html">Manage memorials</a>
+  </nav>
+
+  <div id="menu-overlay"></div>
+
+  <main class="container" id="memorial-detail">
+    <button id="back-btn" class="back-btn" onclick="location.href='memorials.html'" aria-label="Back to memorials list">← Back</button>
+    <h1 id="mem-name"></h1>
+    <p class="memorial-zone" id="mem-zone"></p>
+    <p id="mem-desc"></p>
+    <div id="mem-gmap" style="width:100%;height:300px;border:1px solid #ccc;border-radius:6px;margin:1rem 0;display:none;"></div>
+  </main>
+
+  <script src="../js/app.js"></script>
+  <script src="../js/memorial.js"></script>
+  <script
+  defer
+  src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+  integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+  crossorigin=""
+></script>
+</body>
+</html>

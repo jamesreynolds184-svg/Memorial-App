@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Saved Memorials</title>
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body class="memorials-bg">
+  <button id="burger-menu" class="burger-button" aria-label="Open menu">☰</button>
+
+  <nav id="menu-items" aria-label="Main">
+    <a href="../home.html">Home</a>
+    <a href="memorials.html">View all memorials</a>
+    <a href="search-by-zone.html">Search by zone</a>
+    <a href="saved.html">Saved</a>
+    <a href="pages/manage-memorials.html">Manage memorials</a>
+  </nav>
+
+  <div id="menu-overlay"></div>
+
+  <main class="hero">
+    <div class="welcome memorials-panel">
+      <h1>Saved Memorials</h1>
+      <input id="search" class="search-input" type="text" placeholder="Search saved memorials..." aria-label="Search saved memorials">
+      <ul id="memorial-list" class="memorials-list"></ul>
+    </div>
+  </main>
+
+  <script src="../js/app.js"></script>
+  <script src="../js/saved.js"></script>
+</body>
+</html>

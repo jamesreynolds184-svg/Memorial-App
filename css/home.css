@@ -1,0 +1,33 @@
+body {
+  background-image: url('../img/Resources/home.jpg');
+  background-size: cover;
+  background-position: center;
+  height: 100vh;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.burger-menu {
+  background-color: #005969;
+  padding: 1em;
+  border-radius: 5px;
+  position: relative;
+}
+
+.burger-menu button {
+  background-color: #f16e34;
+  color: white;
+  border: none;
+  padding: 0.5em 1em;
+  margin: 0.5em 0;
+  cursor: pointer;
+  border-radius: 5px;
+  font-size: 1em;
+}
+
+.burger-menu button:hover {
+  background-color: #d65c2e;
+}
