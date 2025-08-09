@@ -9,8 +9,7 @@
 <body class="home">
   <!-- Burger button -->
   <button id="burger-menu" class="burger-button" aria-label="Open menu">☰</button>
-
-  <!-- Logo moved into the welcome panel for centered layout -->
+  <button id="global-search-btn" class="search-toggle" aria-label="Search memorials">🔍</button>
 
   <!-- Slide-out left menu -->
   <nav id="menu-items" aria-label="Main">
@@ -22,18 +21,33 @@
 
   <div id="menu-overlay"></div>
 
+  <!-- Global search overlay -->
+  <div id="global-search-panel" aria-hidden="true">
+    <div class="gsp-inner">
+      <button id="gsp-close" class="gsp-close" aria-label="Close search">✕</button>
+      <input id="global-search-input"
+             type="text"
+             placeholder="Search memorial titles..."
+             autocomplete="off"
+             aria-autocomplete="list"
+             aria-expanded="false">
+      <ul id="global-search-results" role="listbox"></ul>
+    </div>
+  </div>
+
   <main class="hero">
     <div class="welcome">
-      <a href="home.html" class="site-logo" aria-label="National Memorial Arboretum home">
-        <img src="img/logo.png" alt="National Memorial Arboretum logo" loading="lazy">
-      </a>
+      <div class="site-logo">
+        <img src="img/logo.png" alt="National Memorial Arboretum Logo">
+      </div>
       <div class="text-box">
-        <h1>Welcome to the National Memorial Arboretum</h1>
-        <p>Use this tool to explore all the memorials</p>
+        <h1>National Memorial Arboretum</h1>
+        <p>Browse the memorials database using the search (top right) or menus.</p>
       </div>
     </div>
   </main>
 
   <script src="js/app.js"></script>
+  <script src="js/global-search.js"></script>
 </body>
 </html>

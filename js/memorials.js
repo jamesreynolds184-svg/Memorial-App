@@ -43,19 +43,16 @@
     for (const m of items) {
       const li = document.createElement('li');
       li.className = 'memorial-row';
-
       const a = document.createElement('a');
       a.className = 'mem-link';
       a.href = `memorial.html?name=${encodeURIComponent(m.name)}`;
       a.textContent = m.name;
-
       const btn = document.createElement('button');
       btn.className = 'save-btn' + (saved.has(m.name) ? ' saved' : '');
       btn.type = 'button';
       btn.setAttribute('aria-label', saved.has(m.name) ? 'Unsave memorial' : 'Save memorial');
       btn.dataset.name = m.name;
       btn.textContent = saved.has(m.name) ? '★' : '☆';
-
       li.appendChild(a);
       li.appendChild(btn);
       listEl.appendChild(li);
