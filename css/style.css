@@ -790,3 +790,43 @@ body {
   background: rgba(0,0,0,0.35);
   border-radius: 6px;
 }
+
+/* --- iOS Safari improvements for global search --- */
+body.no-scroll {
+  overflow: hidden;
+  height: 100vh;
+  touch-action: none;
+}
+
+#global-search-panel {
+  padding: calc(20px + env(safe-area-inset-top)) 12px 20px calc(12px + env(safe-area-inset-left));
+}
+
+#global-search-panel .gsp-inner {
+  max-height: calc(100vh - env(safe-area-inset-top) - 40px);
+  -webkit-overflow-scrolling: touch;
+}
+
+#global-search-input {
+  font-size: 16px; /* prevent iOS zoom */
+  -webkit-appearance: none;
+  border: 1px solid rgba(0,0,0,0.25);
+}
+
+#global-search-results {
+  -webkit-overflow-scrolling: touch;
+}
+
+@supports (-webkit-touch-callout: none) {
+  /* iOS specific fine-tune */
+  #global-search-panel .gsp-inner {
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+  }
+}
+
+/* Ensure buttons above overlay */
+.search-toggle,
+.burger-button {
+  touch-action: manipulation;
+}
