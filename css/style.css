@@ -595,4 +595,21 @@ body.home .site-logo img {
   object-fit: contain;
 }
 
-/* --- End overrides --- */
+/* --- Fix home logo overlaying slide-out menu --- */
+#menu-items { z-index: 3000; }
+#menu-overlay { z-index: 2990; }
+.burger-button { z-index: 3100; }
+
+/* Lower logo stacking on home so menu can cover it */
+body.home .site-logo { z-index: 100; position: static; }
+
+/* Smaller logo on very narrow screens */
+@media (max-width: 480px) {
+  body.home .site-logo img {
+    max-width: 160px;
+    height: auto;
+  }
+}
+
+/* Optional: when menu open push content slightly (requires body.menu-open toggle in JS)
+body.menu-open.home .welcome { transform: translateX(20px); transition: transform .3s ease;
