@@ -1657,9 +1657,9 @@
   },
   {
     "name": "The Christmas Truce Memorial",
-    "zone": "8",
+    "zone": "1",
     "description": "The Christmas Truce took place in December 1914\n\nThis memorial was sponsored by the Football Association\n\nThere was a national competition for schools to design a memorial that reflected the events of the Christmas Truce\n\n35 schools were shortlisted and those designs were displayed at the National Memorial Arboretum\n\nThe winning design was created by a school boy from Newcastle upon Tyne\n\nThe competition was judged by Theo Walcott and Price William\n\nIt must be stressed that it is highly unlikely that there was ever a formal game of football in No Man’s Land during the\n\n\n\nChristmas Truce. An informal kick-a-about is much more likely to have been the case\n\nNo primary documents have been found to confirm an actual formal football match despite all that we might read in the\n\n\n\npress",
-    "map": "/img/maps/map-8.png",
+    "map": "/img/maps/map-1.png",
     "location": { "lat": 52.732017, "lng": -1.719219 }
   },
   {
@@ -2690,9 +2690,9 @@
   },
   {
     "name": "United Nations Avenue; UN",
-    "zone": "8",
+    "zone": "1",
     "description": "This is an avenue of giant redwoods planted alongside the mainline railway bridge, which will be clearly visible from passing trains as\n\nthe trees grow. Member countries of the United Nations have sponsored the trees and plaques.",
-    "map": "/img/maps/map-8.png",
+    "map": "/img/maps/map-1.png",
     "location": { "lat": 52.732147, "lng": -1.718036 }
   },
   {
