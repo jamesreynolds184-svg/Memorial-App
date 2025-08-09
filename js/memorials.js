@@ -31,13 +31,7 @@
     const items = all.filter(m => {
       if (!m || !m.name) return false;
       if (!q) return true;
-      const hay = [
-        m.name,
-        m.zone || '',
-        (m.description || ''),
-        ...(Array.isArray(m.tags) ? m.tags : [])
-      ].join(' ').toLowerCase();
-      return hay.includes(q);
+      return m.name.toLowerCase().includes(q); // name only
     });
 
     listEl.innerHTML = '';
