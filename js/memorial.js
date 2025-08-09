@@ -39,7 +39,7 @@
       if (zoneEl) zoneEl.textContent = item.zone ? `Zone ${item.zone}` : '';
       if (descEl) descEl.textContent = item.description || '';
 
-      // Background image (robust variants)
+      // Background image + foreground photo (no collapse toggle)
       if (item.zone && item.name) {
         const zone = String(item.zone).replace(/[^0-9]/g, '');
         const rawName = item.name.trim();
@@ -54,7 +54,7 @@
           underscore,
           rawName,
           singleSpaced,
-            punctRemoved,
+          punctRemoved,
           dash,
           encoded
         ])).filter(Boolean);
@@ -65,29 +65,47 @@
 
         const exts = ['jpg','jpeg','png','webp','JPG','JPEG','PNG','WEBP'];
         const candidates = [];
-        for (const s of stems) for (const e of exts)
-          candidates.push(`${baseDir}/zone${zone}/${s}.${e}`);
+        for (const s of stems) {
+          for (const e of exts) {
+            candidates.push(`${baseDir}/zone${zone}/${s}.${e}`);
+          }
+        }
 
-        let applied = false;
+        const photoEl = document.getElementById('mem-photo');
+
         function tryNext(i = 0) {
           if (i >= candidates.length) {
-            console.warn('No background image found for', item.name, candidates);
+            console.warn('No memorial image found for', item.name);
             return;
           }
-          const url = candidates[i];
-          const img = new Image();
-          img.onload = () => {
-            applied = true;
-            document.body.style.backgroundImage = `url("${url}")`;
-            document.body.style.backgroundSize = 'cover';
-            document.body.style.backgroundPosition = 'center center';
-            document.body.style.backgroundRepeat = 'no-repeat';
-            console.log('Background image loaded:', url);
-          };
-          img.onerror = () => tryNext(i + 1);
-          img.src = url;
+            const url = candidates[i];
+            const img = new Image();
+            img.onload = () => {
+              // Apply background
+              document.body.style.backgroundImage = `url("${url}")`;
+              document.body.style.backgroundSize = 'cover';
+              document.body.style.backgroundPosition = 'center center';
+              document.body.style.backgroundRepeat = 'no-repeat';
+              document.body.classList.add('memorial-bg-set');
+
+              // Show foreground image (if element exists)
+              if (photoEl) {
+                photoEl.src = url;
+                photoEl.alt = item.name;
+                photoEl.style.display = 'block';
+                // Orientation class
+                photoEl.onload = () => {
+                  const portrait = photoEl.naturalHeight > photoEl.naturalWidth;
+                  photoEl.classList.toggle('portrait', portrait);
+                  photoEl.classList.toggle('landscape', !portrait);
+                };
+              }
+              console.log('Memorial image loaded:', url);
+            };
+            img.onerror = () => tryNext(i + 1);
+            img.src = url;
         }
-        console.log('Trying background candidates:', candidates);
+        console.log('Trying memorial image candidates:', candidates);
         tryNext();
       }
 

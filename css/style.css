@@ -830,3 +830,104 @@ body.no-scroll {
 .burger-button {
   touch-action: manipulation;
 }
+
+/* --- Memorial detail collapsible panel & fixed background --- */
+body.memorial-bg-set {
+  background-attachment: fixed;
+  overscroll-behavior: none;
+}
+
+#memorial-detail.collapsible {
+  position: relative;
+  max-width: 860px;
+  height: 100vh;
+  box-sizing: border-box;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+#collapse-toggle {
+  background: rgba(255,255,255,0.6);
+  border: 1px solid rgba(0,0,0,0.2);
+  border-radius: 24px;
+  padding: 6px 14px;
+  font-size: 0.8rem;
+  cursor: pointer;
+  margin: 0 0 10px;
+  float: right;
+}
+
+#memorial-detail.collapsed {
+  height: auto;
+  max-height: 30vh;
+  overflow: hidden;
+  padding-bottom: 14px;
+}
+
+#memorial-detail.collapsed #mem-zone,
+#memorial-detail.collapsed #mem-desc,
+#memorial-detail.collapsed #mem-gmap {
+  display: none !important;
+}
+
+#memorial-detail.collapsed {
+  backdrop-filter: blur(4px);
+}
+
+/* Improve mobile handling: prevent background overscroll gap */
+@media (max-width: 640px) {
+  html, body.memorial-bg-set {
+    height: 100%;
+  }
+  body.memorial-bg-set {
+    overflow: hidden;
+  }
+  #memorial-detail.collapsible {
+    height: 100vh;
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+/* Foreground memorial image */
+.mem-photo {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+  max-height: 60vh;              /* limit vertical size */
+  object-fit: contain;           /* show entire image */
+  background: #eee;
+  border-radius: 12px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.24);
+  margin: 14px 0 10px;
+  padding: 4px;                  /* subtle frame */
+  box-sizing: border-box;
+}
+
+/* Add tighter max-height for very tall screens */
+@media (min-height: 1000px) {
+  .mem-photo { max-height: 55vh; }
+}
+
+/* Portrait tweak: narrow slightly & center */
+.mem-photo.portrait {
+  max-height: 70vh;
+  width: auto;
+  max-width: 70%;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Landscape: keep full width but cap height a bit lower */
+.mem-photo.landscape {
+  max-height: 55vh;
+}
+
+/* Small screens: allow a bit more width for portrait */
+@media (max-width: 600px) {
+  .mem-photo.portrait {
+    max-width: 90%;
+    max-height: 65vh;
+  }
+}
