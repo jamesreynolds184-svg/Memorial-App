@@ -931,3 +931,21 @@ body.memorial-bg-set {
     max-height: 65vh;
   }
 }
+
+/* Memorial page image tweaks */
+.mem-photo {
+  padding: 0;              /* remove frame */
+  background: none;        /* remove light border look */
+  border: none;
+  box-shadow: 0 12px 28px rgba(0,0,0,0.35), 0 4px 10px rgba(0,0,0,0.25); /* shading */
+}
+
+/* Optional soft dark gradient behind content for readability */
+body.memorial-bg-set::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(circle at 50% 30%, rgba(0,0,0,0.15), rgba(0,0,0,0.45));
+  pointer-events: none;
+  z-index: -1;
+}
