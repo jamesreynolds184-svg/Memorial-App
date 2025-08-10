@@ -7,6 +7,8 @@
   const dbgAcc = document.getElementById('dbg-acc');
   const dbgHead = document.getElementById('dbg-head');
   const dbgMem = document.getElementById('dbg-mem');
+  const dbgList = document.getElementById('dbg-list');
+  const dbgToggle = document.getElementById('dbg-toggle');
 
   const qs = new URLSearchParams(location.search);
   const useTest = qs.has('test');
@@ -24,6 +26,7 @@
   let userLat = null, userLng = null, userHeading = 0;
   let memorials = [];
   let ringAdded = false;
+  let firstFix = true;
 
   function log(msg) { if (statusEl) statusEl.textContent = msg; }
 
@@ -40,6 +43,7 @@
         memorials = (data || []).filter(m => m?.location && Number.isFinite(m.location.lat) && Number.isFinite(m.location.lng));
         log(`Loaded ${memorials.length} ${useTest ? 'test ' : ''}memorials`);
         updateDebug();
+        if (!memorials.length && dbgMode) console.warn('[AR] No memorials loaded; will generate debug markers after GPS fix.');
       })
       .catch(e => { log('Data error'); console.error(e); });
   }
@@ -80,6 +84,11 @@
         ringAdded = true;
       }
       updateDebug();
+      if (firstFix) {
+        if (dbgMode) addDebugMarkersNear(userLat, userLng);
+        if (genRing && dbgMode) console.log('[AR] Ring + debug both active');
+        firstFix = false;
+      }
     }, e => {
       log('Geo err');
       if (dbgAcc) dbgAcc.textContent = 'Acc: err';
@@ -126,18 +135,47 @@
     return (toDeg(Math.atan2(y, x)) + 360) % 360;
   }
 
+  function addDebugMarkersNear(lat, lng) {
+    // Only if dbgMode
+    if (!dbgMode) return;
+    const R = 6378137;
+    function offset(distMeters, bearingDeg) {
+      const br = bearingDeg * Math.PI/180;
+      const dLat = (distMeters * Math.cos(br)) / R;
+      const dLng = (distMeters * Math.sin(br)) / (R * Math.cos(lat * Math.PI/180));
+      return {
+        lat: lat + dLat * 180/Math.PI,
+        lng: lng + dLng * 180/Math.PI
+      };
+    }
+    const a = offset(10, 30);
+    const b = offset(30, 120);
+    const c = offset(60, 250);
+    const added = [
+      { name: 'DEBUG 10m', zone: 'D', location: a },
+      { name: 'DEBUG 30m', zone: 'D', location: b },
+      { name: 'DEBUG 60m', zone: 'D', location: c }
+    ];
+    memorials = added.concat(memorials);
+    console.log('[AR] Injected debug markers', added);
+    updateDebug();
+  }
+
   function ensureMarker(m) {
     if (m._el) return m._el;
     const div = document.createElement('div');
     div.className = 'mem-marker';
+    div.style.cssText = 'position:absolute;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;font-family:system-ui,sans-serif;';
     const img = document.createElement('img');
     img.alt = m.name;
-    if (m.zone && m.zone !== 'R') {
+    img.style.cssText = 'width:60px;height:60px;object-fit:cover;border-radius:8px;box-shadow:0 4px 10px rgba(0,0,0,.5);background:#222;';
+    if (m.zone && m.zone !== 'R' && m.zone !== 'D') {
       const zone = String(m.zone).replace(/[^0-9]/g,'');
       if (zone) img.src = `../img/zone${zone}/${encodeURIComponent(m.name)}.jpg`;
     }
     const title = document.createElement('span');
     title.textContent = m.name;
+    title.style.cssText = 'margin-top:4px;background:rgba(0,0,0,.55);color:#fff;padding:2px 6px;border-radius:12px;font-size:11px;max-width:120px;text-align:center;';
     const dist = document.createElement('em');
     dist.style.cssText = 'margin-top:2px;font-style:normal;font-size:10px;background:rgba(0,0,0,.4);color:#fff;padding:1px 5px;border-radius:10px;';
     div.append(img, title, dist);
@@ -150,6 +188,7 @@
   function render() {
     if (userLat != null && userLng != null && memorials.length) {
       let visible = 0;
+      let lines = [];
       memorials.forEach(m => {
         const d = haversine(userLat, userLng, m.location.lat, m.location.lng);
         const b = bearing(userLat, userLng, m.location.lat, m.location.lng);
@@ -173,8 +212,12 @@
         } else {
           el.style.opacity = 0;
         }
+        if (dbgMode) lines.push(`${m.name.padEnd(12)} d=${d.toFixed(1)}m b=${b.toFixed(1)} rel=${rel.toFixed(1)}`);
       });
       log(visible ? `${visible} marker${visible!==1?'s':''}` : 'Turn to find markers');
+      if (dbgMode && dbgList) {
+        dbgList.textContent = lines.join('\n');
+      }
     }
     requestAnimationFrame(render);
   }
@@ -186,6 +229,12 @@
     getLocation();
     startHeading();
     render();
+  }
+
+  if (dbgToggle && dbgList) {
+    dbgToggle.addEventListener('click', () => {
+      dbgList.style.display = dbgList.style.display === 'none' ? 'block' : 'none';
+    });
   }
 
   init();

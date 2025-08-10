@@ -819,7 +819,7 @@ body.no-scroll {
 
 @supports (-webkit-touch-callout: none) {
   /* iOS specific fine-tune */
-  #global-search-panel .gsp-inner {
+  #global-search_panel .gsp-inner {
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
   }
@@ -1006,3 +1006,6 @@ body.memorial-bg-set::before {
 
 /* TTS flash message (voice change) */
 #tts-flash { font-variant-numeric: tabular-nums; }
+
+/* AR markers base (optional central styling) */
+.mem-marker.far { opacity: 0.55; }
