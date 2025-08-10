@@ -140,3 +140,149 @@ function initLeafletMemorialMap(coords) {
   }
   start();
 }
+
+// After memorial data (name/desc) is set:
+(function setupReadAloud() {
+  const btn = document.getElementById('read-aloud-btn');
+  const nameEl = document.getElementById('mem-name');
+  const descEl = document.getElementById('mem-desc');
+  if (!btn || !nameEl || !descEl) return;
+  if (!('speechSynthesis' in window)) { btn.style.display = 'none'; return; }
+
+  let speaking = false;
+  let currentUtterance = null;
+  let voicesCache = [];
+  let currentVoiceIndex = 0;
+
+  function loadVoicesAsync() {
+    return new Promise(resolve => {
+      const voices = speechSynthesis.getVoices();
+      if (voices.length) return resolve(voices);
+      speechSynthesis.onvoiceschanged = () => resolve(speechSynthesis.getVoices());
+      // Force a (no-op) utterance to trigger voice load in some browsers
+      speechSynthesis.speak(new SpeechSynthesisUtterance(' '));
+      speechSynthesis.cancel();
+      setTimeout(()=>resolve(speechSynthesis.getVoices()), 1200);
+    });
+  }
+
+  function rankVoices(list) {
+    const prefs = [
+      /en-GB.*(Google|Microsoft|Natural|Neural)/i,
+      /en-GB/i,
+      /en.*(Google|Microsoft|Natural|Neural)/i,
+      /en-US/i,
+      /en-/i
+    ];
+    return list
+      .filter(v => /en/i.test(v.lang))
+      .sort((a,b) => {
+        const sa = score(a), sb = score(b);
+        if (sa !== sb) return sb - sa;
+        return (b.localService === a.localService) ? 0 : (a.localService ? 1 : -1);
+      });
+
+    function score(v) {
+      for (let i=0;i<prefs.length;i++) if (prefs[i].test(v.name + ' ' + v.lang)) return 100 - i*10;
+      return 0;
+    }
+  }
+
+  async function initVoices() {
+    const raw = await loadVoicesAsync();
+    voicesCache = rankVoices(raw);
+  }
+
+  function currentVoice() {
+    return voicesCache[currentVoiceIndex] || null;
+  }
+
+  function cycleVoice() {
+    if (!voicesCache.length) return;
+    currentVoiceIndex = (currentVoiceIndex + 1) % voicesCache.length;
+    const v = currentVoice();
+    btn.dataset.voice = v ? v.name : '';
+    if (speaking) {
+      stopSpeech();
+      startSpeech(); // restart with new voice
+    } else {
+      flash(`Voice: ${v.name.replace(/English/i,'').trim()}`);
+    }
+  }
+
+  function flash(msg) {
+    let n = document.getElementById('tts-flash');
+    if (!n) {
+      n = document.createElement('div');
+      n.id = 'tts-flash';
+      n.style.cssText = 'position:fixed;bottom:14px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.65);color:#fff;padding:6px 14px;border-radius:20px;font:12px system-ui;z-index:4000;pointer-events:none;opacity:0;transition:opacity .25s';
+      document.body.appendChild(n);
+    }
+    n.textContent = msg;
+    requestAnimationFrame(()=>{ n.style.opacity = '1'; });
+    clearTimeout(n._t);
+    n._t = setTimeout(()=> n.style.opacity='0', 1800);
+  }
+
+  function stopSpeech() {
+    speechSynthesis.cancel();
+    speaking = false;
+    btn.classList.remove('playing');
+    btn.setAttribute('aria-pressed','false');
+    btn.textContent = '🔈 Read Aloud';
+  }
+
+  function buildText() {
+    const title = (nameEl.textContent || '').trim();
+    const desc = (descEl.textContent || '').trim();
+    return title + (desc ? '. ' + desc : '');
+  }
+
+  function startSpeech() {
+    const text = buildText();
+    if (!text) return;
+    currentUtterance = new SpeechSynthesisUtterance(text);
+    const v = currentVoice();
+    if (v) currentUtterance.voice = v;
+    currentUtterance.rate = 1;
+    currentUtterance.pitch = 1;
+    currentUtterance.onend = stopSpeech;
+    currentUtterance.onerror = stopSpeech;
+    speechSynthesis.cancel();
+    speechSynthesis.speak(currentUtterance);
+    speaking = true;
+    btn.classList.add('playing');
+    btn.setAttribute('aria-pressed','true');
+    btn.textContent = '⏹ Stop';
+  }
+
+  btn.addEventListener('click', () => {
+    if (speaking) stopSpeech(); else startSpeech();
+  });
+
+  // Long press (hold >500ms) cycles voice
+  let pressTimer;
+  btn.addEventListener('mousedown', startPress);
+  btn.addEventListener('touchstart', startPress, { passive:true });
+  btn.addEventListener('mouseup', cancelPress);
+  btn.addEventListener('mouseleave', cancelPress);
+  btn.addEventListener('touchend', cancelPress);
+  btn.addEventListener('touchcancel', cancelPress);
+
+  function startPress(e) {
+    if (e.type === 'mousedown' && e.button !== 0) return;
+    pressTimer = setTimeout(() => {
+      cycleVoice();
+    }, 600);
+  }
+  function cancelPress() {
+    clearTimeout(pressTimer);
+  }
+
+  initVoices().then(() => {
+    if (voicesCache.length) {
+      const v = currentVoice();
+      if (v) btn.title = 'Tap: play / stop. Hold: cycle voice';
+    }
+  });
+})();

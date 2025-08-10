@@ -28,13 +28,11 @@
 
   <main class="container" id="memorial-detail">
     <button id="back-btn" class="back-btn" onclick="location.href='memorials.html'" aria-label="Back to memorials list">← Back</button>
+    <button id="read-aloud-btn" class="read-aloud-btn" type="button" aria-pressed="false" aria-label="Read memorial aloud">🔈 Read Aloud</button>
     <h1 id="mem-name"></h1>
     <p class="memorial-zone" id="mem-zone"></p>
     <p id="mem-desc"></p>
-
-    <!-- Foreground memorial image (hidden until loaded) -->
     <img id="mem-photo" class="mem-photo" alt="" loading="lazy" style="display:none;"/>
-
     <div id="mem-gmap" style="width:100%;height:300px;border:1px solid #ccc;border-radius:6px;margin:1rem 0;display:none;"></div>
   </main>
 
