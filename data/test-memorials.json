@@ -1,0 +1,16 @@
+[
+  { "name": "Test Memorial N20", "zone": "T", "location": { "lat": 52.920500, "lng": -1.487667 }, "image": "" },
+  { "name": "Test Memorial E18", "zone": "T", "location": { "lat": 52.920320, "lng": -1.487399 }, "image": "" },
+  { "name": "Test Memorial S25", "zone": "T", "location": { "lat": 52.920095, "lng": -1.487667 }, "image": "" },
+  { "name": "Test Memorial W30", "zone": "T", "location": { "lat": 52.920320, "lng": -1.488113 }, "image": "" },
+  { "name": "Test Memorial NE35", "zone": "T", "location": { "lat": 52.920635, "lng": -1.487197 }, "image": "" },
+  { "name": "Test Memorial SE40", "zone": "T", "location": { "lat": 52.919962, "lng": -1.487075 }, "image": "" },
+  { "name": "Test Memorial SW50", "zone": "T", "location": { "lat": 52.919871, "lng": -1.488412 }, "image": "" },
+  { "name": "Test Memorial NW55", "zone": "T", "location": { "lat": 52.920815, "lng": -1.488118 }, "image": "" },
+  { "name": "Test Memorial ENE60", "zone": "T", "location": { "lat": 52.920456, "lng": -1.487070 }, "image": "" },
+  { "name": "Test Memorial ESE70", "zone": "T", "location": { "lat": 52.920083, "lng": -1.487030 }, "image": "" },
+  { "name": "Test Memorial NNW80", "zone": "T", "location": { "lat": 52.920999, "lng": -1.487900 }, "image": "" },
+  { "name": "Test Memorial SSE90", "zone": "T", "location": { "lat": 52.919515, "lng": -1.487465 }, "image": "" },
+  { "name": "Test Memorial Far95", "zone": "T", "location": { "lat": 52.920985, "lng": -1.488530 }, "image": "" },
+  { "name": "Test Memorial Far100", "zone": "T", "location": { "lat": 52.919423, "lng": -1.488182 }, "image": "" }
+]

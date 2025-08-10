@@ -3,7 +3,8 @@
   const headingEl = document.getElementById('heading');
   const video = document.getElementById('camera');
   const markersLayer = document.getElementById('markers');
-  const dataPath = '../data/memorials.json';
+  const useTest = location.search.includes('test=1');
+  const dataPath = useTest ? '../data/test-memorials.json' : '../data/memorials.json';
 
   let userLat = null, userLng = null, userHeading = 0;
   let memorials = [];
