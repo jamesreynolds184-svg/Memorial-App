@@ -949,3 +949,31 @@ body.memorial-bg-set::before {
   pointer-events: none;
   z-index: -1;
 }
+
+/* Nearby memorial distance badge */
+.near-distance {
+  font-size: 0.7rem;
+  padding: 3px 6px;
+  background: rgba(0,0,0,0.15);
+  border-radius: 12px;
+  align-self: center;
+  margin-right: 4px;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+.memorial-row {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+.memorial-row .memorial-zone {
+  font-size: 0.65rem;
+  padding: 4px 6px;
+  background: rgba(0,0,0,0.20);
+  border-radius: 10px;
+  color: #fff;
+  flex-shrink: 0;
+}
+.memorial-row .mem-link {
+  flex: 1 1 auto;
+}
