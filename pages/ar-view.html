@@ -9,7 +9,7 @@
     body,html { margin:0;height:100%;overflow:hidden;background:#000; }
     #ar-root { position:relative;width:100%;height:100%; }
     #camera { position:absolute;inset:0;object-fit:cover;width:100%;height:100%; }
-    .hud { position:absolute;top:8px;left:8px;right:8px;display:flex;justify-content:space-between;color:#fff;font:14px/1.2 system-ui;pointer-events:none;text-shadow:0 0 4px #000; }
+    .hud { position:absolute;top:8px;right:12px;color:#fff;font:12px system-ui;text-shadow:0 0 4px #000; }
     #markers { position:absolute;inset:0;pointer-events:none; }
     .mem-marker { position:absolute;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center; }
     .mem-marker img { width:60px;height:60px;object-fit:cover;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,.5); }
@@ -25,18 +25,32 @@
       text-shadow:0 0 4px #000;
     }
     #debug-bar span{white-space:nowrap;}
+    /* Back button (reuse styling idea from other pages if present) */
+    .back-btn {
+      position: fixed;
+      top: 10px;
+      left: 10px;
+      z-index: 5000;
+      background: rgba(0,0,0,.55);
+      color: #fff;
+      border: 1px solid rgba(255,255,255,.25);
+      padding: 8px 16px;
+      font-size: 14px;
+      border-radius: 28px;
+      cursor: pointer;
+      backdrop-filter: blur(4px);
+    }
+    .back-btn:active { transform: scale(.95); }
   </style>
 </head>
 <body>
-  <button id="burger-menu" class="burger-button" aria-label="Open menu">☰</button>
-  <nav id="menu-items" aria-label="Main"></nav>
-  <div id="menu-overlay"></div>
+  <button id="back-btn" class="back-btn" type="button" aria-label="Back">← Back</button>
 
   <div id="ar-root">
-    <video id="camera" autoplay playsinline muted></video>
-    <div class="hud">
-      <div id="status">Init…</div>
-      <div id="heading">–°</div>
+    <video id="camera" autoplay playsinline muted style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;"></video>
+    <div class="hud" style="position:absolute;top:8px;right:12px;color:#fff;font:12px system-ui;text-shadow:0 0 4px #000;">
+      <span id="status">Init…</span> |
+      <span id="heading">–°</span>
     </div>
     <div id="markers"></div>
     <div id="debug-bar">
@@ -47,7 +61,12 @@
     </div>
   </div>
 
-  <script src="../js/app.js"></script>
+  <script>
+    document.getElementById('back-btn').addEventListener('click', () => {
+      if (history.length > 1) history.back();
+      else window.location.href = '../home.html';
+    });
+  </script>
   <script src="../js/ar-view.js"></script>
 </body>
 </html>
