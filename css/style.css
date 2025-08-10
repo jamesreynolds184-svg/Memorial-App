@@ -1009,3 +1009,8 @@ body.memorial-bg-set::before {
 
 /* AR markers base (optional central styling) */
 .mem-marker.far { opacity: 0.55; }
+.mem-marker .mem-marker-info {}
+.mem-marker.info,
+.mem-marker .info {
+  /* (placeholder if later needed) */
+}

@@ -27,6 +27,9 @@
   let memorials = [];
   let ringAdded = false;
   let firstFix = true;
+  const PRIVACY_KEY = 'nma:arPrivacyAck';
+  let privacyMarker = null; // synthetic dynamic marker
+  let headingReady = false;
 
   function log(msg) { if (statusEl) statusEl.textContent = msg; }
 
@@ -89,6 +92,7 @@
         if (genRing && dbgMode) console.log('[AR] Ring + debug both active');
         firstFix = false;
       }
+      if (!localStorage.getItem(PRIVACY_KEY)) ensurePrivacyMarker();
     }, e => {
       log('Geo err');
       if (dbgAcc) dbgAcc.textContent = 'Acc: err';
@@ -116,6 +120,7 @@
   function onOrient(e) {
     if (e.alpha == null) return;
     userHeading = e.alpha;
+    headingReady = true;
     if (headingEl) headingEl.textContent = Math.round(userHeading) + '°';
     updateDebug();
   }
@@ -182,13 +187,65 @@
     m._distEl = dist;
     markersLayer.appendChild(div);
     m._el = div;
+
+    if (m._isPrivacy) {
+      title.textContent = 'Navigation Notice';
+      const msg = document.createElement('small');
+      msg.textContent = 'Use this tool to navigate the Arboretum. No video data is logged or recorded.';
+      msg.style.cssText = 'margin-top:4px;max-width:180px;text-align:center;background:rgba(0,0,0,.65);color:#fff;padding:6px 8px;border-radius:10px;font-size:11px;line-height:1.25;';
+      const close = document.createElement('button');
+      close.type = 'button';
+      close.textContent = 'Got it';
+      close.style.cssText = 'margin-top:6px;background:#2d7d2d;color:#fff;border:none;padding:4px 10px;font-size:11px;border-radius:14px;cursor:pointer;';
+      close.onclick = (ev)=>{
+        ev.stopPropagation();
+        localStorage.setItem(PRIVACY_KEY,'1');
+        // fade out & remove
+        m._el.style.transition='opacity .4s';
+        m._el.style.opacity='0';
+        setTimeout(()=>{
+          if (m._el && m._el.parentNode) m._el.parentNode.removeChild(m._el);
+          memorials = memorials.filter(x=>x!==m);
+          privacyMarker = null;
+        },420);
+      };
+      // hide distance badge for this marker
+      dist.style.display='none';
+      div.append(msg, close);
+    }
+
     return div;
+  }
+
+  function ensurePrivacyMarker() {
+    if (localStorage.getItem(PRIVACY_KEY)) return;
+    if (!privacyMarker) {
+      privacyMarker = {
+        name: 'Info',
+        zone: 'INFO',
+        _isPrivacy: true,
+        location: { lat: userLat, lng: userLng }
+      };
+      memorials.unshift(privacyMarker);
+    }
+  }
+  function updatePrivacyMarkerPosition() {
+    if (!privacyMarker || userLat == null || userLng == null) return;
+    // Place 15m ahead of user in current heading
+    const dist = 15; // meters
+    const R = 6378137;
+    const headRad = userHeading * Math.PI/180;
+    const dLat = (dist * Math.cos(headRad)) / R;
+    const dLng = (dist * Math.sin(headRad)) / (R * Math.cos(userLat * Math.PI/180));
+    privacyMarker.location.lat = userLat + dLat * 180/Math.PI;
+    privacyMarker.location.lng = userLng + dLng * 180/Math.PI;
   }
 
   function render() {
     if (userLat != null && userLng != null && memorials.length) {
       let visible = 0;
       let lines = [];
+      if (privacyMarker) updatePrivacyMarkerPosition();
       memorials.forEach(m => {
         const d = haversine(userLat, userLng, m.location.lat, m.location.lng);
         const b = bearing(userLat, userLng, m.location.lat, m.location.lng);
