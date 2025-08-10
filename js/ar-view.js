@@ -3,6 +3,11 @@
   const headingEl = document.getElementById('heading');
   const video = document.getElementById('camera');
   const markersLayer = document.getElementById('markers');
+  const dbgPos = document.getElementById('dbg-pos');
+  const dbgAcc = document.getElementById('dbg-acc');
+  const dbgHead = document.getElementById('dbg-head');
+  const dbgMem = document.getElementById('dbg-mem');
+
   const useTest = location.search.includes('test=1');
   const dataPath = useTest ? '../data/test-memorials.json' : '../data/memorials.json';
 
@@ -20,6 +25,7 @@
           Number.isFinite(m.location.lat) &&
           Number.isFinite(m.location.lng)
         );
+        updateDebug();
       }).catch(e => log('Data error'));
   }
 
@@ -35,7 +41,12 @@
     navigator.geolocation.watchPosition(p => {
       userLat = p.coords.latitude;
       userLng = p.coords.longitude;
-    }, err => log('Geo err ' + err.code), { enableHighAccuracy:true, maximumAge:5000, timeout:10000 });
+      if (dbgAcc) dbgAcc.textContent = `Acc: ${Math.round(p.coords.accuracy)}m`;
+      updateDebug();
+    }, err => {
+      log('Geo err: ' + err.code);
+      if (dbgAcc) dbgAcc.textContent = 'Acc: err';
+    }, { enableHighAccuracy:true, maximumAge:3000, timeout:10000 });
   }
 
   function startHeading() {
@@ -64,6 +75,7 @@
     if (h == null) return;
     userHeading = h;
     if (headingEl) headingEl.textContent = Math.round(h) + '°';
+    updateDebug();
   }
 
   function haversine(lat1, lon1, lat2, lon2) {
@@ -124,6 +136,14 @@
       });
     }
     requestAnimationFrame(render);
+  }
+
+  function updateDebug() {
+    if (dbgPos && userLat != null) {
+      dbgPos.textContent = `Lat: ${userLat.toFixed(6)} Lng: ${userLng.toFixed(6)}`;
+    }
+    if (dbgHead) dbgHead.textContent = `Head: ${Math.round(userHeading)}°`;
+    if (dbgMem) dbgMem.textContent = `Mem: ${memorials.length}`;
   }
 
   async function init() {
