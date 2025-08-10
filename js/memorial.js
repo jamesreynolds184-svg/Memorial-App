@@ -256,6 +256,15 @@ function initLeafletMemorialMap(coords) {
     btn.textContent = '⏹ Stop';
   }
 
+  function autoStop() { if (speaking) stopSpeech(); }
+
+  // Stop when navigating away / hiding
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) autoStop();
+  });
+  window.addEventListener('pagehide', autoStop);
+  window.addEventListener('beforeunload', autoStop);
+
   btn.addEventListener('click', () => {
     if (speaking) stopSpeech(); else startSpeech();
   });
