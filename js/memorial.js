@@ -153,6 +153,7 @@ function initLeafletMemorialMap(coords) {
   let currentUtterance = null;
   let voicesCache = [];
   let currentVoiceIndex = 0;
+  const isiOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
 
   function loadVoicesAsync() {
     return new Promise(resolve => {
@@ -167,30 +168,45 @@ function initLeafletMemorialMap(coords) {
   }
 
   function rankVoices(list) {
-    const prefs = [
-      /en-GB.*(Google|Microsoft|Natural|Neural)/i,
+    const iosPref = [
+      /Siri Voice 3.*en/i,
+      /Siri Voice 2.*en/i,
+      /Siri Voice 1.*en/i,
+      /Daniel/i,
+      /Serena/i,
+      /Martha/i,
+      /Kate/i,
+      /Ellis/i
+    ];
+    const genericPref = [
+      /en-GB.*(Natural|Neural)/i,
       /en-GB/i,
-      /en.*(Google|Microsoft|Natural|Neural)/i,
+      /en-US.*(Natural|Neural)/i,
       /en-US/i,
       /en-/i
     ];
+    const prefs = isiOS ? iosPref.concat(genericPref) : genericPref;
     return list
       .filter(v => /en/i.test(v.lang))
-      .sort((a,b) => {
-        const sa = score(a), sb = score(b);
-        if (sa !== sb) return sb - sa;
-        return (b.localService === a.localService) ? 0 : (a.localService ? 1 : -1);
-      });
+      .sort((a,b) => score(b)-score(a));
 
-    function score(v) {
-      for (let i=0;i<prefs.length;i++) if (prefs[i].test(v.name + ' ' + v.lang)) return 100 - i*10;
-      return 0;
+    function score(v){
+      const nameLang = (v.name + ' ' + v.lang);
+      for (let i=0;i<prefs.length;i++){
+        if (prefs[i].test(nameLang)) return 100 - i*5;
+      }
+      // Slight bonus to non-localService (often network / higher quality off iOS)
+      return v.localService ? 10 : 15;
     }
   }
 
   async function initVoices() {
     const raw = await loadVoicesAsync();
     voicesCache = rankVoices(raw);
+    if (!voicesCache.length) return;
+    currentVoiceIndex = 0;
+    const v = currentVoice();
+    if (v) flash(`Voice: ${v.name}`);
   }
 
   function currentVoice() {
@@ -241,11 +257,16 @@ function initLeafletMemorialMap(coords) {
   function startSpeech() {
     const text = buildText();
     if (!text) return;
+    if (!voicesCache.length) {
+      // Defer until voices ready
+      initVoices().then(() => startSpeech());
+      return;
+    }
     currentUtterance = new SpeechSynthesisUtterance(text);
     const v = currentVoice();
     if (v) currentUtterance.voice = v;
-    currentUtterance.rate = 1;
-    currentUtterance.pitch = 1;
+    currentUtterance.rate = isiOS ? 1.02 : 1;   // slight lift
+    currentUtterance.pitch = isiOS ? 1.05 : 1;  // brighten deep voices
     currentUtterance.onend = stopSpeech;
     currentUtterance.onerror = stopSpeech;
     speechSynthesis.cancel();
