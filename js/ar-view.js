@@ -14,6 +14,8 @@
   const useTest = qs.has('test');
   const genRing = qs.has('ring');
   const noFade = qs.has('nofade');
+  const dbgMode = qs.has('dbg');              // <-- ADD
+  const localize = qs.has('local');           // <-- OPTIONAL: shift test markers near user
   const dataPath = useTest ? '../data/test-memorials.json' : '../data/memorials.json';
 
   // Config
@@ -28,8 +30,9 @@
   let ringAdded = false;
   let firstFix = true;
   const PRIVACY_KEY = 'nma:arPrivacyAck';
-  let privacyMarker = null; // synthetic dynamic marker
+  let privacyMarker = null;
   let headingReady = false;
+  let localized = false; // ensure we only shift once
 
   function log(msg) { if (statusEl) statusEl.textContent = msg; }
 
@@ -56,7 +59,7 @@
     const added = [];
     for (let i = 0; i < 12; i++) {
       const angle = (i / 12) * Math.PI * 2;
-      const dist = 30 + (i % 4) * 30; // 30,60,90,120
+      const dist = 30 + (i % 4) * 30;
       const dLat = (dist * Math.cos(angle)) / R;
       const dLng = (dist * Math.sin(angle)) / (R * Math.cos(lat * Math.PI / 180));
       added.push({
@@ -67,6 +70,22 @@
     }
     memorials = added.concat(memorials);
     updateDebug();
+  }
+
+  // Shift test markers to be around the user (keep their relative offsets)
+  function localizeTestMarkers() {
+    if (!useTest || !localize || localized || userLat == null) return;
+    if (!memorials.length) return;
+    const baseLat = memorials[0].location.lat;
+    const baseLng = memorials[0].location.lng;
+    const dLat = userLat - baseLat;
+    const dLng = userLng - baseLng;
+    memorials.forEach(m => {
+      m.location.lat += dLat;
+      m.location.lng += dLng;
+    });
+    localized = true;
+    console.log('[AR] Test markers localized around user.');
   }
 
   function startCamera() {
@@ -86,14 +105,14 @@
         addDynamicRing(userLat, userLng);
         ringAdded = true;
       }
+      if (useTest && localize) localizeTestMarkers();
       updateDebug();
       if (firstFix) {
         if (dbgMode) addDebugMarkersNear(userLat, userLng);
-        if (genRing && dbgMode) console.log('[AR] Ring + debug both active');
         firstFix = false;
       }
       if (!localStorage.getItem(PRIVACY_KEY)) ensurePrivacyMarker();
-    }, e => {
+    }, () => {
       log('Geo err');
       if (dbgAcc) dbgAcc.textContent = 'Acc: err';
     }, { enableHighAccuracy: true, maximumAge: 3000, timeout: 10000 });
@@ -141,25 +160,18 @@
   }
 
   function addDebugMarkersNear(lat, lng) {
-    // Only if dbgMode
     if (!dbgMode) return;
     const R = 6378137;
     function offset(distMeters, bearingDeg) {
       const br = bearingDeg * Math.PI/180;
       const dLat = (distMeters * Math.cos(br)) / R;
       const dLng = (distMeters * Math.sin(br)) / (R * Math.cos(lat * Math.PI/180));
-      return {
-        lat: lat + dLat * 180/Math.PI,
-        lng: lng + dLng * 180/Math.PI
-      };
+      return { lat: lat + dLat * 180/Math.PI, lng: lng + dLng * 180/Math.PI };
     }
-    const a = offset(10, 30);
-    const b = offset(30, 120);
-    const c = offset(60, 250);
     const added = [
-      { name: 'DEBUG 10m', zone: 'D', location: a },
-      { name: 'DEBUG 30m', zone: 'D', location: b },
-      { name: 'DEBUG 60m', zone: 'D', location: c }
+      { name: 'DEBUG 10m', zone: 'D', location: offset(10, 30) },
+      { name: 'DEBUG 30m', zone: 'D', location: offset(30, 120) },
+      { name: 'DEBUG 60m', zone: 'D', location: offset(60, 250) }
     ];
     memorials = added.concat(memorials);
     console.log('[AR] Injected debug markers', added);
@@ -174,7 +186,7 @@
     const img = document.createElement('img');
     img.alt = m.name;
     img.style.cssText = 'width:60px;height:60px;object-fit:cover;border-radius:8px;box-shadow:0 4px 10px rgba(0,0,0,.5);background:#222;';
-    if (m.zone && m.zone !== 'R' && m.zone !== 'D') {
+    if (m.zone && !['R','D','INFO'].includes(m.zone)) {
       const zone = String(m.zone).replace(/[^0-9]/g,'');
       if (zone) img.src = `../img/zone${zone}/${encodeURIComponent(m.name)}.jpg`;
     }
@@ -197,23 +209,19 @@
       close.type = 'button';
       close.textContent = 'Got it';
       close.style.cssText = 'margin-top:6px;background:#2d7d2d;color:#fff;border:none;padding:4px 10px;font-size:11px;border-radius:14px;cursor:pointer;';
-      close.onclick = (ev)=>{
+      close.onclick = ev => {
         ev.stopPropagation();
         localStorage.setItem(PRIVACY_KEY,'1');
-        // fade out & remove
         m._el.style.transition='opacity .4s';
         m._el.style.opacity='0';
         setTimeout(()=>{
-          if (m._el && m._el.parentNode) m._el.parentNode.removeChild(m._el);
+          if (m._el?.parentNode) m._el.parentNode.removeChild(m._el);
           memorials = memorials.filter(x=>x!==m);
-          privacyMarker = null;
         },420);
       };
-      // hide distance badge for this marker
       dist.style.display='none';
       div.append(msg, close);
     }
-
     return div;
   }
 
@@ -230,9 +238,8 @@
     }
   }
   function updatePrivacyMarkerPosition() {
-    if (!privacyMarker || userLat == null || userLng == null) return;
-    // Place 15m ahead of user in current heading
-    const dist = 15; // meters
+    if (!privacyMarker || userLat == null) return;
+    const dist = 15;
     const R = 6378137;
     const headRad = userHeading * Math.PI/180;
     const dLat = (dist * Math.cos(headRad)) / R;
@@ -249,16 +256,15 @@
       memorials.forEach(m => {
         const d = haversine(userLat, userLng, m.location.lat, m.location.lng);
         const b = bearing(userLat, userLng, m.location.lat, m.location.lng);
-        const rel = ((b - userHeading + 540) % 360) - 180; // -180..180
+        const rel = ((b - userHeading + 540) % 360) - 180;
         const el = ensureMarker(m);
         if (Math.abs(rel) <= HALF_FOV) {
           const w = innerWidth;
           const x = (rel / HALF_FOV) * (w/2) + w/2;
           const clampedX = Math.min(w - 40, Math.max(40, x));
-            // Vertical displacement
           const yBase = innerHeight * 0.5;
           const y = yBase + Math.min(300, d * 0.1);
-          el.style.left = clampedX + 'px';
+            el.style.left = clampedX + 'px';
           el.style.top = y + 'px';
           const scale = Math.max(MIN_SCALE, 1 - d/800);
           el.style.transform = `translate(-50%,-50%) scale(${scale})`;
@@ -272,9 +278,7 @@
         if (dbgMode) lines.push(`${m.name.padEnd(12)} d=${d.toFixed(1)}m b=${b.toFixed(1)} rel=${rel.toFixed(1)}`);
       });
       log(visible ? `${visible} marker${visible!==1?'s':''}` : 'Turn to find markers');
-      if (dbgMode && dbgList) {
-        dbgList.textContent = lines.join('\n');
-      }
+      if (dbgMode && dbgList) dbgList.textContent = lines.join('\n');
     }
     requestAnimationFrame(render);
   }
