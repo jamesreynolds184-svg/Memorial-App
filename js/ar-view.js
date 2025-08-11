@@ -123,11 +123,9 @@
         typeof DeviceOrientationEvent.requestPermission === 'function') {
       document.body.addEventListener('click', function req() {
         DeviceOrientationEvent.requestPermission()
-          .then(res => { if (res === 'granted') addOrientationListeners(); else log('Heading denied'); })
-          .catch(() => log('Heading err'));
+          .then(res => { if (res === 'granted') addOrientationListeners(); });
         document.body.removeEventListener('click', req);
       }, { once: true });
-      log('Tap to enable heading');
     } else {
       addOrientationListeners();
     }
@@ -296,6 +294,26 @@
     dbgToggle.addEventListener('click', () => {
       dbgList.style.display = dbgList.style.display === 'none' ? 'block' : 'none';
     });
+  }
+
+  // Always show a debug marker 10m in front of user for AR testing
+  if (!window._arDebugMarker) {
+    window._arDebugMarker = {
+      name: 'AR TEST',
+      zone: 'DEBUG',
+      location: { lat: userLat, lng: userLng }
+    };
+    memorials.unshift(window._arDebugMarker);
+  }
+  if (userLat && userLng && window._arDebugMarker) {
+    // Place 10m ahead of user heading
+    const dist = 10;
+    const R = 6378137;
+    const headRad = userHeading * Math.PI/180;
+    const dLat = (dist * Math.cos(headRad)) / R;
+    const dLng = (dist * Math.sin(headRad)) / (R * Math.cos(userLat * Math.PI/180));
+    window._arDebugMarker.location.lat = userLat + dLat * 180/Math.PI;
+    window._arDebugMarker.location.lng = userLng + dLng * 180/Math.PI;
   }
 
   init();
