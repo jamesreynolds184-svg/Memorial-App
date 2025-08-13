@@ -116,6 +116,16 @@
           initLeafletMemorialMap({ lat, lng });
         }
       }
+
+      // See on map button logic
+      const seeBtn = document.getElementById('see-on-map-btn');
+      if (seeBtn && item && item.location &&
+          Number.isFinite(item.location.lat) && Number.isFinite(item.location.lng)) {
+        seeBtn.style.display = 'inline-flex';
+        seeBtn.addEventListener('click', () => {
+          location.href = 'map.html?focus=' + encodeURIComponent(item.name);
+        });
+      }
     })
     .catch(err => {
       console.error('Failed to load data', err);

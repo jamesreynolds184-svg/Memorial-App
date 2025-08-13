@@ -56,7 +56,6 @@ input[type="text"] {
   --primary: #005969;
   --accent:  #f16e34;
   --text:    #123;
-  /* Make panels more see-through */
   --panel-bg: rgba(255,255,255,0.60);
   --shadow:  0 10px 25px rgba(0,0,0,0.15);
   --radius:  12px;
@@ -92,53 +91,51 @@ body {
 
 /* Slide-out left menu */
 #menu-items {
-  display: block;              /* override the earlier display:none */
   position: fixed;
-  top: 0;
-  left: 0;
+  top: 0; left: 0;
   height: 100vh;
-  width: 260px;
-  background-color: var(--primary);
-  padding: 72px 16px 16px;
-  box-sizing: border-box;
-  transform: translateX(-100%);
-  transition: transform 0.3s ease;
-  z-index: 1000;
-  overflow-y: auto;
-  border-top-right-radius: 12px;
-  border-bottom-right-radius: 12px;
-  box-shadow: 8px 0 20px rgba(0,0,0,0.2);
-}
-#menu-items.active {
-  transform: translateX(0);
+  width: 250px;
+  background: rgba(255,255,255,0.92);
+  backdrop-filter: blur(6px);
+  box-shadow: 2px 0 18px -6px rgba(0,0,0,0.35);
+  padding: 70px 18px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  transform: translateX(-270px);
+  transition: transform .3s;
+  z-index: 6000;
 }
 #menu-items a {
-  display: block;
-  color: #fff;
   text-decoration: none;
-  padding: 12px 8px;
-  border-radius: 4px;
-  font-size: 1rem;
+  font: 15px/1.3 system-ui,sans-serif;
+  color: #123;
+  padding: 6px 8px;
+  border-radius: 8px;
 }
+#menu-items a.active,
 #menu-items a:hover {
-  background-color: rgba(255,255,255,0.12);
-  text-decoration: none;
+  background: var(--accent);
+  color: #fff;
 }
+#menu-items.open { transform: translateX(0); }
 
-/* Dark overlay behind the menu */
 #menu-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0.35);
+  background: rgba(0,0,0,0.4);
   opacity: 0;
   pointer-events: none;
-  transition: opacity 0.3s ease;
-  z-index: 999;
+  transition: opacity .25s;
+  z-index: 5500;
 }
-#menu-overlay.active {
+#menu-overlay.show {
   opacity: 1;
   pointer-events: auto;
 }
+
+/* Prevent body scroll when nav open */
+body.nav-open { overflow: hidden; }
 
 /* Welcome section */
 .hero {
@@ -1013,4 +1010,278 @@ body.memorial-bg-set::before {
 .mem-marker.info,
 .mem-marker .info {
   /* (placeholder if later needed) */
+}
+
+/* --- Map View --- */
+.map-panel {
+  background: var(--panel-bg, rgba(255,255,255,0.85));
+  backdrop-filter: blur(6px);
+  border: 1px solid rgba(0,0,0,0.08);
+  border-radius: 18px;
+  padding: 0;
+  box-shadow: 0 6px 28px -10px rgba(0,0,0,0.25);
+  position: relative;
+  overflow: hidden;
+  transition: box-shadow .3s, transform .3s;
+}
+.map-panel.fullscreen {
+  position: fixed;
+  inset: 0;
+  margin: 0;
+  border-radius: 0;
+  z-index: 4000;
+  padding-top: 54px;
+  background: #fff;
+}
+.map-toolbar {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 12px;
+  background: linear-gradient(90deg,var(--accent,#2d6dfa),#174a9e);
+  color: #fff;
+}
+.map-panel.fullscreen .map-toolbar {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 4001;
+  border-radius: 0;
+}
+.map-filters {
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+  align-items:center;
+}
+.map-filters input,
+.map-filters select {
+  background:#fff;
+  border:1px solid rgba(0,0,0,0.15);
+  border-radius: 8px;
+  padding:6px 10px;
+  font:14px/1.2 system-ui,sans-serif;
+  min-width:160px;
+}
+.map-filters input:focus,
+.map-filters select:focus {
+  outline:2px solid var(--accent,#2d6dfa);
+  outline-offset:2px;
+}
+.map-count {
+  font-size:12px;
+  padding:4px 8px;
+  background:rgba(255,255,255,0.15);
+  border-radius:20px;
+}
+.map-actions {
+  display:flex;
+  gap:6px;
+}
+.map-actions button {
+  background:#fff;
+  border:1px solid rgba(0,0,0,0.15);
+  color:#222;
+  width:36px;
+  height:36px;
+  border-radius:10px;
+  font-size:16px;
+  line-height:1;
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  transition: background .2s, transform .15s;
+}
+.map-actions button:hover { background:#fff; }
+.map-actions button:active { transform:scale(.9); }
+.map-wrap {
+  height:320px;
+  min-height:240px;
+  transition:height .35s;
+}
+.map-panel.fullscreen .map-wrap {
+  height:100%;
+}
+.map-list {
+  list-style:none;
+  margin:0;
+  padding:8px 10px 10px;
+  max-height:200px;
+  overflow:auto;
+  display:grid;
+  gap:4px;
+}
+.map-panel.fullscreen .map-list {
+  position:fixed;
+  right:8px;
+  top:64px;
+  width:240px;
+  max-height:calc(100vh - 80px);
+  background:rgba(255,255,255,0.92);
+  border:1px solid rgba(0,0,0,0.15);
+  border-radius:12px;
+  box-shadow:0 4px 18px -6px rgba(0,0,0,0.4);
+  padding:8px 8px 10px;
+  z-index:4002;
+}
+.map-list li {
+  padding:6px 8px;
+  border-radius:8px;
+  background:rgba(0,0,0,0.04);
+  cursor:pointer;
+  font-size:13px;
+  display:flex;
+  justify-content:space-between;
+  gap:8px;
+}
+.map-list li:hover {
+  background:rgba(0,0,0,0.08);
+}
+.map-list li:active {
+  background:rgba(0,0,0,0.15);
+}
+.map-list li span.zone {
+  font-size:11px;
+  opacity:.7;
+}
+.leaflet-popup-content a {
+  color: var(--accent);
+  text-decoration:none;
+  font-weight:600;
+  font-size:13px;
+}
+.leaflet-popup-content a:hover { text-decoration:underline; }
+
+/* Map View overrides */
+.map-toolbar {
+  background: var(--primary);
+  color:#fff;
+}
+.map-actions button {
+  background:#fff;
+  border:1px solid rgba(0,0,0,0.15);
+  color:#222;
+}
+.map-actions button:hover {
+  border-color: var(--accent);
+}
+.map-actions button:focus {
+  outline:2px solid var(--accent);
+  outline-offset:2px;
+}
+.map-count {
+  background: var(--accent);
+  color:#fff;
+}
+.map-list li:hover {
+  background: rgba(241,110,52,0.18); /* accent with alpha */
+}
+.leaflet-popup-content a {
+  color: var(--accent);
+}
+.leaflet-control-attribution {
+  background: rgba(255,255,255,0.6);
+  font-size: 10px;
+  padding: 2px 6px;
+  border-radius: 6px;
+  backdrop-filter: blur(4px);
+}
+
+.home-search input {
+  width:100%;
+  max-width:420px;
+  padding:12px 16px;
+  border:1px solid rgba(0,0,0,0.25);
+  border-radius:14px;
+  font:16px/1.2 system-ui,sans-serif;
+  background:rgba(255,255,255,0.85);
+  backdrop-filter:blur(4px);
+}
+.home-search input:focus {
+  outline:2px solid var(--accent,#f16e34);
+  outline-offset:2px;
+  background:#fff;
+}
+
+/* --- New styles for memorial detail toolbar and buttons --- */
+.mem-detail-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.see-on-map-btn {
+  background: var(--accent,#f16e34);
+  color:#fff;
+  border:none;
+  padding:8px 14px;
+  border-radius:24px;
+  font:14px/1 system-ui,sans-serif;
+  cursor:pointer;
+  box-shadow:0 3px 8px -3px rgba(0,0,0,0.4);
+  transition:background .25s, transform .2s;
+  margin-left:8px;
+}
+.see-on-map-btn:hover { background:#d75d23; }
+.see-on-map-btn:active { transform:scale(.92); }
+
+/* Memorial detail layout & buttons */
+.mem-detail-header {
+  display:flex;
+  flex-wrap:wrap;
+  gap:14px;
+  align-items:center;
+  border-bottom:1px solid rgba(0,0,0,0.08);
+  padding:4px 0 10px;
+}
+.mem-detail-header .mem-title {
+  flex:1 1 auto;
+  margin:0;
+  font-size:1.9rem;
+  line-height:1.15;
+}
+.mem-actions {
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+}
+.btn {
+  font:14px/1.1 system-ui,sans-serif;
+  padding:10px 18px;
+  border-radius:28px;
+  cursor:pointer;
+  border:1px solid transparent;
+  background:#eee;
+  color:#123;
+  transition:background .25s, color .25s, transform .18s, box-shadow .25s;
+  white-space:nowrap;
+}
+.btn:hover { background:#e4e4e4; }
+.btn:active { transform:scale(.92); }
+.btn:focus-visible {
+  outline:2px solid var(--accent,#f16e34);
+  outline-offset:2px;
+}
+.btn-plain {
+  background:transparent;
+  border:1px solid rgba(0,0,0,0.15);
+}
+.btn-plain:hover { background:rgba(0,0,0,0.05); }
+.btn-accent {
+  background:var(--accent,#f16e34);
+  color:#fff;
+}
+.btn-accent:hover { background:#d45f26; }
+.btn-primary {
+  background:var(--primary,#005969);
+  color:#fff;
+}
+.btn-primary:hover { background:#024b57; }
+@media (max-width:640px){
+  .mem-detail-header .mem-title { order:3; flex:1 1 100%; }
+  .mem-actions { order:2; }
+  .btn-plain { order:1; }
 }

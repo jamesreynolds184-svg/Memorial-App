@@ -14,6 +14,7 @@
   <!-- Slide-out left menu -->
     <nav id="menu-items">
       <a href="home.html">Home</a>
+      <a href="pages/map.html">Map</a>
       <a href="pages/memorials.html">View all memorials</a>
       <a href="pages/search-by-zone.html">Search by zone</a>
       <a href="pages/nearby-memorials.html">Nearby Memorials</a>
@@ -44,12 +45,50 @@
       </div>
       <div class="text-box">
         <h1>National Memorial Arboretum</h1>
-        <p>Browse the memorials database using the search (top right) or menus.</p>
+        <!-- Replaced paragraph with search bar -->
+        <div class="home-search">
+          <input id="home-search-input"
+                 type="text"
+                 placeholder="Search memorial titles..."
+                 autocomplete="off"
+                 aria-label="Search memorial titles">
+        </div>
       </div>
     </div>
   </main>
 
   <script src="js/app.js"></script>
   <script src="js/global-search.js"></script>
+  <script>
+    // Bridge home search to global overlay
+    (function(){
+      const hs = document.getElementById('home-search-input');
+      const openBtn = document.getElementById('global-search-btn');
+      function openOverlay(){
+        if (!openBtn) return;
+        if (!document.body.classList.contains('gsp-open')) {
+          openBtn.click();
+          setTimeout(sync, 60);
+        } else {
+          sync();
+        }
+      }
+      function sync(){
+        const g = document.getElementById('global-search-input');
+        if (g && hs) {
+          g.value = hs.value;
+          g.dispatchEvent(new Event('input'));
+          g.focus();
+        }
+      }
+      if (hs){
+        hs.addEventListener('focus', openOverlay);
+        hs.addEventListener('input', openOverlay);
+        hs.addEventListener('keydown', e=>{
+          if (e.key==='Enter') { openOverlay(); e.preventDefault(); }
+        });
+      }
+    })();
+  </script>
 </body>
 </html>

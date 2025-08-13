@@ -1,6 +1,6 @@
 import csv, re, pathlib, sys
 
-SRC = pathlib.Path(r"c:\Users\james\Documents\NMA APP\memorials-app\img\zone1\image_metadata.csv")
+SRC = pathlib.Path(r"c:\Users\james\Documents\NMA APP\memorials-app\img\zone6\image_metadata.csv")
 OUT = SRC.with_name("image_coordinates.csv")
 
 LAT_REF_RE = re.compile(r"[{,]\s*1:\s*['\"]?([NS])['\"]?", re.IGNORECASE)

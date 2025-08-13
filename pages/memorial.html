@@ -5,31 +5,39 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Memorial</title>
   <link rel="stylesheet" href="../css/style.css">
-  <link
-  rel="stylesheet"
-  href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-  integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
-  crossorigin=""
-/>
+  <link rel="stylesheet"
+        href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+        crossorigin="">
 </head>
 <body>
   <button id="burger-menu" class="burger-button" aria-label="Open menu">☰</button>
 
   <nav id="menu-items" aria-label="Main">
     <a href="../home.html">Home</a>
+    <a href="map.html">Map</a>
     <a href="memorials.html">View all memorials</a>
     <a href="search-by-zone.html">Search by zone</a>
     <a href="nearby-memorials.html">Nearby Memorials</a>
     <a href="ar-view.html">AR View</a>
     <a href="saved.html">Saved</a>
   </nav>
-  
   <div id="menu-overlay"></div>
 
   <main class="container" id="memorial-detail">
-    <button id="back-btn" class="back-btn" onclick="location.href='memorials.html'" aria-label="Back to memorials list">← Back</button>
-    <button id="read-aloud-btn" class="read-aloud-btn" type="button" aria-pressed="false" aria-label="Read memorial aloud">🔈 Read Aloud</button>
-    <h1 id="mem-name"></h1>
+    <!-- Back button on its own line -->
+    <div class="mem-back-line">
+      <button id="back-btn" class="btn btn-plain" type="button" onclick="location.href='memorials.html'">Back</button>
+    </div>
+
+    <div class="mem-detail-header">
+      <h1 id="mem-name" class="mem-title"></h1>
+      <div class="mem-actions">
+        <button id="read-aloud-btn" class="btn btn-accent" type="button" aria-pressed="false">Read aloud</button>
+        <button id="see-on-map-btn" class="btn btn-primary" type="button" style="display:none;">Find on map</button>
+      </div>
+    </div>
+
     <p class="memorial-zone" id="mem-zone"></p>
     <p id="mem-desc"></p>
     <img id="mem-photo" class="mem-photo" alt="" loading="lazy" style="display:none;"/>
@@ -38,11 +46,9 @@
 
   <script src="../js/app.js"></script>
   <script src="../js/memorial.js"></script>
-  <script
-  defer
-  src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-  integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
-  crossorigin=""
-></script>
+  <script defer
+          src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+          integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+          crossorigin=""></script>
 </body>
 </html>
