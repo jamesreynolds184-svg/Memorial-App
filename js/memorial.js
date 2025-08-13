@@ -135,20 +135,37 @@
 
 // Leaflet map init
 function initLeafletMemorialMap(coords) {
-  const mapEl = document.getElementById('mem-gmap');
-  if (!mapEl) return;
-  mapEl.style.display = 'block';
+  if (!coords || !Number.isFinite(coords.lat) || !Number.isFinite(coords.lng)) return;
+  const el = document.getElementById('mem-gmap');
+  if (!el) return;
+  el.style.display = 'block';
 
-  function start() {
-    if (!window.L) { setTimeout(start, 60); return; }
-    const map = L.map(mapEl, { center: [coords.lat, coords.lng], zoom: 17 });
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      maxZoom: 19,
-      attribution: '© OpenStreetMap contributors'
-    }).addTo(map);
-    L.marker([coords.lat, coords.lng]).addTo(map);
+  const map = L.map(el, {
+    center: [coords.lat, coords.lng],
+    zoom: 17,
+    attributionControl: false
+  });
+
+  L.tileLayer(
+    'https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png',
+    {
+      maxZoom: 20,
+      attribution: '© OpenStreetMap contributors | Tiles © CARTO'
+    }
+  ).addTo(map);
+
+  L.control.attribution({ position: 'bottomright' })
+    .addTo(map)
+    .addAttribution('© OpenStreetMap contributors | Tiles © CARTO');
+
+  const marker = L.marker([coords.lat, coords.lng]).addTo(map);
+
+  const title = (window.currentMemorial && window.currentMemorial.name) ? window.currentMemorial.name : 'Memorial';
+  marker.bindPopup(escapeHtml(title)).openPopup();
+
+  function escapeHtml(s){
+    return String(s).replace(/[&<>"']/g,c=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":"&#39;" }[c]));
   }
-  start();
 }
 
 // After memorial data (name/desc) is set:
