@@ -2,71 +2,48 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>AR View</title>
+  <title>AR Trial (Orientation)</title>
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <link rel="stylesheet" href="../css/style.css">
   <style>
-    body,html { margin:0;height:100%;overflow:hidden;background:#000; }
-    #ar-root { position:relative;width:100%;height:100vh;overflow:hidden;background:#000; }
-    #camera { position:absolute;inset:0;object-fit:cover;width:100%;height:100%; }
-    .hud { position:absolute;top:8px;right:12px;color:#fff;font:12px system-ui;text-shadow:0 0 4px #000; }
-    #markers { position:absolute;inset:0;pointer-events:none; }
-    .mem-marker { position:absolute;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center; }
-    .mem-marker img { width:60px;height:60px;object-fit:cover;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,.5); }
-    .mem-marker span { margin-top:4px;background:rgba(0,0,0,.55);color:#fff;padding:2px 6px;border-radius:12px;font-size:11px;max-width:120px;text-align:center; }
-    .far { opacity:.55; }
-    #debug-bar{
-      position:absolute;left:0;right:0;bottom:0;
-      background:rgba(0,0,0,.5);
-      color:#fff;font:11px system-ui;
-      padding:4px 6px;
-      display:flex;flex-wrap:wrap;gap:10px;
-      pointer-events:none;
-      text-shadow:0 0 4px #000;
+    html,body { margin:0;height:100%;overflow:hidden;background:#000;font-family:system-ui,sans-serif; }
+    #cam { position:fixed;inset:0;width:100%;height:100%;object-fit:cover;background:#000; }
+    #anchor {
+      position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);
+      background:rgba(0,0,0,.55);color:#fff;padding:14px 18px;border-radius:18px;
+      font-size:16px;max-width:260px;text-align:center;backdrop-filter:blur(4px);
+      box-shadow:0 6px 22px -8px rgba(0,0,0,.6);pointer-events:none;transition:opacity .2s;
     }
-    #debug-bar span{white-space:nowrap;}
-    /* Back button (reuse styling idea from other pages if present) */
-    .back-btn {
-      position: fixed;
-      top: 10px;
-      left: 10px;
-      z-index: 5000;
-      background: rgba(0,0,0,.55);
-      color: #fff;
-      border: 1px solid rgba(255,255,255,.25);
-      padding: 8px 16px;
-      font-size: 14px;
-      border-radius: 28px;
-      cursor: pointer;
-      backdrop-filter: blur(4px);
+    #ui {
+      position:fixed;top:10px;left:10px;display:flex;gap:8px;z-index:10;
     }
-    .back-btn:active { transform: scale(.95); }
+    #ui button {
+      background:rgba(0,0,0,.55);color:#fff;border:1px solid rgba(255,255,255,.3);
+      padding:6px 14px;font-size:14px;border-radius:24px;cursor:pointer;backdrop-filter:blur(4px);
+    }
+    #ui button:active { transform:scale(.9); }
+    #hint {
+      position:fixed;bottom:12px;left:50%;transform:translateX(-50%);
+      background:rgba(0,0,0,.45);color:#fff;font-size:12px;padding:6px 12px;border-radius:20px;
+      max-width:80%;text-align:center;
+    }
+    #debug {
+      position:fixed;top:10px;right:10px;font:11px/1.3 monospace;
+      background:rgba(0,0,0,.45);color:#0f0;padding:6px 8px;border-radius:10px;white-space:pre;
+      max-width:180px;
+    }
+    .hidden { display:none; }
   </style>
 </head>
 <body>
-  <button id="back-btn" class="back-btn" type="button" aria-label="Back">← Back</button>
-
-  <div id="ar-root" style="position:relative;width:100%;height:100vh;overflow:hidden;background:#000;">
-    <video id="camera" autoplay playsinline muted style="position:absolute;inset:0;object-fit:cover;width:100%;height:100%;"></video>
-    <div id="markers" style="position:absolute;inset:0;pointer-events:none;"></div>
-    <div id="status" style="position:absolute;top:8px;left:8px;color:#fff;font:12px system-ui;text-shadow:0 0 4px #000;">Init…</div>
-    <div id="heading" style="position:absolute;top:8px;right:8px;color:#fff;font:12px system-ui;text-shadow:0 0 4px #000;">–°</div>
-    <div id="debug-bar" style="position:absolute;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);color:#fff;font:11px system-ui;padding:4px 6px;display:flex;flex-wrap:wrap;gap:10px;">
-      <span id="dbg-pos">Lat: – Lng: –</span>
-      <span id="dbg-acc">Acc: –</span>
-      <span id="dbg-head">Head: –°</span>
-      <span id="dbg-mem">Mem: 0</span>
-      <button id="dbg-toggle" type="button" style="margin-left:auto;background:#222;color:#fff;border:1px solid #555;padding:2px 8px;border-radius:6px;cursor:pointer;">Details</button>
-    </div>
-    <pre id="dbg-list" style="position:absolute;left:0;right:0;bottom:48px;max-height:40%;overflow:auto;background:rgba(0,0,0,.7);color:#0f0;font:10px/1.25 monospace;margin:0;padding:6px;display:none;"></pre>
+  <video id="cam" autoplay playsinline muted></video>
+  <div id="anchor">Test Anchor</div>
+  <div id="ui">
+    <button id="back" type="button">Back</button>
+    <button id="relock" type="button">Re‑lock</button>
+    <button id="toggleDebug" type="button">Debug</button>
   </div>
-
-  <script>
-    document.getElementById('back-btn').addEventListener('click', () => {
-      if (history.length > 1) history.back();
-      else window.location.href = '../home.html';
-    });
-  </script>
-  <script src="../js/ar-view.js"></script>
+  <div id="hint">Allow camera. Tap screen once to enable motion sensors.</div>
+  <div id="debug" class="hidden"></div>
+  <script src="../js/ar-simple.js"></script>
 </body>
 </html>
