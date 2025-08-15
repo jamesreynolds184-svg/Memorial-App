@@ -91,6 +91,8 @@
     .then(data => {
       all = (Array.isArray(data) ? data : []).filter(m => m && m.name);
       render('');
+      // Enable tour planner
+      if (window._tourPlanner) window._tourPlanner.enableIfPossible(all);
     })
     .catch(() => {
       listEl.innerHTML = '<li class="empty">Failed to load memorials.</li>';

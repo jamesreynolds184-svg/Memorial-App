@@ -1276,16 +1276,53 @@ body.memorial-bg-set::before {
 }
 .btn-accent:hover { background:#d45f26; }
 .btn-primary {
-  background:var(--primary,#005969);
+  background: var(--primary,#005969);
   color:#fff;
+  border:none;
+  padding:10px 18px;
+  border-radius:28px;
+  font:14px/1 system-ui,sans-serif;
+  cursor:pointer;
 }
-.btn-primary:hover { background:#024b57; }
-@media (max-width:640px){
-  .mem-detail-header .mem-title { order:3; flex:1 1 100%; }
-  .mem-actions { order:2; }
-  .btn-plain { order:1; }
+.btn.btn-primary:disabled {
+  opacity:.45;
+  cursor: not-allowed;
 }
-.map-actions #map-track[aria-pressed="true"] {
-  background:#005969;
+.tour-status {
+  font-size:13px;
+  color:#444;
+}
+.tour-result {
+  list-style:decimal;
+  margin:14px 0 0;
+  padding-left:24px;
+  font:14px/1.4 system-ui,sans-serif;
+  max-width:520px;
+}
+.tour-result li {
+  margin:4px 0;
+}
+.tour-result li span.dist {
+  color:#555;
+  font-size:12px;
+  margin-left:6px;
+}
+.tour-summary {
+  margin-top:12px;
+  font-weight:600;
+}
+
+/* Memorial label (for map and details) */
+.memorial-label {
+  background:rgba(0,0,0,0.65);
   color:#fff;
+  padding:2px 6px;
+  font:12px/1.2 system-ui,sans-serif;
+  border-radius:4px;
+  border:1px solid rgba(255,255,255,0.15);
+  pointer-events:none;
+  white-space:nowrap;
+  box-shadow:0 1px 3px rgba(0,0,0,0.35);
 }
+.leaflet-tooltip.memorial-label:before { display:none; }
+.memorial-label--noicon { transform:translateY(-6px); }

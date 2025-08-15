@@ -28,103 +28,32 @@
         root.innerHTML = '<p>Memorial not found.</p>';
         return;
       }
-
       window.currentMemorial = item;
 
       const nameEl = document.getElementById('mem-name');
       const zoneEl = document.getElementById('mem-zone');
       const descEl = document.getElementById('mem-desc');
+      if (nameEl) nameEl.textContent = item.name || 'Memorial';
+      if (zoneEl) zoneEl.textContent = item.zone ? `Zone: ${item.zone}` : '';
+      if (descEl) descEl.textContent = (item.description || '').trim();
 
-      if (nameEl) nameEl.textContent = item.name || '';
-      if (zoneEl) zoneEl.textContent = item.zone ? `Zone ${item.zone}` : '';
-      if (descEl) descEl.textContent = item.description || '';
-
-      // Background image + foreground photo (no collapse toggle)
-      if (item.zone && item.name) {
-        const zone = String(item.zone).replace(/[^0-9]/g, '');
-        const rawName = item.name.trim();
-
-        const punctRemoved = rawName.replace(/[:;,'"]/g, '');
-        const singleSpaced = punctRemoved.replace(/\s+/g, ' ');
-        const underscore = singleSpaced.replace(/\s+/g, '_');
-        const dash = singleSpaced.replace(/\s+/g, '-');
-        const encoded = encodeURIComponent(rawName);
-
-        const stems = Array.from(new Set([
-          underscore,
-          rawName,
-          singleSpaced,
-          punctRemoved,
-          dash,
-          encoded
-        ])).filter(Boolean);
-
-        const baseDir = location.pathname.toLowerCase().includes('/pages/')
-          ? '../img'
-          : 'img';
-
-        const exts = ['jpg','jpeg','png','webp','JPG','JPEG','PNG','WEBP'];
-        const candidates = [];
-        for (const s of stems) {
-          for (const e of exts) {
-            candidates.push(`${baseDir}/zone${zone}/${s}.${e}`);
-          }
-        }
-
-        const photoEl = document.getElementById('mem-photo');
-
-        function tryNext(i = 0) {
-          if (i >= candidates.length) {
-            console.warn('No memorial image found for', item.name);
-            return;
-          }
-            const url = candidates[i];
-            const img = new Image();
-            img.onload = () => {
-              // Apply background
-              document.body.style.backgroundImage = `url("${url}")`;
-              document.body.style.backgroundSize = 'cover';
-              document.body.style.backgroundPosition = 'center center';
-              document.body.style.backgroundRepeat = 'no-repeat';
-              document.body.classList.add('memorial-bg-set');
-
-              // Show foreground image (if element exists)
-              if (photoEl) {
-                photoEl.src = url;
-                photoEl.alt = item.name;
-                photoEl.style.display = 'block';
-                // Orientation class
-                photoEl.onload = () => {
-                  const portrait = photoEl.naturalHeight > photoEl.naturalWidth;
-                  photoEl.classList.toggle('portrait', portrait);
-                  photoEl.classList.toggle('landscape', !portrait);
-                };
-              }
-              console.log('Memorial image loaded:', url);
-            };
-            img.onerror = () => tryNext(i + 1);
-            img.src = url;
-        }
-        console.log('Trying memorial image candidates:', candidates);
-        tryNext();
+      // Coordinates (object or legacy string) -> map
+      const coords = extractCoords(item.location);
+      if (coords) {
+        initLeafletMemorialMap(coords);
       }
 
-      // Leaflet map
-      if (item.location && typeof item.location === 'object') {
-        const { lat, lng } = item.location;
-        if (Number.isFinite(lat) && Number.isFinite(lng)) {
-          initLeafletMemorialMap({ lat, lng });
-        }
-      }
-
-      // See on map button logic
+      // See on map button
       const seeBtn = document.getElementById('see-on-map-btn');
-      if (seeBtn && item && item.location &&
-          Number.isFinite(item.location.lat) && Number.isFinite(item.location.lng)) {
-        seeBtn.style.display = 'inline-flex';
-        seeBtn.addEventListener('click', () => {
-          location.href = 'map.html?focus=' + encodeURIComponent(item.name);
-        });
+      if (seeBtn) {
+        if (coords) {
+          seeBtn.style.display = '';
+          seeBtn.addEventListener('click', () => {
+            location.href = `map.html?focus=${encodeURIComponent(item.name)}`;
+          }, { once:true });
+        } else {
+          seeBtn.style.display = 'none';
+        }
       }
     })
     .catch(err => {
@@ -343,3 +272,31 @@ function initLeafletMemorialMap(coords) {
     }
   });
 })();
+
+// Add near bottom (before file end) helper:
+function extractCoords(raw) {
+  if (!raw) return null;
+  // Already an object with numbers
+  if (typeof raw === 'object') {
+    const lat = Number(raw.lat);
+    const lng = Number(raw.lng);
+    if (Number.isFinite(lat) && Number.isFinite(lng)) return { lat, lng };
+    return null;
+  }
+  // Try to parse legacy string "{ 'lat': 52.x, 'lng': -1.x }"
+  if (typeof raw === 'string') {
+    // Quick JSON attempt
+    try {
+      const maybe = JSON.parse(raw);
+      return extractCoords(maybe);
+    } catch {}
+    // Regex fallback
+    const m = raw.match(/lat[^0-9-]*([-+]?\d+(\.\d+)?).+?lng[^0-9-]*([-+]?\d+(\.\d+)?)/i);
+    if (m) {
+      const lat = Number(m[1]);
+      const lng = Number(m[3]);
+      if (Number.isFinite(lat) && Number.isFinite(lng)) return { lat, lng };
+    }
+  }
+  return null;
+}

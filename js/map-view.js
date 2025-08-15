@@ -31,6 +31,9 @@
   const STALE_MS = 20000;       // ADDED (ignore >20s old)
   const MIN_ACCURACY_SHOW = 120;// ADDED (hide circle if worse)
 
+  let memorials = [];
+  let markers = [];
+
   function initMap(center=[52.75,-1.72], zoom=14){
     map = L.map(mapEl, {
       center,
@@ -82,14 +85,51 @@
     });
   }
 
-  function applyFilters(){
-    const q = (searchEl.value||'').trim().toLowerCase();
-    const z = zoneEl.value;
-    return points.filter(p=>{
-      if (z && String(p.zone)!==z) return false;
-      if (q && !p.name.toLowerCase().includes(q)) return false;
+  function hasCoords(m) {
+    return m && m.location && Number.isFinite(m.location.lat) && Number.isFinite(m.location.lng);
+  }
+
+  function buildMarkers(list) {
+    // Clear old
+    markers.forEach(k => map.removeLayer(k.marker));
+    markers = [];
+
+    const withCoords = list.filter(hasCoords);
+    withCoords.forEach(m => {
+      const { lat, lng } = m.location;
+      const marker = L.marker([lat, lng]);
+      marker.addTo(map).bindPopup(
+        `<strong>${escapeHtml(m.name)}</strong><br><button data-go="${escapeHtml(m.name)}" class="go-btn">Open</button>`
+      );
+      markers.push({ m, marker });
+    });
+
+    if (withCoords.length) {
+      const group = L.featureGroup(markers.map(o => o.marker));
+      map.fitBounds(group.getBounds().pad(0.15));
+    }
+    updateCount(withCoords.length);
+  }
+
+  function updateCount(n) {
+    const countEl = document.getElementById('map-count');
+    if (countEl) countEl.textContent = String(n);
+  }
+
+  function applyFilters() {
+    const q = searchEl.value.trim().toLowerCase();
+    const z = zoneSel.value;
+    const filtered = memorials.filter(m => {
+      if (!hasCoords(m)) return false;          // skip those without coordinates
+      if (z && m.zone !== z) return false;
+      if (q) {
+        return (m.name || '').toLowerCase().includes(q) ||
+               (m.description || '').toLowerCase().includes(q);
+      }
       return true;
     });
+    buildMarkers(filtered);
+    buildList(filtered);
   }
 
   function render(){
