@@ -29,18 +29,17 @@
     setHint('No camera API');
   }
 
-  // World-lock settings
-  const HALF_FOV = 25;        // Narrow field => moves off screen sooner
-  const HIDE_MARGIN = 2;      // Extra before hiding
-  const SMOOTH_ALPHA = 0.15;  // 0..1 higher = faster but more jitter
-  const MIN_DELTA = 0.3;      // Ignore micro jitter (< degrees)
-  let headingSmoothed = null;
-  let currentRawHeading = 0;
-  let anchorHeading = null;
+  function setHint(t){ if (hintEl) hintEl.textContent = t; }
 
+  // CONFIG
+  const HALF_FOV   = 35;  // degrees to map fully across screen (wider = slower movement)
+  const DEAD_ZONE  = 2;   // degrees: keep perfectly centered (prevents drift)
+  const SMOOTH     = 0.25;// 0..1 smoothing for heading
+  const HIDE_MARGIN= 3;   // extra margin before hide (if you later choose to hide)
+
+  let anchorHeading = null;   // fixed world heading for anchor
+  let smoothHeading = null;   // smoothed current heading
   let motionRequested = false;
-
-  function setHint(msg){ if (hintEl) hintEl.textContent = msg; }
 
   // Permission (iOS)
   document.body.addEventListener('click', () => {
@@ -55,54 +54,40 @@
 
   function startOrientation(){
     window.addEventListener('deviceorientation', onOrient, true);
-    setHint('Rotate to move, relock to reset');
+    setHint('Tap relock to re-center');
   }
 
-  function normalize(h){
-    // Normalize to 0..360
-    return (h + 360) % 360;
+  function norm(h){ return (h + 360) % 360; }
+
+  function shortestDiff(a,b){
+    let d = (b - a + 540) % 360 - 180;
+    return d;
   }
 
   function onOrient(e){
-    let h;
-    if (typeof e.webkitCompassHeading === 'number'){
-      h = e.webkitCompassHeading; // iOS true north
-    } else if (typeof e.alpha === 'number'){
-      h = e.alpha; // May be device coords
-    } else return;
+    let raw;
+    if (typeof e.webkitCompassHeading === 'number') raw = e.webkitCompassHeading;
+    else if (typeof e.alpha === 'number') raw = e.alpha;
+    else return;
+    raw = norm(raw);
 
-    h = normalize(h);
-
-    if (headingSmoothed == null){
-      headingSmoothed = h;
-      currentRawHeading = h;
-    } else {
-      // Reject micro changes
-      const delta = Math.abs(h - currentRawHeading);
-      currentRawHeading = h;
-      if (delta < MIN_DELTA) {
-        h = headingSmoothed; // treat as noise
-      }
-      headingSmoothed = normalize(headingSmoothed + SMOOTH_ALPHA * angleShortestDiff(headingSmoothed, h));
-    }
-
-    if (anchorHeading == null){
-      anchorHeading = headingSmoothed;
+    if (smoothHeading == null){
+      smoothHeading = raw;
+      anchorHeading = raw; // initial lock directly ahead
       if (!customText && anchorEl) anchorEl.textContent = 'Test Anchor';
+      return;
     }
-  }
 
-  function angleShortestDiff(a, b){
-    // Smallest signed diff a->b
-    let d = (b - a + 540) % 360 - 180;
-    return d;
+    // Smooth (handle wrap properly via shortest diff)
+    const diff = shortestDiff(smoothHeading, raw);
+    smoothHeading = norm(smoothHeading + diff * SMOOTH);
   }
 
   // Relock button
   if (relockBtn){
     relockBtn.onclick = () => {
-      if (headingSmoothed != null){
-        anchorHeading = headingSmoothed;
+      if (smoothHeading != null){
+        anchorHeading = smoothHeading;
         if (anchorEl) anchorEl.textContent = (customText || 'Test Anchor');
       }
     };
@@ -110,36 +95,38 @@
 
   // Debug toggle
   if (dbgBtn && dbgBox){
-    dbgBtn.onclick = () => dbgBox.style.display = dbgBox.style.display==='block' ? 'none' : 'block';
+    dbgBtn.onclick = () => {
+      dbgBox.style.display = dbgBox.style.display === 'block' ? 'none' : 'block';
+    };
   }
 
   function update(){
-    if (anchorHeading != null && headingSmoothed != null && anchorEl){
-      const rel = angleShortestDiff(headingSmoothed, anchorHeading); // -180..180 (0 = looking directly at anchor)
+    if (anchorHeading != null && smoothHeading != null && anchorEl){
+      // Relative angle: user heading vs anchor
+      const rel = shortestDiff(anchorHeading, smoothHeading); // left = negative, right = positive
 
-      // Map rel angle horizontally (world-locked)
-      const absRel = Math.abs(rel);
-      if (absRel <= HALF_FOV + HIDE_MARGIN){
-        // Position across screen: -HALF_FOV => left edge, +HALF_FOV => right edge
-        const w = window.innerWidth;
-        const x = ((rel / HALF_FOV) * 0.5 + 0.5) * w;
-        anchorEl.style.left = x + 'px';
-        anchorEl.style.opacity = '1';
+      // Dead zone: keep perfectly centered & stop drift
+      if (Math.abs(rel) <= DEAD_ZONE){
+        anchorEl.style.left = '50%';
       } else {
-        anchorEl.style.opacity = '0';
+        // Map rel to screen: -HALF_FOV => 0%, +HALF_FOV => 100%
+        const clamped = Math.max(-HALF_FOV, Math.min(HALF_FOV, rel));
+        const pct = (clamped / (HALF_FOV * 2)) + 0.5; // 0..1
+        anchorEl.style.left = (pct * 100) + '%';
       }
 
-      // Keep strictly centered vertically (no scale / no vertical jitter)
-      anchorEl.style.top = '50%';
-      anchorEl.style.transform = 'translate(-50%,-50%)';
+      // Always visible (remove fade logic); comment out below if you want hide when far behind
+      anchorEl.style.opacity = '1';
 
-      if (dbgBox && dbgBox.style.display==='block'){
+      anchorEl.style.top = '50%';
+      anchorEl.style.transform = 'translate(-50%,-50%)'; // fixed size, no scaling
+
+      if (dbgBox && dbgBox.style.display === 'block'){
         dbgBox.textContent =
-          `Raw:    ${currentRawHeading.toFixed(1)}°\n` +
-          `Smooth: ${headingSmoothed.toFixed(1)}°\n` +
           `Anchor: ${anchorHeading.toFixed(1)}°\n` +
+          `Head:   ${smoothHeading.toFixed(1)}°\n` +
           `Rel:    ${rel.toFixed(2)}°\n` +
-          `Vis:    ${Math.abs(rel)<=HALF_FOV}`;
+          `Centered: ${Math.abs(rel)<=DEAD_ZONE}`;
       }
     }
     requestAnimationFrame(update);
