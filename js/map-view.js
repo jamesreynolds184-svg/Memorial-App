@@ -12,6 +12,7 @@
   const btnLocate = document.getElementById('map-locate');
   const btnReset  = document.getElementById('map-reset');
   const btnExpand = document.getElementById('map-expand');
+  const btnTrack  = document.getElementById('map-track'); // ADDED
 
   let map, markersLayer;
   let all = [];
@@ -22,6 +23,13 @@
   let minZoomAllowed = null;
   const GEOFENCE_PAD = 0.35;
   const ZOOM_DELTA  = 1;
+
+  let userMarker = null;        // ADDED
+  let userAccuracyCircle = null;// ADDED
+  let watchId = null;           // ADDED
+  let lastFixTs = 0;            // ADDED
+  const STALE_MS = 20000;       // ADDED (ignore >20s old)
+  const MIN_ACCURACY_SHOW = 120;// ADDED (hide circle if worse)
 
   function initMap(center=[52.75,-1.72], zoom=14){
     map = L.map(mapEl, {
@@ -204,18 +212,100 @@
     setTimeout(()=> { map.invalidateSize(); if (fs && lastBounds) map.fitBounds(lastBounds); }, 350);
   }
 
-  function locateUser(){
+  function locateUser(){ // MODIFIED (force fresh single fix)
     if (!navigator.geolocation) return;
     btnLocate.disabled = true;
     navigator.geolocation.getCurrentPosition(pos=>{
       btnLocate.disabled = false;
-      const { latitude, longitude } = pos.coords;
+      handlePosition(pos, { single:true });
+    }, ()=>{
+      btnLocate.disabled = false;
+    }, {
+      enableHighAccuracy:true,
+      timeout:10000,
+      maximumAge:0    // force no cached position
+    });
+  }
+
+  // ADDED: start / stop continuous tracking
+  function startTracking(){
+    if (!navigator.geolocation || watchId != null) return;
+    btnTrack.textContent = '⏹';
+    btnTrack.title = 'Stop live tracking';
+    btnTrack.setAttribute('aria-pressed','true');
+    watchId = navigator.geolocation.watchPosition(
+      pos => handlePosition(pos, { single:false }),
+      err => {
+        console.warn('watchPosition error', err);
+        stopTracking();
+      },
+      {
+        enableHighAccuracy:true,
+        maximumAge:1000,  // allow up to 1s cached between rapid fixes
+        timeout:15000
+      }
+    );
+  }
+  function stopTracking(){
+    if (watchId != null){
+      navigator.geolocation.clearWatch(watchId);
+      watchId = null;
+    }
+    btnTrack.textContent = '▶︎';
+    btnTrack.title = 'Start live tracking';
+    btnTrack.setAttribute('aria-pressed','false');
+  }
+
+  // ADDED: generic handler for both single + watch
+  function handlePosition(pos, meta){
+    const { latitude, longitude, accuracy } = pos.coords;
+    const ts = pos.timestamp || Date.now();
+
+    // Ignore stale (iOS sometimes replays)
+    if (Date.now() - ts > STALE_MS){
+      console.log('Ignoring stale position', new Date(ts).toISOString());
+      return;
+    }
+    // Ignore if duplicate timestamp
+    if (ts <= lastFixTs) return;
+    lastFixTs = ts;
+
+    updateUserMarker(latitude, longitude, accuracy);
+
+    if (meta.single){
+      // For single locate also pan/zoom
       map.setView([latitude, longitude], 17, { animate:true });
-      const mk = L.circleMarker([latitude, longitude], {
-        radius:8, weight:2, color:'#005969', fillColor:'#005969', fillOpacity:0.45
-      }).addTo(map);
-      mk.bindPopup('You are here').openPopup();
-    }, ()=> { btnLocate.disabled = false; }, { enableHighAccuracy:true, timeout:8000 });
+    }
+  }
+
+  // ADDED: update / create marker + accuracy circle
+  function updateUserMarker(lat, lng, acc){
+    if (!map) return;
+    if (!userMarker){
+      userMarker = L.circleMarker([lat,lng], {
+        radius:8, weight:2, color:'#005969', fillColor:'#008ca3', fillOpacity:0.55
+      }).addTo(map).bindPopup('You are here');
+    } else {
+      userMarker.setLatLng([lat,lng]);
+    }
+    if (acc && acc < MIN_ACCURACY_SHOW){
+      if (!userAccuracyCircle){
+        userAccuracyCircle = L.circle([lat,lng], {
+          radius: acc,
+          color:'#008ca3',
+          weight:1,
+          fillColor:'#008ca3',
+          fillOpacity:0.15,
+          interactive:false
+        }).addTo(map);
+      } else {
+        userAccuracyCircle.setLatLng([lat,lng]);
+        userAccuracyCircle.setRadius(acc);
+      }
+    } else if (userAccuracyCircle){
+      map.removeLayer(userAccuracyCircle);
+      userAccuracyCircle = null;
+    }
   }
 
   function resetView(){
@@ -232,7 +322,15 @@
   zoneEl.addEventListener('change', render);
   btnExpand.addEventListener('click', expandToggle);
   btnLocate.addEventListener('click', locateUser);
-  btnReset.addEventListener('click', resetView);
+  if (btnTrack){
+    btnTrack.addEventListener('click', () => {
+      if (watchId == null) startTracking(); else stopTracking();
+    });
+  }
+
+// Optionally auto-start tracking on page load for faster first fix (uncomment to enable):
+// startTracking();
+
   document.addEventListener('keydown', e=>{
     if (e.key==='Escape' && mapPanel.classList.contains('fullscreen')) expandToggle();
   });

@@ -1285,3 +1285,7 @@ body.memorial-bg-set::before {
   .mem-actions { order:2; }
   .btn-plain { order:1; }
 }
+.map-actions #map-track[aria-pressed="true"] {
+  background:#005969;
+  color:#fff;
+}
