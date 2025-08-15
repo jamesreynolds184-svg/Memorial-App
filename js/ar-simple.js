@@ -31,15 +31,22 @@
 
   function setHint(t){ if (hintEl) hintEl.textContent = t; }
 
-  // CONFIG
-  const HALF_FOV   = 35;  // degrees to map fully across screen (wider = slower movement)
-  const DEAD_ZONE  = 2;   // degrees: keep perfectly centered (prevents drift)
-  const SMOOTH     = 0.25;// 0..1 smoothing for heading
-  const HIDE_MARGIN= 3;   // extra margin before hide (if you later choose to hide)
+  // CONFIG (tweak)
+  const HALF_FOV        = 35;   // degrees mapped across screen
+  const DEAD_ZONE       = 2;    // keep center if within this after stabilization
+  const BUFFER_LEN      = 15;   // heading samples (larger = steadier, slower)
+  const THRESH_MOVE_DEG = 1.5;  // required delta to update screen position
+  const MAX_JUMP_DEG    = 25;   // ignore crazy spikes > this (mag glitches)
+  const RELAX_MEANINGFUL = 0.4; // if user turning steadily, reduce threshold factor
 
-  let anchorHeading = null;   // fixed world heading for anchor
-  let smoothHeading = null;   // smoothed current heading
+  // State
   let motionRequested = false;
+  let anchorHeading = null;        // fixed world direction
+  let displayHeading = null;       // heading actually driving UI (stable)
+  let lastRaw = null;              // last raw (wrapped 0..360)
+  let unwrapped = null;            // continuous heading (degrees can grow)
+  const buf = [];                  // recent unwrapped samples
+  let lastUpdateTime = 0;
 
   // Permission (iOS)
   document.body.addEventListener('click', () => {
@@ -54,14 +61,37 @@
 
   function startOrientation(){
     window.addEventListener('deviceorientation', onOrient, true);
-    setHint('Tap relock to re-center');
+    setHint('Rotate. Relock to reset.');
   }
 
-  function norm(h){ return (h + 360) % 360; }
-
+  function norm360(h){ return (h + 360) % 360; }
   function shortestDiff(a,b){
-    let d = (b - a + 540) % 360 - 180;
-    return d;
+    return (b - a + 540) % 360 - 180;
+  }
+
+  function unwrap(newVal){
+    if (lastRaw == null){
+      lastRaw = newVal;
+      unwrapped = newVal;
+      return unwrapped;
+    }
+    let diff = newVal - lastRaw;
+    if (diff > 180) diff -= 360;
+    else if (diff < -180) diff += 360;
+    // Spike rejection
+    if (Math.abs(diff) > MAX_JUMP_DEG) {
+      // ignore spike: pretend no movement
+      diff = 0;
+    }
+    unwrapped += diff;
+    lastRaw = newVal;
+    return unwrapped;
+  }
+
+  function median(arr){
+    const a = arr.slice().sort((x,y)=>x-y);
+    const m = Math.floor(a.length/2);
+    return a.length % 2 ? a[m] : (a[m-1]+a[m])/2;
   }
 
   function onOrient(e){
@@ -69,25 +99,45 @@
     if (typeof e.webkitCompassHeading === 'number') raw = e.webkitCompassHeading;
     else if (typeof e.alpha === 'number') raw = e.alpha;
     else return;
-    raw = norm(raw);
+    raw = norm360(raw);
+    const uw = unwrap(raw);
 
-    if (smoothHeading == null){
-      smoothHeading = raw;
-      anchorHeading = raw; // initial lock directly ahead
+    buf.push(uw);
+    if (buf.length > BUFFER_LEN) buf.shift();
+
+    if (buf.length < BUFFER_LEN) return; // wait until buffer fills
+
+    const medUnwrapped = median(buf);
+    // Convert median unwrapped back to 0..360 ref by comparing to current unwrapped
+    const estHeading = norm360(medUnwrapped % 360);
+
+    if (displayHeading == null){
+      displayHeading = estHeading;
+      anchorHeading = estHeading;
       if (!customText && anchorEl) anchorEl.textContent = 'Test Anchor';
       return;
     }
 
-    // Smooth (handle wrap properly via shortest diff)
-    const diff = shortestDiff(smoothHeading, raw);
-    smoothHeading = norm(smoothHeading + diff * SMOOTH);
+    // Determine if user is making a meaningful turn
+    const deltaSinceLast = Math.abs(shortestDiff(displayHeading, estHeading));
+    // If sustained motion (delta > threshold * factor over time), reduce threshold dynamically
+    let thresh = THRESH_MOVE_DEG;
+    const now = performance.now();
+    if (deltaSinceLast > THRESH_MOVE_DEG * 2 && (now - lastUpdateTime) < 220){
+      thresh = THRESH_MOVE_DEG * RELAX_MEANINGFUL;
+    }
+
+    if (deltaSinceLast >= thresh){
+      displayHeading = norm360(displayHeading + shortestDiff(displayHeading, estHeading));
+      lastUpdateTime = now;
+    }
   }
 
   // Relock button
   if (relockBtn){
     relockBtn.onclick = () => {
-      if (smoothHeading != null){
-        anchorHeading = smoothHeading;
+      if (displayHeading != null){
+        anchorHeading = displayHeading;
         if (anchorEl) anchorEl.textContent = (customText || 'Test Anchor');
       }
     };
@@ -101,32 +151,28 @@
   }
 
   function update(){
-    if (anchorHeading != null && smoothHeading != null && anchorEl){
-      // Relative angle: user heading vs anchor
-      const rel = shortestDiff(anchorHeading, smoothHeading); // left = negative, right = positive
+    if (anchorHeading != null && displayHeading != null && anchorEl){
+      const rel = shortestDiff(anchorHeading, displayHeading); // -180..180
 
-      // Dead zone: keep perfectly centered & stop drift
       if (Math.abs(rel) <= DEAD_ZONE){
         anchorEl.style.left = '50%';
       } else {
-        // Map rel to screen: -HALF_FOV => 0%, +HALF_FOV => 100%
         const clamped = Math.max(-HALF_FOV, Math.min(HALF_FOV, rel));
-        const pct = (clamped / (HALF_FOV * 2)) + 0.5; // 0..1
+        const pct = (clamped / (HALF_FOV * 2)) + 0.5;
         anchorEl.style.left = (pct * 100) + '%';
       }
 
-      // Always visible (remove fade logic); comment out below if you want hide when far behind
       anchorEl.style.opacity = '1';
-
       anchorEl.style.top = '50%';
-      anchorEl.style.transform = 'translate(-50%,-50%)'; // fixed size, no scaling
+      anchorEl.style.transform = 'translate(-50%,-50%)';
 
       if (dbgBox && dbgBox.style.display === 'block'){
         dbgBox.textContent =
+          `Disp:   ${displayHeading.toFixed(1)}°\n` +
           `Anchor: ${anchorHeading.toFixed(1)}°\n` +
-          `Head:   ${smoothHeading.toFixed(1)}°\n` +
           `Rel:    ${rel.toFixed(2)}°\n` +
-          `Centered: ${Math.abs(rel)<=DEAD_ZONE}`;
+          `BufLen: ${buf.length}\n` +
+          `Stable: ${Math.abs(rel)<=DEAD_ZONE}`;
       }
     }
     requestAnimationFrame(update);
