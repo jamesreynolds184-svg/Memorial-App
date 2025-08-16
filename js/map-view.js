@@ -2,7 +2,7 @@
   const dataPath = '../data/memorials.json';
   const footpathsPath = '../data/footpaths.geojson';
   // --- DEBUG FLAG ---
-  const DEBUG_ROUTING = true;
+  const DEBUG_ROUTING = false;
   // Show individual footpath node (blue) debug markers?
   const SHOW_FOOTPATH_NODES = false; // set true only when debugging node graph
 
@@ -58,13 +58,13 @@
     debugPanelEl.innerHTML = '<strong>Routing Debug</strong> (D to toggle)<hr style="border:none;border-top:1px solid #444;margin:4px 0;">';
     document.body.appendChild(debugPanelEl);
   }
-  function dbg(...args){
+  function dbg(){
     if (!DEBUG_ROUTING) return;
     ensureDebugPanel();
-    console.log('[ROUTE]', ...args);
+    console.log('[ROUTE]', ...arguments);
     if (debugPanelEl){
       const div=document.createElement('div');
-      div.textContent = args.map(a=> typeof a==='object'? JSON.stringify(a): a).join(' ');
+      div.textContent = [...arguments].map(a=> typeof a==='object'? JSON.stringify(a): a).join(' ');
       debugPanelEl.appendChild(div);
       debugPanelEl.scrollTop = debugPanelEl.scrollHeight;
     }
