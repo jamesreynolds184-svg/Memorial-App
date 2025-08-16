@@ -1,100 +1,89 @@
-(() => {
-  const SAVED_KEY = 'savedMemorials';
-  const listEl = document.getElementById('memorial-list');
-  const searchEl = document.getElementById('search');
+// Simplified restored logic for saved page
 
-  let all = [];
-  let savedNames = new Set(loadSaved());
+const SAVED_KEY = 'savedMemorials';
+const MIN_STOPS = 2;
 
-  function loadSaved() {
-    try {
-      const arr = JSON.parse(localStorage.getItem(SAVED_KEY));
-      return Array.isArray(arr) ? arr : [];
-    } catch { return []; }
-  }
-  function saveSaved() {
-    localStorage.setItem(SAVED_KEY, JSON.stringify([...savedNames]));
-  }
+const buildBtn = document.getElementById('build-tour-btn');
+const statusEl = document.getElementById('tour-status');
+const listEl = document.getElementById('memorial-list');
+const searchEl = document.getElementById('search');
 
-  function render(filter = '') {
-    const q = filter.trim().toLowerCase();
+let allMemorials = [];
+let savedNames = loadSavedNames(); // Set of names (exact names)
 
-    const items = all
-      .filter(m => m && m.name && savedNames.has(m.name))
-      .filter(m => {
-        if (!q) return true;
-        const hay = [
-          m.name,
-          m.zone || '',
-          (m.description || ''),
-          ...(Array.isArray(m.tags) ? m.tags : [])
-        ].join(' ').toLowerCase();
-        return hay.includes(q);
-      })
-      .sort((a, b) => a.name.localeCompare(b.name));
+init();
 
-    listEl.innerHTML = '';
-    if (!items.length) {
-      listEl.innerHTML = '<li class="empty">No saved memorials.</li>';
-      return;
-    }
-
-    for (const m of items) {
-      const li = document.createElement('li');
-      li.className = 'memorial-row';
-
-      const a = document.createElement('a');
-      a.className = 'mem-link';
-      a.href = `memorial.html?name=${encodeURIComponent(m.name)}`;
-      a.textContent = m.name;
-
-      const btn = document.createElement('button');
-      btn.className = 'save-btn saved';
-      btn.type = 'button';
-      btn.dataset.name = m.name;
-      btn.setAttribute('aria-label', 'Unsave memorial');
-      btn.textContent = '★';
-
-      li.appendChild(a);
-      li.appendChild(btn);
-      listEl.appendChild(li);
-    }
+function init(){
+  log('init saved.js; saved count:', savedNames.size);
+  if(buildBtn){
+    buildBtn.disabled = true;
   }
 
-  // Unsave on star click (and remove from the list)
-  listEl.addEventListener('click', (e) => {
-    const btn = e.target.closest('.save-btn');
-    if (!btn) return;
-    const name = btn.dataset.name;
-    if (!name) return;
-
-    savedNames.delete(name);
-    saveSaved();
-
-    const row = btn.closest('li');
-    if (row) row.remove();
-    if (!listEl.children.length) {
-      listEl.innerHTML = '<li class="empty">No saved memorials.</li>';
-    }
-  });
-
-  // Live search
-  let t;
-  searchEl.addEventListener('input', () => {
-    clearTimeout(t);
-    t = setTimeout(() => render(searchEl.value), 120);
-  });
-
-  // Load all memorials, then render saved subset
   fetch('../data/memorials.json')
-    .then(r => r.json())
-    .then(data => {
-      all = (Array.isArray(data) ? data : []).filter(m => m && m.name);
-      render('');
-      // Enable tour planner
-      if (window._tourPlanner) window._tourPlanner.enableIfPossible(all);
+    .then(r=>r.json())
+    .then(data=>{
+      allMemorials = Array.isArray(data)? data : [];
+      log('memorials loaded', allMemorials.length);
+      // Dispatch so tour-planner gets list
+      window.dispatchEvent(new CustomEvent('memorialsData',{ detail:{ all: allMemorials }}));
+      renderSavedList();
+      updateBuildButton();
     })
-    .catch(() => {
-      listEl.innerHTML = '<li class="empty">Failed to load memorials.</li>';
+    .catch(e=>console.error('memorials load failed', e));
+
+  if(searchEl){
+    searchEl.addEventListener('input', ()=>{
+      renderSavedList(searchEl.value);
     });
-})();
+  }
+}
+
+function loadSavedNames(){
+  try{
+    const arr = JSON.parse(localStorage.getItem(SAVED_KEY));
+    return new Set(Array.isArray(arr)?arr:[]);
+  }catch{
+    return new Set();
+  }
+}
+
+function getSavedMemorials(){
+  return allMemorials.filter(m=>savedNames.has(m.name));
+}
+
+function renderSavedList(filter=''){
+  if(!listEl) return;
+  const f = filter.trim().toLowerCase();
+  const items = getSavedMemorials().filter(m => {
+    if(!f) return true;
+    return m.name.toLowerCase().includes(f);
+  }).sort((a,b)=>a.name.localeCompare(b.name));
+
+  listEl.innerHTML = '';
+  if(!items.length){
+    const li = document.createElement('li');
+    li.textContent = 'No saved memorials.';
+    listEl.appendChild(li);
+    return;
+  }
+  items.forEach(m=>{
+    const li = document.createElement('li');
+    li.textContent = m.name;
+    listEl.appendChild(li);
+  });
+  log('rendered saved list', items.length);
+}
+
+function updateBuildButton(){
+  if(!buildBtn) return;
+  const count = getSavedMemorials().length;
+  buildBtn.disabled = count < MIN_STOPS;
+  if(statusEl){
+    statusEl.textContent = count < MIN_STOPS
+      ? `Need ${MIN_STOPS - count} more saved to build a tour`
+      : 'Ready to build a tour';
+  }
+  log('updateBuildButton count:', count, 'disabled:', buildBtn.disabled);
+}
+
+function log(...a){ console.log('[saved]', ...a); }

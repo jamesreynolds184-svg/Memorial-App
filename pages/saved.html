@@ -26,12 +26,12 @@
       <h1>Saved Memorials</h1>
       <input id="search" class="search-input" type="text" placeholder="Search saved memorials..." aria-label="Search saved memorials">
       <div class="saved-toolbar">
-        <button id="build-tour-btn" class="btn btn-primary" disabled>Build tour</button>
+        <button id="build-tour-btn" class="primary-btn" type="button" aria-label="Build a tour from saved memorials">Build tour</button>
         <span id="tour-status" class="tour-status"></span>
       </div>
       <pre id="tour-debug-box" style="background:#111;color:#0f0;padding:8px;font:12px/1.3 monospace;max-width:600px;max-height:240px;overflow:auto;display:none;"></pre>
 
-      <ol id="tour-result" class="tour-result" hidden></ol>
+      <ol id="tour-result" class="tour-result"></ol>
       <ul id="memorial-list" class="memorials-list"></ul>
     </div>
   </main>
@@ -41,7 +41,6 @@
   <script src="../js/tour-planner.js"></script>
   <script src="../js/saved.js"></script>
   <script>
-    // Toggle debug box with URL param ?tourDebug=1
     if (location.search.includes('tourDebug=1')) {
       document.getElementById('tour-debug-box').style.display = 'block';
     }
