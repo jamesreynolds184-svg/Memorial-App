@@ -3,6 +3,8 @@
   const footpathsPath = '../data/footpaths.geojson';
   // --- DEBUG FLAG ---
   const DEBUG_ROUTING = true;
+  // Show individual footpath node (blue) debug markers?
+  const SHOW_FOOTPATH_NODES = false; // set true only when debugging node graph
 
   const qs = new URLSearchParams(location.search);
   const focusName = qs.get('focus'); // ADDED
@@ -453,17 +455,26 @@
   // ADDED: load + add footpaths layer
   function loadFootpaths(){
     fetch(footpathsPath)
-      .then(r=>{ if(!r.ok) throw new Error('HTTP '+r.status); return r.json();})
+      .then(r=>{ if(!r.ok) throw new Error('Footpaths load failed '+r.status); return r.json(); })
       .then(gj=>{
-        dbg('Footpaths GeoJSON fetched');
-        if (footpathsLayer) map.removeLayer(footpathsLayer);
-        footpathsLayer = L.geoJSON(gj,{
-          style:()=>({ color:'#666',weight:2,opacity:0.7 })
+        // Remove any prior layer
+        if (footpathsLayer) { map.removeLayer(footpathsLayer); footpathsLayer = null; }
+
+        // Add GeoJSON with ONLY black polylines (no point markers)
+        footpathsLayer = L.geoJSON(gj, {
+          style: ()=>({
+            color:'#000',
+            weight:2,
+            opacity:0.9
+          }),
+          onEachFeature: (feat, layer)=>{
+            // Optional: no popup, keep clean
+          }
         }).addTo(map);
-        if (markersLayer) footpathsLayer.bringToBack();
+
         buildFootpathGraph(gj);
       })
-      .catch(err=>{ console.warn('Footpaths load failed', err); dbg('Footpaths load failed', err.message); });
+      .catch(err=>{ console.error(err); });
   }
 
   // ADDED: plan route to memorial (enhanced path snapping)
@@ -859,9 +870,8 @@
     const compInfoAfter1 = recomputeComponents();
     dbg('Bridging pass1: added', bridges1, 'bridges; components', compInfo1.count,'->', compInfoAfter1.count);
 
-    // Visual debug of nodes + first pass bridges
-    if (DEBUG_ROUTING){
-      clearDebugLayers();
+    // Visual debug of nodes + first pass bridges (optional)
+    if (DEBUG_ROUTING && SHOW_FOOTPATH_NODES){
       footpathGraph.nodes.forEach(n=>{
         const circ=L.circleMarker([n.lat,n.lng],{
           radius:3,color:'#268bd2',weight:1,fillColor:'#fff',fillOpacity:0.9
@@ -983,28 +993,28 @@
           if (d > HOP_MAX_METERS) continue;
           const bTarget = distToTarget(b);
           const score = d + 0.2 * bTarget; // slight bias toward components nearer target
-          if (score < bestScore){
-            bestScore=score;
-            bestPair={ a, b, d, aTarget, bTarget };
+          if (score < bestScore) {
+            bestScore = score;
+            bestPair = { a, b, d };
           }
         }
       }
 
-      if (!bestPair){
-        dbg('Hop: no candidate within', HOP_MAX_METERS,'m (iter',iter,')');
+      if (!bestPair) {
+        dbg('Heuristic: no further candidate hop found');
         break;
       }
 
+      // Add hop (penalised weight so real paths still preferred)
       adj.get(bestPair.a).push({ to: bestPair.b, w: bestPair.d * HOP_PENALTY, hop:true });
       adj.get(bestPair.b).push({ to: bestPair.a, w: bestPair.d * HOP_PENALTY, hop:true });
-      hopEdges.push({ a:bestPair.a, b:bestPair.b, d:bestPair.d });
+      hopEdges.push(bestPair);
       hops++;
-      dbg('Hop',hops,'added',bestPair.a,'->',bestPair.b,'dist',
-          bestPair.d.toFixed(1),'m Δtarget',
-          (bestPair.aTarget - bestPair.bTarget).toFixed(1),'m');
+      dbg('Heuristic hop', hops, 'added', bestPair.a, '<->', bestPair.b,
+          'd=', bestPair.d.toFixed(1),'m (weighted', (bestPair.d*HOP_PENALTY).toFixed(1),')');
     }
     return hops;
   }
+// === end ensureConnectedHeuristic ===
 
-  dbg('Routing debug initialized');
-})();
+})(); // close IIFE
