@@ -37,42 +37,36 @@
       if (zoneEl) zoneEl.textContent = item.zone ? `Zone: ${item.zone}` : '';
       if (descEl) descEl.textContent = (item.description || '').trim();
 
-      // --- Add this block for the image ---
-      const photoEl = document.getElementById('mem-photo');
-      const pathEl = document.getElementById('mem-photo-path');
-      if (photoEl && pathEl && item.zone && item.name) {
-        const imgPath = `../img/zone${item.zone}/${item.name}.JPEG`;
-        pathEl.textContent = imgPath;
-        pathEl.style.display = 'block';
-        photoEl.src = imgPath;
-        photoEl.alt = item.name + ' photo';
-        photoEl.style.display = 'none';
-        let handled = false;
-        photoEl.onerror = function() {
-          handled = true;
-          photoEl.style.display = 'none';
-          pathEl.style.color = 'red';
-          pathEl.textContent = imgPath + ' (not found)';
-          console.warn('Image NOT found:', imgPath);
-        };
-        photoEl.onload = function() {
-          handled = true;
-          photoEl.style.display = '';
-          pathEl.style.color = '#888';
-          pathEl.textContent = imgPath + ' (found)';
-          console.info('Image found:', imgPath);
-        };
-        setTimeout(() => {
-          if (!handled) {
-            pathEl.style.color = 'orange';
-            pathEl.textContent = imgPath + ' (no response from browser)';
-            console.warn('Image event did not fire:', imgPath);
-          }
-        }, 2000);
-      } else if (pathEl) {
-        pathEl.style.display = 'none';
+      // --- New image display block ---
+      // Remove any old image if present
+      let oldImg = document.getElementById('memorial-photo-img');
+      if (oldImg) oldImg.remove();
+
+      // Build image path (prefer item.photo, else fallback)
+      let imgPath = item.photo;
+      if (!imgPath && item.zone && item.name) {
+        imgPath = `../img/zone${item.zone}/${item.name}.JPEG`;
       }
-      // --- End image block ---
+
+      if (imgPath) {
+        const img = document.createElement('img');
+        img.id = 'memorial-photo-img';
+        img.src = imgPath;
+        img.alt = item.name + ' photo';
+        img.style.display = 'block';
+        img.style.maxWidth = '60%';
+        img.style.margin = '18px auto 0 auto';
+        img.style.borderRadius = '18px';
+        img.style.boxShadow = '0 4px 18px rgba(0,0,0,0.18)'; // <-- Add this line for shadow
+        img.onerror = function() {
+          img.style.display = 'none';
+        };
+        // Insert below description
+        if (descEl && descEl.parentNode) {
+          descEl.parentNode.insertBefore(img, descEl.nextSibling);
+        }
+      }
+      // --- End new image display block ---
 
       // Coordinates (object or legacy string) -> map
       const coords = extractCoords(item.location);
@@ -124,10 +118,51 @@ function initLeafletMemorialMap(coords) {
     .addTo(map)
     .addAttribution('© OpenStreetMap contributors | Tiles © CARTO');
 
-  const marker = L.marker([coords.lat, coords.lng]).addTo(map);
+  // --- Custom marker icon logic ---
+  const memorial = window.currentMemorial;
+  let marker;
+  if (memorial && memorial.zone && memorial.name) {
+    // Build icon path (relative to map.html or current page)
+    const iconPath = `../icons/zone${memorial.zone}/${memorial.name}.png`;
 
-  const title = (window.currentMemorial && window.currentMemorial.name) ? window.currentMemorial.name : 'Memorial';
-  marker.bindPopup(escapeHtml(title)).openPopup();
+    // Try to load the icon image
+    const img = new window.Image();
+    img.onload = function() {
+      // Use the image's natural size to preserve proportions
+      const w = img.naturalWidth;
+      const h = img.naturalHeight;
+      // Optionally, scale down if too large (e.g., max 48px)
+      const maxDim = 60;
+      let scale = 1;
+      if (w > maxDim || h > maxDim) {
+        scale = Math.min(maxDim / w, maxDim / h);
+      }
+      const iconW = Math.round(w * scale);
+      const iconH = Math.round(h * scale);
+
+      const customIcon = L.icon({
+        iconUrl: iconPath,
+        iconSize: [iconW, iconH],
+        iconAnchor: [iconW / 2, iconH], // bottom center
+        popupAnchor: [0, -iconH]
+      });
+      marker = L.marker([coords.lat, coords.lng], { icon: customIcon }).addTo(map);
+      const title = memorial.name ? memorial.name : 'Memorial';
+      marker.bindPopup(escapeHtml(title)).openPopup();
+    };
+    img.onerror = function() {
+      // Fallback to default marker
+      marker = L.marker([coords.lat, coords.lng]).addTo(map);
+      const title = memorial.name ? memorial.name : 'Memorial';
+      marker.bindPopup(escapeHtml(title)).openPopup();
+    };
+    img.src = iconPath;
+  } else {
+    // Fallback to default marker
+    marker = L.marker([coords.lat, coords.lng]).addTo(map);
+    const title = (memorial && memorial.name) ? memorial.name : 'Memorial';
+    marker.bindPopup(escapeHtml(title)).openPopup();
+  }
 
   function escapeHtml(s){
     return String(s).replace(/[&<>"']/g,c=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":"&#39;" }[c]));
