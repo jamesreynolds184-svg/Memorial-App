@@ -221,7 +221,31 @@
     markersLayer.clearLayers();
     leafletMarkers.clear();
     filtered.forEach(m=>{
-      const mk = L.marker([m.location.lat, m.location.lng]).addTo(markersLayer);
+      // --- Custom icon logic (copied from memorial.js) ---
+      let mk;
+      if (m.zone && m.name) {
+        const iconPath = `../icons/zone${m.zone}/${m.name}.png`;
+        const img = new window.Image();
+        img.onload = function() {
+          const w = img.naturalWidth, h = img.naturalHeight;
+          const maxDim = 48;
+          let scale = 1;
+          if (w > maxDim || h > maxDim) scale = Math.min(maxDim / w, maxDim / h);
+          const iconW = Math.round(w * scale), iconH = Math.round(h * scale);
+          const customIcon = L.icon({
+            iconUrl: iconPath,
+            iconSize: [iconW, iconH],
+            iconAnchor: [iconW / 2, iconH],
+            popupAnchor: [0, -iconH]
+          });
+          mk.setIcon(customIcon);
+        };
+        img.onerror = function() {
+          // fallback: do nothing, keep default icon
+        };
+        img.src = iconPath;
+      }
+      mk = L.marker([m.location.lat, m.location.lng]).addTo(markersLayer);
       mk.bindPopup(
         `<strong>${escapeHtml(m.name)}</strong><br>` +
         (m.zone?`Zone ${escapeHtml(m.zone)}<br>`:'') +
