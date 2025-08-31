@@ -45,7 +45,9 @@
       // Build image path (prefer item.photo, else fallback)
       let imgPath = item.photo;
       if (!imgPath && item.zone && item.name) {
-        imgPath = `../img/zone${item.zone}/${item.name}.JPEG`;
+        // URL-encode the filename part only
+        const safeName = encodeURIComponent(`${item.name}.JPEG`);
+        imgPath = `../img/zone${item.zone}/${safeName}`;
       }
 
       if (imgPath) {
