@@ -57,13 +57,22 @@
         img.style.maxWidth = '60%';
         img.style.margin = '18px auto 0 auto';
         img.style.borderRadius = '18px';
-        img.style.boxShadow = '0 4px 18px rgba(0,0,0,0.18)'; // <-- Add this line for shadow
+        img.style.boxShadow = '0 4px 18px rgba(0,0,0,0.18)';
         img.onerror = function() {
           img.style.display = 'none';
         };
         // Insert below description
         if (descEl && descEl.parentNode) {
           descEl.parentNode.insertBefore(img, descEl.nextSibling);
+
+          // --- Add debug line showing image path ---
+          const debugLine = document.createElement('div');
+          debugLine.textContent = `Image path: ${imgPath}`;
+          debugLine.style.fontSize = '12px';
+          debugLine.style.color = '#c00';
+          debugLine.style.textAlign = 'center';
+          debugLine.style.margin = '6px auto 0 auto';
+          descEl.parentNode.insertBefore(debugLine, img.nextSibling);
         }
       }
       // --- End new image display block ---
