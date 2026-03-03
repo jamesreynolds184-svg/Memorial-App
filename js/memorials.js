@@ -31,7 +31,9 @@
     const items = all.filter(m => {
       if (!m || !m.name) return false;
       if (!q) return true;
-      return m.name.toLowerCase().includes(q); // name only
+      const nameMatch = m.name.toLowerCase().includes(q);
+      const descMatch = m.description && m.description.toLowerCase().includes(q);
+      return nameMatch || descMatch;
     });
 
     listEl.innerHTML = '';
@@ -45,7 +47,7 @@
       li.className = 'memorial-row';
       const a = document.createElement('a');
       a.className = 'mem-link';
-      a.href = `memorial.html?name=${encodeURIComponent(m.name)}`;
+      a.href = `memorial.html?name=${encodeURIComponent(m.name)}&from=memorials`;
       a.textContent = m.name;
       const btn = document.createElement('button');
       btn.className = 'save-btn' + (saved.has(m.name) ? ' saved' : '');

@@ -24,25 +24,13 @@
     "lng": -1.7298333333333336
   },
   {
-    "name": "14th/20th Kings Hussars",
-    "zone": "",
-    "description": "",
-    "map": "",
-    "location": {
-      "lat": 52.72737222222222,
-      "lng": -1.729263888888889
-    },
-    "lat": 52.72737222222222,
-    "lng": -1.729263888888889
-  },
-  {
     "name": "17th Dogra Regiment Memorial",
     "zone": "7",
     "description": "17th DOGRA REGIMENT MEMORIAL\nThe Dogra Regiment was raised in 1887 from the foothills of the Himalayas and earned laurels for valour in both World Wars, including Nunshigam, Imphal and Kota Bharu in the Second World War Burma campaign.",
     "map": "",
     "location": {
-      "lat": "",
-      "lng": ""
+      "lat": "52.729994",
+      "lng": "-1.732014"
     }
   },
   {
@@ -171,8 +159,8 @@
     "description": "M-286 624 (Special Duties) Squadron RAF\nThis squadron was formed in September 1943 and carried out Special Duties Operations into Greece, \nRomania, Albania, Italy, Corsica, Sardinia, Southern France, Yugoslavia and Czechoslovakia. They \ndropped agents and supplies to partisans and resistance forces and operated from Algeria, Tunisia, \nLibya and Italy. \nThe squadron was disbanded in September 1944. \nThe memorial, Established in 2012, was instigated by Ron McKeon who has a plaque in the Sun \nRoom and is supported by members of the 4624 Royal Auxiliary Air Force and 624 Veterans. The \nmemorial is located in the Special Operations Garden opposite the 299 Squadron Stone and close to \nthe Vera Atkins memorial seat.",
     "map": "",
     "location": {
-      "lat": "",
-      "lng": ""
+      "lat": "52.731278",
+      "lng": "-1.722656"
     }
   },
   {
@@ -193,12 +181,12 @@
     "description": "90 Signals Unit TCU\n90 Signals Unit (90SU) provides a vital role in ensuring the RAF achieves operational success and exists to provide Expeditionary Information Services, whenever they are required. \nComprising two Wings, Force Generation Wing (FGW) and Tactical Communications Wing (TCW), the Unit’s history can be traced back to the mid1950s, although TCW did not become an autonomous signals unit until later (1973). \nSince this time, 90SU have been involved in every major conflict and support operation that has taken place worldwide.",
     "map": "",
     "location": {
-      "lat": "",
-      "lng": ""
+      "lat": "52.727956",
+      "lng": "-1.728917"
     }
   },
   {
-    "name": "9th/12th Royal Lancers Memorial",
+    "name": "9th 12th Royal Lancers Memorial",
     "zone": "12",
     "description": "9th/12th Royal Lancers\nThe 9th/12th Royal Lancers can date its ancestry back to 1715 with the formation of Wynn's Dragoon and Bowles Dragoons. The antecedent regiments served in many campaigns including the Peninsular War, Waterloo, Crimean War, Indian Mutiny, Boer War, WW1 and WW2. In May 2015 it was amalgamated with the Queen's Royal Lancers (see Memorial M-287) to form the Royal Lancers.\nThe amalgamation history is shown in the table below.\n9th/12th Royal Lancers (Prince of Wales’s) September 1960\no 9th (Queens Royal) Lancers 1830 from 9th Regiment of (Light) Dragoons ) Lancers) 1816 from • 9th Regiment of (Light) Dragoons 1783 from 9th Regiment of Dragoons 1751 from Wynn’s Dragoons 1715\no 12th (Prince of Wales’s) Royal Lancers 1817 from 12th (Prince of Wales’s) Lancers 1816 from • (Prince of Wales’s) Light Dragoons 1768 from 12th Regiment of Dragoons 1751 from Bowles’s Dragoon’s 1715",
     "map": "",
@@ -383,8 +371,8 @@
     "description": "Armed Services Wood \nThe Armed Services Wood is a woodland of mixed trees individually sponsored as living tributes to those who served in the British Army, the Royal Navy and the Royal Air Force.",
     "map": "",
     "location": {
-      "lat": "",
-      "lng": ""
+      "lat": "52.731383",
+      "lng": "-1.728383"
     }
   },
   {
@@ -417,8 +405,8 @@
     "description": "No information available",
     "map": "",
     "location": {
-      "lat": "",
-      "lng": ""
+      "lat": "52.728108",
+      "lng": "-1.730720"
     }
   },
   {
@@ -439,8 +427,8 @@
     "description": "Army Dog Unit (Northern Ireland) Association Red Paw Memorial \nThis memorial was dedicated on 1 August 2009 to the memory of those, both humans and animals, who lost their lives whilst serving in the Army Dog Unit, Northern Ireland.\nThe memorial comprises a natural boulder with an inscribed polished, black granite plaque displaying the Association’s red dog paw badge and motto “Search and Secure”.",
     "map": "",
     "location": {
-      "lat": "",
-      "lng": ""
+      "lat": "52.730070",
+      "lng": "-1.727370"
     }
   },
   {
@@ -449,8 +437,8 @@
     "description": "no information available",
     "map": "",
     "location": {
-      "lat": "",
-      "lng": ""
+      "lat": "52.726978",
+      "lng": "-1.726764"
     }
   },
   {
@@ -493,8 +481,8 @@
     "description": "Athel Shipping Line Memorial \nThe memorial to the Athel Line – The United Molasses Company is placed in the Athel Line Grove of six English Oaks dedicated in gratitude to those who served in the Athel Line of Liverpool at Home and Overseas, Ashore and Afloat. Of the 32 ships owned by Athel Line Ltd and Tankers Ltd, 22 ships were lost. \nThis memorial honours the 205 souls who perished as a result of enemy action.",
     "map": "",
     "location": {
-      "lat": "",
-      "lng": ""
+      "lat": "52.729647",
+      "lng": "-1.729122"
     }
   },
   {
@@ -561,8 +549,8 @@
     "description": "M-214 The Battle of Mirbat Memorial \nThe Battle of Mirbat memorial commemorates a conflict, codenamed 'Operation STORM', which \ntook place between 1970-1975 in the Dhofar Province of Southern Oman. \nSoldiers from 22 Special Air Service (SAS) Regiment were deployed under the guise of a British Army \nTraining Team (commonly known as BATT Men). The SAS objective was to help the armed forces of \nOman win the battle on the Jebel of Dhofar and so deliver the Province from armed communists \nworking from bases in South Yemen. \nAt dawn on the 19th July 1972 a nine man BATT team under the command of Mike Kealy were \n\"stood to\" in their gun positions at the ancient capital port of Dhofar called Mirbat. \nThey came under attack by over 250 communist fighters. As the battle intensified Talaiasi Lablaba, a \nFijian was firing the 25-pounder field gun directly at the enemy forces who were only yards away \nfrom the gun pit. Walid Khamis of the Omani gun team and Sekonaia Takevesi another Fijian had \nbeen seriously wounded. \nTommy Tobin the medic was tending to them when he was shot in the jaw, a wound that was to \nlater to prove fatal. Labalaba was shot in the neck whilst trying to retrieve a mortar nearby.",
     "map": "",
     "location": {
-      "lat": "",
-      "lng": ""
+      "lat": "52.732220",
+      "lng": "-1.721864"
     }
   },
   {
@@ -605,8 +593,8 @@
     "description": "Birmingham Children’s Hospital Memorial \nThere are five sculptures along this Riverside Walk, as well as further pieces within Birmingham Children’s Hospital. The organic or ‘seed-like’ sculptures represent the key sentiments of love, loss, endings and new beginnings. There is a bench at the beginning of the walk.",
     "map": "",
     "location": {
-      "lat": "",
-      "lng": ""
+      "lat": "52.726422",
+      "lng": "-1.724503"
     }
   },
   {
@@ -781,8 +769,8 @@
     "description": "Brixmis Memorial \nBRIXMIS (the British Commanders’- in-Chief Mission to the Soviet Forces in Germany) along with its American and French counterpart military liaison missions, worked throughout the Cold War from 1946-1990 in East Germany. \nAs well as keeping open high-level communication channels between the Soviet and British military commands in Germany, these missions evolved into highly professional and successful intelligence gathering units. Their patrolling operations, both on the ground and in the air, were conducted under conditions of strict secrecy. \nThe dedication of the BRIXMIS Association Memorial at the Arboretum on 17 September 2016 marked the 70th anniversary of the Anglo-Soviet agreement to set up reciprocal military liaison missions.",
     "map": "",
     "location": {
-      "lat": "",
-      "lng": ""
+      "lat": "52.731292",
+      "lng": "-1.722492"
     }
   },
   {
@@ -875,8 +863,8 @@
     "description": "No information available",
     "map": "",
     "location": {
-      "lat": "",
-      "lng": ""
+      "lat": "52.726372",
+      "lng": "-1.728972"
     }
   },
   {
@@ -897,8 +885,8 @@
     "description": "Cavalry Crescent\nThe Cavalry Grove (Crescent) grove consists of a colourful mix of ornamental trees and memorials dedicated to the Cavalry Regiments of the British Army. These include 9/12 Lancers, The Queen’s Royal Hussars, The Royal Dragoon Guards, The Queen’s Royal Lancers, The King’s Royal Hussars and The Light Dragoons.",
     "map": "",
     "location": {
-      "lat": "",
-      "lng": ""
+      "lat": "52.727067",
+      "lng": "-1.729392"
     }
   },
   {
@@ -967,8 +955,8 @@
     "description": "Cheshire Regiment Memorial Bench \nThis polished grey granite bench from the people of Winsford is dedicated to the service men and women of The Cheshire Regiment who gave their lives in conflict. The badges of the Cheshire Regiment, comprising an acorn accompanied by crossed oak leaves, are displayed either side of the inscription.",
     "map": "",
     "location": {
-      "lat": "",
-      "lng": ""
+      "lat": "52.727978",
+      "lng": "-1.728270"
     }
   },
   {
@@ -989,8 +977,8 @@
     "description": "CHILDREN’S WOOD \nThe owl and cockerel features relate to raising awareness of cardiac risk to young people and the need for families/carers to bear in mind that problems of heart diseaguarse are not confined to older people and can occur at any time of day or night. \nThe sculpture of a post-box, with birds in flight above it, was made by children of British armed forces personnel at their school in Germany and represents the transient lifestyle of such families. \nWith the reduction in numbers of our armed forces abroad, the school was closed and the sculpture brought here. \nThe idea is that ‘the birds are dispersing and then finding someone they know in the next flock’, like so many children of Service personnel over previous years/decades/centuries.",
     "map": "",
     "location": {
-      "lat": "",
-      "lng": ""
+      "lat": "52.729845",
+      "lng": "-1.725695"
     }
   },
   {
@@ -1071,8 +1059,8 @@
     "description": "No information available",
     "map": "",
     "location": {
-      "lat": "",
-      "lng": ""
+      "lat": "52.728928",
+      "lng": "-1.726581"
     }
   },
   {
@@ -1165,8 +1153,8 @@
     "description": "The Diamond Grove \nThe trees in the Diamond Grove have been sponsored by couples from the Second World War generation to celebrate 60 years of marriage, their Diamond Wedding anniversary.",
     "map": "",
     "location": {
-      "lat": "",
-      "lng": ""
+      "lat": "52.729631",
+      "lng": "-1.730981"
     }
   },
   {
@@ -1175,8 +1163,8 @@
     "description": "M-212 The Dieppe Raid -18/19th August 1942- 'Operation Jubilee' \nCommemorating the 65th Anniversary, 18th August 2007 \nOn August 18th 1942 more than 6,000 Allied soldiers, of whom almost 5,000 were Canadian sailed \nfrom the south coast of Britain to attack the German held French Port of Dieppe. \nThe Dieppe Raid was called a 'Reconnaissance in Force' by the Combined Operations planners, and \nwas intended to be both a morale booster when the early stages of the war were going badly for the \nAllies, and as a testing ground for a full scale invasion of Fortress Europe, along with an opportunity \nto gain vital intelligence. \nThe Dieppe Raid turned out to be a military disaster, where nothing was achieved and about 60% of \nthe 5,000 soldiers who eventually landed ashore were killed, wounded or captured. \nThe Dieppe Raid Memorial, located in the Allied Special Forces Memorial Grove, remembers over \n42,000 Canadians who lost their lives during WW2 with over 900 during the raid. \nA second plaque honours Lt. Col. C. Merritt of the South Saskatchewan Regiment, John Foote of the \nCanadian Chaplains Service and Capt. Patrick Porteus of No.4 Commando. All of which received the \nVictoria Cross for their bravery. The scale of the Ground, Naval and Air Force losses are detailed here \nand an accompanying plaque lists all the forces that participated in 'Operation Jubilee'. \nThe lessons learnt led to the successful invasion on June 6th 1944. \nThe memorial design was by Mike Colton who also helped dig the Old Red Sandstone out from a \nquarry at Consall Hall and transport it to the site. The stone represents the formidable defences of \nDieppe. \nDedicated in 2007.",
     "map": "",
     "location": {
-      "lat": "",
-      "lng": ""
+      "lat": "52.731414",
+      "lng": "-1.722570"
     }
   },
   {
@@ -1185,8 +1173,8 @@
     "description": "Douglas Skene Grove \nDouglas Skene (1948 – 2007) was a dedicated military historian, a serving officer in the Royal Scots Greys and a member of the Territorial Army with the Royal Green Jackets. He practiced as an independent financial consultant, but his hobby was to lead tours to First World War battlefields. \nHis other great love was trees and he enjoyed watching the Arboretum develop from its inception until his untimely death at the age of 59. Following his death, his family, friends and colleagues raised funds towards setting up the first grove of specimen trees at the Arboretum, a lasting legacy to his memory. \nTrees in the Grove include the barberry (Berberis valdivian) from Chile; the sweet buckeye (Aesculus flava) from South-East USA; the Chinese weeping cypress (Cupressus funebris) from central China; and the Japanese white pine (Pinus parviflora).",
     "map": "",
     "location": {
-      "lat": "",
-      "lng": ""
+      "lat": "52.730972",
+      "lng": "-1.728506"
     }
   },
   {
@@ -1399,8 +1387,8 @@
     "description": "Flt Lt J W Lucas DFC \nThis memorial is dedicated by the Lucas family to honour Flight Lieutenant James William Lucas D.F.C 1918-2001, who in commemoration of his dedication to duty as a Second World War pilot, was awarded the Distinguished Flying Cross.\nThe memorial is a grey polish granite bench with a dedication panel of black polished granite beneath the seat. The panel is inscribed with a dedication and features a propeller and the badge of Bomber Command contained within a white circle.\nThe memorial is located within the RAF Memorial Grove (known as the RAF Wing) which comprises a collection of silver birch trees planted in the shape of an eagle’s wings.",
     "map": "",
     "location": {
-      "lat": "",
-      "lng": ""
+      "lat": "52.728247",
+      "lng": "-1.727170"
     }
   },
   {
@@ -1565,8 +1553,8 @@
     "description": "GOLDEN GROVE \nThis is one of our many non-military sites. The trees, which have golden bark, leaves or fruit have been sponsored for people who have celebrated Golden Wedding Anniversaries. \nThe banks have been raised like an Iron Age fort, and Girl Guides from Staffordshire planted masses of yellow daffodils around the inside of the banks.",
     "map": "",
     "location": {
-      "lat": "",
-      "lng": ""
+      "lat": "52.724925",
+      "lng": "-1.726622"
     }
   },
   {
@@ -1635,8 +1623,8 @@
     "description": "Heroes' Square \nAdjacent to the Remembrance Centre is Heroes’ Square, a cloistered courtyard, which provides a welcoming area to gather for events, relax with friends and to look at the breath-taking vistas across the Arboretum. \nWithin Heroes’ Square are many crests, badges or cyphers which have been elegantly carved into the York Stone paviours, a material chosen for its visual appeal and hard-wearing qualities. \nThe red oaks, providing a natural canopy above them, have been selected for their beautiful red foliage during the autumn, the season of Remembrance.",
     "map": "",
     "location": {
-      "lat": "",
-      "lng": ""
+      "lat": "52.727917",
+      "lng": "-1.731314"
     }
   },
   {
@@ -1645,8 +1633,8 @@
     "description": "If we look back to the top of The Beat we can see a traditional Blue Police lamp, they used to be situated outside most Police Stations. This one originates from Hitchin, Hertfordshire, Police Station, it was placed here in memory of Mandy Raynor, the youngest Policewoman to lose her life whilst on duty.",
     "map": "",
     "location": {
-      "lat": "",
-      "lng": ""
+      "lat": "52.726945",
+      "lng": "-1.730061"
     }
   },
   {
@@ -1674,13 +1662,13 @@
     "lng": -1.728188888888889
   },
   {
-    "name": "HMA Nairana & 835 Royal Naval Air Squadron Memorial Grove",
+    "name": "HMS Nairana & 835 Royal Naval Air Squadron Memorial Grove",
     "zone": "5",
     "description": "HMS Nairana & 835 Royal Naval Air Squadron Memorial Grove \nThe memorial comprises eight oak trees located in a corner of the Royal Naval Review adjacent the Merchant Navy Wood.",
     "map": "",
     "location": {
-      "lat": "",
-      "lng": ""
+      "lat": "52.729814",
+      "lng": "-1.729858"
     }
   },
   {
@@ -1689,8 +1677,8 @@
     "description": "Antelope Garden \nThe garden was opened on 2 April 2007 by Captain Nick Tobin, the former Commanding Officer of HMS Antelope, which was sunk during the campaign. It is planted with a deciduous azalea (Viscosa Antelope), which produces a pink fragrant flower in May. \nNearby is a tree, planted by Lady Fieldhouse in memory of her husband, Admiral of the Fleet Lord Fieldhouse of Gosport, in the County of Hampshire. As Commander in Chief Fleet in 1982, John Fieldhouse was the Commander of the Task Force and given responsibility for ‘Operation Corporate’, the mission to recover the Falkland Islands.",
     "map": "",
     "location": {
-      "lat": "",
-      "lng": ""
+      "lat": "52.728353",
+      "lng": "-1.729158"
     }
   },
   {
@@ -1759,8 +1747,8 @@
     "description": "HMS Caledonia Memorial \nHMS Caledonia was used for Artificer Apprentice training from 1937 to 1985. A stone memorial tablet containing the Caledonia insignia at the top includes the inscription: This tree is dedicated to all Caledonia trained Artificer Apprentices.",
     "map": "",
     "location": {
-      "lat": "",
-      "lng": ""
+      "lat": "52.729400",
+      "lng": "-1.728767"
     }
   },
   {
@@ -1769,8 +1757,8 @@
     "description": "HMS Cavalier Memorial \nThis memorial is dedicated to all those who served on the HMS Cavalier and was donated and erected by the HMS Cavalier Association. The insignia badge of the HMS Cavalier is displayed at the centre of the memorial. HMS Cavalier joined the 8th Destroyer Flotilla Home Fleet and quickly saw action. In February 1945 she took part in three operations off Norway. “Selenium”, a strike against enemy shipping, “Shred” to provide fighter cover for a minesweeping flotilla and “Groundsheet” an aircraft mine laying strike. \nCavalier was one of three destroyers sent from Scapa to reinforce the escort of Artic Convoy RA64 which had left the Kola Inlet on 17th February. After being attacked by U-boats and enemy aircraft on 23 February the convoy was scattered in a hurricane combining force 12 winds with icing. Cavalier went to round up the convoy with the other escorts and on 1 March 31 of the 34 merchant ships arrived safely in Clyde. \nThis mission earned HMS Cavalier a well deserved “Battle Honour” Arctic 44. \nHMS Cavalier is now preserved at the National Destroyer Memorial in The Historic Dockyard, Chatham.",
     "map": "",
     "location": {
-      "lat": "",
-      "lng": ""
+      "lat": "52.729458",
+      "lng": "-1.728661"
     }
   },
   {
@@ -1921,8 +1909,8 @@
     "description": "HMS SHEFFIELD \nHMS Sheffield was a Type 42 guided missile destroyer and the second Royal Navy ship to be named after the city of Sheffield in Yorkshire. Commissioned on 16 February 1975 the Sheffield was part of the Task Force 317 sent to the Falkland Islands. \nOn May 4 1982, the 4,100-ton destroyer was struck by a missile fired from an Argentine fighter bomber as it carried out a scouting mission off the Falklands - which Argentina had invaded and claimed as their own weeks earlier. \nThe ship caught fire when a French-made Exocet missile hit HMS Sheffield and went deep into its control room. \nThe blaze caused a poisonous smoke to be released and most of the crew abandoned ship. \nThe “Shiny Sheff” \nThe Shiny Sheff memorial honours the service of all those who served in the three ships of that name over 65 years and the 20 members of the Ship’s Company killed in action during the Falklands Conflict in 1982: \nThe Cruiser (C24) 1937-67. World War 11 service \nThe Destroyer (D80) 1970-82. Gulf and Falklands conflict \nThe Frigate (F96) 1986-2002. Gulf. Awarded the Wilkinson Sword of Peace \nIn 2020 with the 40th anniversary of the Falklands Conflict rapidly approaching the HMS SHEFFIELD Association agreed that a memorial should be placed at the National Memorial Arboretum to honour all those who served in the three ships of that name and that there should also be a place of remembrance for the 20 men lost when the second vessel of the name was damaged in action on the 4th of May 1982. In the spring of 2021, the artist Peter Naylor was commissioned to design a memorial which reflected all three ships and their close association with the city of Sheffield and its industries. The City of Sheffield Master Cutler was approached for assistance in making the memorial. The fabrication of the memorial was led by William Cook steel casting and supported by Tinsley Bridge, Outokumpu, and Charles Day Steels. The Association are extremely proud that their memorial was made of stainless steel by skilled craftsmen in the city of Sheffield. The memorial consists of a stainless-steel bow of a warship set in a stainless steel base, within in the deconstructed cruiser’s crest. The circular crest on the top of the memorial represents both destroyer and frigate. \nMaterials Used \nSheffield Stainless steel cast and sheet \nThe memorial was constructed in January to April 2022 with ground-breaking in April 2022, it was unveiled by Mrs Penny Salt, widow of Captain Sam Salt, the Commanding Officer of the Destroyer HMS SHEFFIELD during the Falklands conflict. Mrs Salt consecrated the memorial on the 4th of May 2022 with a bottle of sea water collected in the South Atlantic by HMS Forth. \nSymbolism \nPositioned close to the South Atlantic Memorial and the corner of the Naval Field the memorial links the South Atlantic conflict with the large part played in that conflict by the Royal Navy and supporting Maritime services. \nThe design of the memorial and its manufacture in stainless steel proudly links all three ships with the City of Sheffield and its world-famous steel industries. When they were constructed all three warships were presented with ship’s bells and fittings of stainless steel made in Sheffield. \nThe memorial represents a warship at speed as it cuts through a dull grey sea during operations. The sea is set in the deconstructed pentagonal crest of the cruiser which links the second world war generation of sailors to the modern era. \nThe warship crest on the top of the memorial takes the sheaf of arrows from the city of Sheffield Coat of Arms. The sheaf of arrows is a wordplay on the river Sheaf which runs through Sheffield and is also a reference to the iron and steel making heritage of the city. ",
     "map": "",
     "location": {
-      "lat": "",
-      "lng": ""
+      "lat": "52.728550",
+      "lng": "-1.728853"
     }
   },
   {
@@ -2046,7 +2034,7 @@
     "lng": -1.7299805555555556
   },
   {
-    "name": "Iraq / Afghanistan Willows",
+    "name": "Iraq & Afghanistan Willows",
     "zone": "14",
     "description": "",
     "map": "",
@@ -2147,8 +2135,8 @@
     "description": "Kingfisher Wood \nThe Kingfisher Wood is a mixed woodland of individually dedicated native trees. It is named after the kingfishers seen flying along the nearby riverbank.",
     "map": "",
     "location": {
-      "lat": "",
-      "lng": ""
+      "lat": "52.726125",
+      "lng": "-1.724475"
     }
   },
   {
@@ -2164,13 +2152,13 @@
     "lng": -1.7332805555555557
   },
   {
-    "name": "L/Cpl Kevin 'Dinger' Bell Memorial",
+    "name": "LCpl Kevin 'Dinger' Bell Memorial",
     "zone": "15",
     "description": "L Cpl Kevin “Dinger” Bell REME \nA small memorial to the right of the nearby Royal Electrical and Mechanical Engineers (REME) Memorial remembers Lance Corporal Kevin ‘Dinger’ Bell from REME who was killed in Bosnia. It originally marked the spot in Bosnia where he died but was brought back to the United Kingdom when troops pulled out.",
     "map": "",
     "location": {
-      "lat": "",
-      "lng": ""
+      "lat": "52.726033",
+      "lng": "-1.725850"
     }
   },
   {
@@ -2179,8 +2167,8 @@
     "description": "Ladysmith Memorial \nThe Ladysmith Memorial was commissioned on 21 October 2012 and is dedicated to all “Field Gunners” from the Boer War through to the present day. \nLadysmith, South Africa, 15 October 1899 - under heavy fire, General Sir George White defending the town of Ladysmith, requested a few guns in support from the Naval contingent in Simonstown. The request found Captain Percy Scott RN in Simons Bay. His crew had, in 24 hours, prepared two 4.7-inch guns and four 12-pounders for land warfare. Under the command of Captain Hedworth Lambton RN, the Naval Brigade set out over land for Ladysmith. Crews from HMS Powerful and HMS terrible were formed for this task. \nAfter oxen failed to haul the guns across the rough terrain, only one option was left. The Naval Brigade (Bluejackets) had to haul the guns by muscle power themselves and still managed to arrive within 48 hours. Soon after their arrival at Ladysmith the siege of 119 days began. More men from the ships set out with more guns of both 4.7” and 12-pounders with a six in monster called “ROMA”. \nThe Determination, Teamwork and Dedication of the Bluejackets captured the public’s hearts back home and, on the ships, return the Naval Brigades were to be paraded. This was so popular that the following year a tournament was staged at the 1900 Military Tournament at the Royal Agricultural Hall in Islington, London. The Field Gun Competition was born. \nLater the Royal Tournament moved to Olympia and then to Earl’s Court. Earl’s Court became the home to the Command Field Gun Competition with crews from the ports of Chatham (CHATS), Devonport (GUZZ), Portsmouth (POMPEY) and Fleet Air Arm (Air), who joined much later in 1947. In 1919 a set of rules was agreed and has fundamentally remained the same until the demise in 1999.",
     "map": "",
     "location": {
-      "lat": "",
-      "lng": ""
+      "lat": "52.728517",
+      "lng": "-1.728861"
     }
   },
   {
@@ -2189,8 +2177,8 @@
     "description": "SIR LEONARD CHESHIRE AMPHITHEATRE \nGroup Captain Sir Leonard Cheshire was a WW2 ace and was awarded the VC, OM, DSO & two Bars, DFC and Mentioned in Despatches. \nHe was Group Captain when he joined 617 Squadron, famously known as the Dambusters, as its Commander \nAfter the war he was heavily involved in charity work and set up a charity with his wife Sue Ryder, called The Ryder-Cheshire Foundation. \nSir Leonard was instrumental in starting a germ of an idea for the NMA. A conversation took place in the late 80's between Sir Leonard and Commander David Childs and both were concerned that we, as a country were beginning to forget to remember the sacrifice that so many made for us. \nFrom that conversation came a germ of an idea for some kind of a National Centre of Remembrance, which David Childs saw through to fruition.",
     "map": "",
     "location": {
-      "lat": "",
-      "lng": ""
+      "lat": "52.728297",
+      "lng": "-1.730578"
     }
   },
   {
@@ -2223,8 +2211,8 @@
     "description": "Lichfield Wood \nThe mix of native trees in the City of Lichfield Wood includes species relating to districts of the city such as The Cherry Orchard. Many of the trees have been sponsored by local groups and individuals associated with the Lichfield District area.",
     "map": "",
     "location": {
-      "lat": "",
-      "lng": ""
+      "lat": "52.725436",
+      "lng": "-1.726581"
     }
   },
   {
@@ -2365,8 +2353,8 @@
     "description": "Master Mariners Sundial \nThe 20 foot (six metre) diameter ‘human’ sundial was designed by Christopher St J H Daniel and placed in situ by Mark Frith in Dunhouse stone and blue Elterwater slate. \nThe dial represents an oval outline chart of the world and the shadow of a person standing on the date scale indicates Greenwich Mean Time (GMT) on the surrounding numbers. So, to get the correct and very accurate time, stand on the appropriate month, add seven minutes (the difference in time between GMT and the Alrewas time) and in the summer add the extra hour. \nIt was presented by the Honourable Company of Master Mariners and dedicated in 2001 to commemorate the loss of 2,535 ships of the Merchant Navy and the 32,000 merchant seamen who gave their lives in the Second World War.",
     "map": "",
     "location": {
-      "lat": "",
-      "lng": ""
+      "lat": "52.729539",
+      "lng": "-1.729167"
     }
   },
   {
@@ -2375,8 +2363,8 @@
     "description": "MEDITERRANEAN CAMPAIGNS OF WW2 GARDEN \nThe Mediterranean Grove is laid out geographically, at the far side we have the North African coastline where we remember the 1st and 8th Armies. A stone memorial for the famous Rats of Tobruk, who endured one of the longest sieges in British and Commonwealth military history. Palestine, Malta, Cyprus, Palestinian Police and Monte Cassino. Italy giving the boot to Sicily is planted with Black Pines, each one linked to a major battle of the Italian Campaign.",
     "map": "",
     "location": {
-      "lat": "",
-      "lng": ""
+      "lat": "52.726483",
+      "lng": "-1.730336"
     }
   },
   {
@@ -2433,8 +2421,8 @@
     "description": "Mercian Wood \nMercian Wood is a mixed woodland of native broadleaf tree species containing individual dedications.",
     "map": "",
     "location": {
-      "lat": "",
-      "lng": ""
+      "lat": "52.725297",
+      "lng": "-1.726706"
     }
   },
   {
@@ -2491,8 +2479,8 @@
     "description": "Millennium Wood \nMillennium Wood is a woodland of native broadleaf tree species including oak, ash and field maple. The trees are individually sponsored with remembrance plaques and labels.",
     "map": "",
     "location": {
-      "lat": "",
-      "lng": ""
+      "lat": "52.731572",
+      "lng": "-1.726628"
     }
   },
   {
@@ -2547,8 +2535,8 @@
     "description": "National Association of Memorial Masons \nThe Association was formed in 1907 to promote excellence and craftsmanship within the memorial masonry trade. \nThrough its strict codes of business practice and working practice, the National Association of Memorial Masons (NAMM) demands the very highest standards of its members. \nThe NAMM memorial ‘exhibition’ was created to provide a permanent marker to celebrate 100 years of service to both its members and bereaved families. It is a timeline of memorialisation from Stone Age to the present day. \nThe garden also aims to encourage children to understand how history, remembrance and heritage are linked to memorialisation. \nThe ‘exhibition’, designed as a Centenary Garden, was officially opened by HRH The Princess Royal on \n20 May 2008.",
     "map": "",
     "location": {
-      "lat": "",
-      "lng": ""
+      "lat": "52.729756",
+      "lng": "-1.730508"
     }
   },
   {
@@ -2605,8 +2593,8 @@
     "description": "The Navy Wood consists of mixed native trees individually sponsored and dedicated to those who have served in the Royal Navy and Merchant Navy.",
     "map": "",
     "location": {
-      "lat": "",
-      "lng": ""
+      "lat": "52.725953",
+      "lng": "-1.727431"
     }
   },
   {
@@ -2824,7 +2812,7 @@
     "lng": -1.7266861111111111
   },
   {
-    "name": "Operation Market Garden / Market Garden Veterans' Association Memorial",
+    "name": "Operation Market Garden Market Garden Veterans' Association Memorial",
     "zone": "7",
     "description": "Market Garden Grove\nThese are the trees either side of Yeomanry Avenue near the Market Garden Memorial. They are dedicated to various Market Garden Veterans Associations. Technically this is not a memorial..",
     "map": "",
@@ -3163,8 +3151,8 @@
     "description": "RAC Future Forests \nFuture Forests is a scheme that measures emissions of carbon dioxide, the greenhouse gas which scientists think is responsible for global warming. The scheme helps to offset this pollution by planting natural forests and woodlands and investing in renewable energy. \nThe Royal Automobile Club (RAC) Future Forests wood was sponsored by the RAC as part of the Future Forests scheme and as a tribute to their employees who have now retired.",
     "map": "",
     "location": {
-      "lat": "",
-      "lng": ""
+      "lat": "52.732475",
+      "lng": "-1.726753"
     }
   },
   {
@@ -3689,8 +3677,8 @@
     "description": "Royal British Legion (RBL) Poppy Field \nIn June, the wildflower display with the distinguishable poppy is simply stunning. The 200-metre meadow is lined with 44 tall English oaks ‘Quercus robur’, intended, as they grow to provide a dramatic tree-lined vista.",
     "map": "",
     "location": {
-      "lat": "",
-      "lng": ""
+      "lat": "52.731464",
+      "lng": "-1.724994"
     }
   },
   {
@@ -3867,8 +3855,8 @@
     "description": "Royal Mail Lines \nThe memorial comprises a commemorative plaque and a line of trees dedicated to the ships of the Royal Mail Lines which were sunk or destroyed during the Second World War and to all who, as a result of enemy action gave their lives whilst serving aboard them. The memorial was donated by the Royal Mail Association.",
     "map": "",
     "location": {
-      "lat": "",
-      "lng": ""
+      "lat": "52.729642",
+      "lng": "-1.728544"
     }
   },
   {
@@ -3925,8 +3913,8 @@
     "description": "Royal Naval Association – Uttoxeter \nThe memorial plaque is dedicated to all members of The Royal Navy, The Royal Marines and The Merchant Navy who have served in H.M. Forces from the Uttoxeter and Districts of Staffordshire.",
     "map": "",
     "location": {
-      "lat": "",
-      "lng": ""
+      "lat": "52.729992",
+      "lng": "-1.728111"
     }
   },
   {
@@ -3952,16 +3940,6 @@
     },
     "lat": 52.72951388888889,
     "lng": -1.727288888888889
-  },
-  {
-    "name": "Royal Naval Review",
-    "zone": "",
-    "description": "",
-    "map": "",
-    "location": {
-      "lat": "",
-      "lng": ""
-    }
   },
   {
     "name": "Royal Navy Artificers Memorial",
@@ -4171,18 +4149,8 @@
     "description": "Second Tactical Air Force \nThe memorial is dedicated to all who served with 137 and 139 Wings RAF 2nd T.A.F. / B.A.F.O (2nd Tactical Air Force / British Air Force of Operation). \nThe memorial is located within the RAF Memorial Grove near Millennium Avenue.",
     "map": "",
     "location": {
-      "lat": "",
-      "lng": ""
-    }
-  },
-  {
-    "name": "Sensory Play Garden",
-    "zone": "9",
-    "description": "CHILDRENS SENSORY GARDEN \nEven the Children's garden has symbolism within it. You can see a circle of red posts for jumping and balancing on with a central black post symbolising a poppy. The boards under the climbing frame symbolise the duck boards used in the trenches in WWI, and the large circular climbing net represents a globe and hope for world peace. \nThe large wooden figures at the entrance are characters from Wind in the Willows. They were carved by the Essex Woodcarvers. \nDogs are not allowed into the garden",
-    "map": "",
-    "location": {
-      "lat": "",
-      "lng": ""
+      "lat": "52.728397",
+      "lng": "-1.728456"
     }
   },
   {
@@ -4273,8 +4241,8 @@
     "description": "THE SIKH MEMORIAL \nThe bust on our right commemorates the 124,245 Sikh soldiers who fought with the British forces during the 4 years of WW1. \nAlthough only about 1% of the Indian population at that time were Sikhs, they made up about 20% of the British Indian Army and were highly regarded for their fighting abilities. \nSikhs also fought alongside the Allies in WW2 of course. \nThe medals are - 8-pointed star is the Indian Order of Merit; then The 1914 Star; The British War Medal; The Victory Medal. The last 3 came to be known as Pip, Squeak and Wilfred after the newspaper cartoon characters",
     "map": "",
     "location": {
-      "lat": "",
-      "lng": ""
+      "lat": "52.729644",
+      "lng": "-1.732194"
     }
   },
   {
@@ -4355,8 +4323,8 @@
     "description": "Sergeant Phil Curass \nThis memorial is dedicated to Staff Sergeant Philip Preston Curass QGM who died on active service in \nThe Falklands conflict on 19 May 1982. It comprises a modern stainless steel sundial set on a piece of \nstone from Old Radnor Quarry. \nThe sundial is inscribed with the following dedication: \nPhil joined D Squadron 22 SAS in 1972 from the Royal Army Medical Corps. He completed \noperational tours in Dhofar (Oman) and in Northern Ireland. In 1979 he was awarded the Queen’s \nGallantry Medal. During the Falklands War he helped liberate South Georgia and raided Pebble \nIsland to destroy enemy aircraft. Phil lost his life during a ship to ship transfer prior to carrying out a \ndiversionary raid near Goose Green. \nHusband, Father, Brother, Son and Soldier. dearly loved and sorely missed by his family. \n“There are moments when I wish I could roll back the clock and take all the sadness away, but I have \nthe feeling that if I did, the joy would be gone as well.” Nicholas Sparks \nLost in the South Atlantic 19th May 1982. \nOn the top right of the sundial an arrow points in the direction of Pebble Island (some 7934 miles \nfrom this location).",
     "map": "",
     "location": {
-      "lat": "",
-      "lng": ""
+      "lat": "52.731900",
+      "lng": "-1.721386"
     }
   },
   {
@@ -4384,16 +4352,6 @@
     "lng": -1.7303722222222224
   },
   {
-    "name": "Stick Man Sculpture",
-    "zone": "",
-    "description": "no information available",
-    "map": "",
-    "location": {
-      "lat": "",
-      "lng": ""
-    }
-  },
-  {
     "name": "Stillbirth and Neonatal Death Charity Memorial (SANDS)",
     "zone": "9",
     "description": "THE SANDS GARDEN \nStillbirth and Neonatal Death Charity \nThe aims of the SANDS organisation aim is to save babies lives and to support bereaved families \nSANDS was founded in 1978 and aims to support anyone affected by the death of a baby, providing services to parents and their families, promoting changes in antenatal practice and funding research that could help to reduce infant mortality rates. \nThe garden has been designed to reflect the emotional journey that many parents face when coming to terms with their bereavement, starting with harsh foliage which becomes progressively softer as you move along the path. \nIt is a very quiet and tranquil place for people to remember. \nAt the heart of the garden is the Portland stone sculpture of a baby and the SANDS logo which represents an eye and a glass teardrop set into the ground. ",
@@ -4411,8 +4369,8 @@
     "description": "Stirling X9-Y, 299 Squadron Memorial Map\n299 Squadron (Special Operations Service) Royal Air Force WW2\nMemorial plaque is on a stone situated in the Special Operation Garden close to the Vera Atkins\nmemorial.\n299 Squadron RAF Memorial - Special Operations Flights – Stirling X9-Y (Worry!).\nRemarkably these lads, listed below, survived the war as well as all their hazardous missions: PO Bert\nHoran, WO Jack Fry, WO Basil Jaggard, WO Reg Lowmanbaker, WO Maurice Davis & WO Gus Tyers.\nThis crew also participated in Operation Market Garden at Arnhem (September 1944) and Operation\nVarsity (The Rhine Crossing) on 19th March 1945.\nThis memorial was contributed by WO Maurice Davis in 2006.\nThe 299 Squadron Motto 'Par Nobile Fratrum' (A noble group of brothers) symbolises the close\nassociation with the Army Airborne Forces.\nBehind the memorial is a Red Oak Tree which was grown from an acorn found in Oosterbeek\nCemetery!",
     "map": "",
     "location": {
-      "lat": "",
-      "lng": ""
+      "lat": "52.731256",
+      "lng": "-1.722953"
     }
   },
   {
@@ -4505,8 +4463,8 @@
     "description": "The Fisgard Association Memorial \nThe Fisgard Association Memorial and nearby tree are dedicated to the former Royal Navy artificer apprentices, most of whom served all or part of their training at the Royal Navy Artificer Training Establishment, HMS Fisgard or as part of the Fisgard Squadron in HMS Raleigh. \nThe original HMS Fisgard was a 46 gun Leda class frigate which was used as a training establishment between 1848 and 1872. A second Fisgard was established in hulks at Portsmouth in 1904 and went through several incarnations. The establishment was moved to Chatham in 1930 and in July 1932 moved ashore. In October 1940 the establishment moved to Torpoint in Cornwall, near Devonport Naval Base. The base was closed on 21st October 1983 when its activities were absorbed into HMS Raleigh",
     "map": "",
     "location": {
-      "lat": "",
-      "lng": ""
+      "lat": "52.729392",
+      "lng": "-1.728631"
     }
   },
   {
@@ -4743,8 +4701,8 @@
     "description": "ULSTER ASH GROVE \nThe grove of ash trees has been planted as a living tribute to those members of the RUC, the RUC Reserve, the Armed Forces and other organisations who lost their lives during the period of ‘the troubles’ between 1969 - 2001. \nMany of the names appearing on dedication plaques in the Grove will also be found engraved on the walls of our Armed Forces Memorial. \nFurther inside the Grove is a small memorial for the 29 Prison Officers murdered in Ulster during that time.",
     "map": "",
     "location": {
-      "lat": "",
-      "lng": ""
+      "lat": "52.730389",
+      "lng": "-1.725317"
     }
   },
   {
@@ -4861,8 +4819,8 @@
     "description": "War Widows Association Memorial \nThe War Widows Memorial is located at the front of the War Widows Wood. It includes the emblem of the War Widows Association of Great Britain and a dedication to those who died in service of their country. \nThe woodland is a mixture of individually dedicated native trees sponsored by war widows in memory of their husbands who never returned from conflict. \nThe War Widows Association of Great Britain was founded in 1971. It campaigns to improve conditions for War Widows, War Widowers, partners and dependants who lost their lives serving in the Armed Forces.",
     "map": "",
     "location": {
-      "lat": "",
-      "lng": ""
+      "lat": "52.726608",
+      "lng": "-1.730108"
     }
   },
   {
@@ -4890,16 +4848,6 @@
     "lng": -1.7301083333333334
   },
   {
-    "name": "Watersmeet",
-    "zone": "",
-    "description": "no information available",
-    "map": "",
-    "location": {
-      "lat": "",
-      "lng": ""
-    }
-  },
-  {
     "name": "Western Front Association Memorial",
     "zone": "1",
     "description": "The Western Front Association Memorial\nOn the side of the memorial shown is the second verse of ‘For the Fallen’ used on many occasions of remembrance. On the reverse are the two final lines from the poem ‘Aftermath’ by Siegfried Sassoon.",
@@ -4913,7 +4861,7 @@
   },
   {
     "name": "Women's Auxiliary Air Force (WAAF) Memorial",
-    "zone": "",
+    "zone": "16",
     "description": "WOMANS RAF \nIt existed in two separate incarnations: the Women's Royal Air Force from 1918 to 1920 and the Women's Royal Air Force from 1949 to 1994. On 1 February 1949, the name of the First World War organisation was revived when the Women's Auxiliary Air Force, which had been founded in 1939, was re-established on a regular footing as the Women's Royal Air Force. The RAF and WRAF merged in 1994",
     "map": "",
     "location": {
@@ -5018,13 +4966,13 @@
     "lng": -1.7293
   },
   {
-    "name": "Y Group Memorial",
-    "zone": "",
-    "description": "",
+    "name": "Operation Chariot",
+    "zone": "7",
+    "description": "After the Bismarck had sunk HMS Hood on 24th May 1941 she was hunted down and destroyed by elements of the Royal Navy but, when initially damaged, had signalled her intention to make for St Nazaire, the only dock on the western seaboard of Europe that could accommodate her. Realising that such a port could also be a haven for the Tirpitz, should she leave Norwegian waters for the Atlantic, planners set their minds to destroying the port facilities, in particular the Normandie Dock. \n On 26th March 1942, a force consisting of HMS Campbeltown (a converted former US destroyer) and eighteen small launches of coastal forces, twelve of themcarrying commandos, set sail from Falmouth on the 400-mile passage to St. Nazaire. The destroyer carried five tons of explosives in her bows and was to ram the caisson of the Dock, the explosives timed to detonate some hours later. The destroyer and the motor launches carried commandos who would storm ashore and disable many of the port facilities. \n The launches, being wooden and carrying auxiliary petrol tanks on deck, suffered severely and easily caught fire, but the Campbeltown was successfully lodged on the caisson at 01.34 on the 28th and blew up later that morning, putting the Normandie Dock out of action for the remainder of the war. The Tirpitz never came out into the Atlantic and the success of the Raid was a huge boost to morale at home when most of the news was bad. More importantly, it was the first sign of hope for the French in their belief that they would one day be liberated. \n Of the 625 personnel involved 169 were lost, mainly in the burning waters of the estuary, 101 of them having no known grave. Over 200 were made prisoners of war but 239 were able to return to England. Among the 140 decorations awarded were five Victoria Crosses. \n The Raid was a truly joint operation. The Royal Navy provided the essential core, the commandos came from the Army and during the four days of the operation the Royal Air Force lent their support by sweeping the Bay of Biscay, searching for survivors and mounting a diversionary bombing raid immediately prior to the landings. They lost seven planes and nine aircrew and three were made prisoners of war.",
     "map": "",
     "location": {
-      "lat": "",
-      "lng": ""
+      "lat": "52.7291356480809",
+      "lng": "-1.730442812044231"
     }
   },
   {
@@ -5057,8 +5005,8 @@
     "description": "Yeomanry Avenue \nThis is an avenue of 48 large and small leaved lime trees where each tree is dedicated to a Yeomanry Unit. \nIn the 1790s, the threat of invasion of the Kingdom of Great Britain was high after the French Revolution and the rise of Napoleon Bonaparte. In order to improve the country’s defences, volunteer regiments were raised in many counties from yeomen. \nThe word ‘yeoman’ refers to small farmers who owned the land they cultivated, but the officers were drawn from the nobility and many of the men were their tenants. Yeomen were not obliged to serve overseas without their individual consent. \nDuring the first half of the 19th century, Yeomanry Regiments were used extensively in support of the civil authority to suppress riots and civil disturbances (including the Peterloo Massacre), but as police forces took over this role, the Yeomanry concentrated on local defence. During the Boer War, companies of The Imperial Yeomanry were formed from volunteers from the Yeomanry to serve overseas. In 1908, the Yeomanry became part of the Territorial Army.",
     "map": "",
     "location": {
-      "lat": "",
-      "lng": ""
+      "lat": "52.728278",
+      "lng": "-1.729225"
     }
   },
   {
@@ -5156,13 +5104,6 @@
     },
     "lat": 52.72797777777778,
     "lng": -1.7306111111111113
-  },
-  {
-    "name": "British Limbless Ex-Service Men’s Association (BLESMA)",
-    "zone": "9",
-    "description": "BLESMA\nBLESMA stands for British Limbless Ex-Service Men’s Association \nBLESMA was formed in 1932 \nBELSMA works to assist those who have lost limbs as a result of service in any branch of Her Majesty's Armed Forces. \nThe garden is planted mostly with fruit trees which are kept purposely at a low height to allow easy access for those in wheelchairs both to smell the blossom in spring and harvest the fruit in autumn. \nAn apple or pear, of course, does not need to be peeled for eating (requiring two hands) \nThe circular benches do not have any arm rests. A service person may have lost their arms.",
-    "map": "",
-    "location": {}
   },
   {
     "name": "Combined Cadet Force",
@@ -5307,5 +5248,16 @@
     },
     "lat": 52.726622222222225,
     "lng": -1.7253416666666668
+  },
+  {
+    "name": "RAF Trade Group 11",
+    "zone": "14",
+    "description": "The RAF Trade Group 11 Memorial was installed on the RAF wing this week near the 216 Sqn Memorial.\n\nHere is some information about the Memorial:\n\nThe RAF Trade Group 11 Association Memorial is dedicated to all past and present Royal Air Force personnel, who proudly wore the ‘Sparks’ Badge on their arms and served across the world in support of maritime, land and air operations. Working in silence at the morse key or in noisy conditions in large relay centres or on tactical deployments, they maintained the vital communications that carried messages across the continents.\n\nMaterials Used - Blue Granite sourced from India with gilt inscriptions.\n\nName of Designers - Young Johnson, Monumental Masons.\n\nAge of Memorial - The Association launched the memorial project in March 2024 with the need to raise funds, select a designer and seek permission to erect the memorial at the Arboretum. The memorial was completed in February 2026, and a dedication ceremony will be held on 21 March 2026, when Air Commodore John Wariner will unveil the memorial.\n\nSymbolism - The main symbolisms on the memorial are the RAF Badge and Sparks badge which has a rich history. The Royal Air Force (RAF) Wireless Operators badge dates back to its initial authorisation by Air Ministry Order 1066 on 18 September 1918. This badge was the first trade badge to be officially recognised by the RAF. Originally, it featured red worsted embroidery and was worn by signallers to signify their role and authority to communicate directly with officers, bypassing the usual chain of command.\n\nThe design was later updated to a fist clutching six lightning bolts, embroidered in light blue on a dark blue or black background. It became known as the “Sparks” badge. In 1951, authority was given for it to be worn by airmen and airwomen of all ground signals and radio engineering trade groups.\n\nTrade Group 11 History and Formation of TG11 Association:\n\n1952 saw the reorganisation of the Royal Air Force trade groups, including Trade Group 11 for telecommunications personnel. Due to the rapid development of telecoms technology, the need for dedicated communications centres declined and Trade Group 11 ceased in March 2005. Whilst there remains a role for specialist units such as mobile tactical comms personnel, they were morphed into Trade Group 4.\n\nThe Trade Group 11 Association was founded in 2008.",
+    "location": {
+      "lat": 52.72802,
+      "lng": -1.72852
+    },
+    "lat": 52.72802,
+    "lng": -1.72852
   }
 ]

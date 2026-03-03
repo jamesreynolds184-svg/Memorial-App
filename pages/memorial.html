@@ -9,32 +9,57 @@
         href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
         integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
         crossorigin="">
+  <style>
+    #mem-name {
+      padding-top: max(20px, env(safe-area-inset-top));
+      margin-top: 0;
+    }
+  </style>
 </head>
 <body>
   <button id="burger-menu" class="burger-button" aria-label="Open menu">☰</button>
 
+  <!-- Global search button (before or after burger menu) -->
+  <button id="global-search-btn" class="search-toggle" aria-label="Search memorials">🔍</button>
+
   <nav id="menu-items" aria-label="Main">
     <a href="../home.html">Home</a>
     <a href="map.html">Map</a>
-    <a href="memorials.html">View all memorials</a>
-    <a href="search-by-zone.html">Search by zone</a>
+    <a href="memorials.html">Find a Memorial</a>
+    <a href="afm-list.html">Armed Forces Memorial</a>
+    <a href="search-by-zone.html">Search by Zone</a>
     <a href="nearby-memorials.html">Nearby Memorials</a>
     <a href="saved.html">Saved</a>
   </nav>
   <div id="menu-overlay"></div>
 
-  <main class="container" id="memorial-detail">
-    <!-- Back button on its own line -->
-    <div class="mem-back-line">
-      <button id="back-btn" class="btn btn-plain" type="button" onclick="location.href='memorials.html'">Back</button>
+  <!-- Global search overlay (after menu overlay) -->
+  <div id="global-search-panel" aria-hidden="true">
+    <div class="gsp-inner">
+      <button id="gsp-close" class="gsp-close" aria-label="Close search">✕</button>
+      <input id="global-search-input"
+             type="text"
+             placeholder="Search memorial titles..."
+             autocomplete="off"
+             aria-autocomplete="list"
+             aria-expanded="false">
+      <label class="gsp-desc-label">
+        <input type="checkbox" id="global-search-desc-checkbox">
+        Search description
+      </label>
+      <ul id="global-search-results" role="listbox"></ul>
     </div>
+  </div>
 
-    <div class="mem-detail-header">
-      <h1 id="mem-name" class="mem-title"></h1>
-      <div class="mem-actions">
-        <button id="read-aloud-btn" class="btn btn-accent" type="button" aria-pressed="false">Read aloud</button>
-        <button id="see-on-map-btn" class="btn btn-primary" type="button" style="display:none;">Find on map</button>
-      </div>
+  <main class="container" id="memorial-detail">
+    <!-- Title at top -->
+    <h1 id="mem-name" class="mem-title"></h1>
+
+    <!-- Action buttons including back button -->
+    <div class="mem-detail-actions">
+      <button id="back-btn" class="btn btn-plain" type="button">← Back</button>
+      <button id="read-aloud-btn" class="btn btn-accent" type="button" aria-pressed="false">Read aloud</button>
+      <button id="see-on-map-btn" class="btn btn-primary" type="button" style="display:none;">Find on map</button>
     </div>
 
     <p class="memorial-zone" id="mem-zone"></p>
@@ -52,5 +77,8 @@
           src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
           integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
           crossorigin=""></script>
+  <script src="js/gestures.js"></script>
+  <script src="../js/global-search.js"></script>
+  <script src="../js/ios-menu.js"></script>
 </body>
 </html>

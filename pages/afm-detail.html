@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Armed Forces Memorial - Person Detail</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <style>
+    #afm-name {
+      padding-top: max(20px, env(safe-area-inset-top));
+      margin-top: 0;
+    }
+    
+    .afm-detail-section {
+      background: rgba(255, 255, 255, 0.95);
+      padding: 1.5rem;
+      border-radius: 8px;
+      margin-bottom: 1rem;
+    }
+    
+    .afm-detail-row {
+      display: flex;
+      padding: 0.75rem 0;
+      border-bottom: 1px solid #e9ecef;
+    }
+    
+    .afm-detail-row:last-child {
+      border-bottom: none;
+    }
+    
+    .afm-detail-label {
+      font-weight: 600;
+      color: #495057;
+      min-width: 150px;
+    }
+    
+    .afm-detail-value {
+      color: #212529;
+      flex: 1;
+    }
+    
+    .panel-location-badge {
+      display: inline-block;
+      padding: 0.3rem 0.8rem;
+      border-radius: 4px;
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
+    
+    .panel-location-badge.top {
+      background: #d4edda;
+      color: #155724;
+    }
+    
+    .panel-location-badge.middle {
+      background: #fff3cd;
+      color: #856404;
+    }
+    
+    .panel-location-badge.bottom {
+      background: #cce5ff;
+      color: #004085;
+    }
+    
+    .service-badge-large {
+      display: inline-block;
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      font-size: 1rem;
+      font-weight: 600;
+      margin-right: 1rem;
+    }
+    
+    .service-army {
+      background: #d1e7dd;
+      color: #0f5132;
+    }
+    
+    .service-navy {
+      background: #cfe2ff;
+      color: #084298;
+    }
+    
+    .service-raf {
+      background: #e7d6f5;
+      color: #59266e;
+    }
+  </style>
+</head>
+<body>
+  <button id="burger-menu" class="burger-button" aria-label="Open menu">☰</button>
+
+  <!-- Global search button -->
+  <button id="global-search-btn" class="search-toggle" aria-label="Search memorials">🔍</button>
+
+  <nav id="menu-items" aria-label="Main">
+    <a href="../home.html">Home</a>
+    <a href="map.html">Map</a>
+    <a href="memorials.html">Find a Memorial</a>
+    <a href="afm-list.html">Armed Forces Memorial</a>
+    <a href="search-by-zone.html">Search by Zone</a>
+    <a href="nearby-memorials.html">Nearby Memorials</a>
+    <a href="saved.html">Saved</a>
+  </nav>
+  <div id="menu-overlay"></div>
+
+  <!-- Global search overlay -->
+  <div id="global-search-panel" aria-hidden="true">
+    <div class="gsp-inner">
+      <button id="gsp-close" class="gsp-close" aria-label="Close search">✕</button>
+      <input id="global-search-input"
+             type="text"
+             placeholder="Search memorial titles..."
+             autocomplete="off"
+             aria-autocomplete="list"
+             aria-expanded="false">
+      <label class="gsp-desc-label">
+        <input type="checkbox" id="global-search-desc-checkbox">
+        Search description
+      </label>
+      <ul id="global-search-results" role="listbox"></ul>
+    </div>
+  </div>
+
+  <main class="container" id="afm-detail">
+    <!-- Title at top -->
+    <h1 id="afm-name" class="mem-title"></h1>
+
+    <!-- Action buttons -->
+    <div class="mem-detail-actions">
+      <button id="back-btn" class="btn btn-plain" type="button">← Back to List</button>
+    </div>
+
+    <div class="afm-detail-section">
+      <div class="afm-detail-row">
+        <span class="afm-detail-label">Service:</span>
+        <span class="afm-detail-value" id="afm-service"></span>
+      </div>
+      
+      <div class="afm-detail-row">
+        <span class="afm-detail-label">Year of Death:</span>
+        <span class="afm-detail-value" id="afm-year"></span>
+      </div>
+      
+      <div class="afm-detail-row">
+        <span class="afm-detail-label">Panel Number:</span>
+        <span class="afm-detail-value" id="afm-panel"></span>
+      </div>
+      
+      <div class="afm-detail-row">
+        <span class="afm-detail-label">Panel Location:</span>
+        <span class="afm-detail-value" id="afm-location"></span>
+      </div>
+    </div>
+
+    <!-- Panel Location Map -->
+    <div class="afm-detail-section" id="panel-map-section" style="display: none; padding: 0; overflow: hidden;">
+      <div id="panel-map" style="width: 100%; height: 400px;"></div>
+    </div>
+
+    <div class="afm-detail-section">
+      <h3 style="margin-top: 0;">About the Armed Forces Memorial</h3>
+      <p>The Armed Forces Memorial at the National Memorial Arboretum commemorates the men and women of the Armed Forces who have given their lives in service to their country since the Second World War.</p>
+      <p>The Memorial consists of a series of bronze panels displaying the names of over 16,000 service personnel who have died in operations or training since 1945.</p>
+    </div>
+  </main>
+
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  
+  <script src="../js/app.js"></script>
+  <script src="../js/afm-detail.js"></script>
+  <script src="../js/global-search.js"></script>
+  <script src="../js/ios-menu.js"></script>
+</body>
+</html>

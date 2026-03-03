@@ -4,9 +4,14 @@
   const input = document.getElementById('global-search-input');
   const closeBtn = document.getElementById('gsp-close');
   const list = document.getElementById('global-search-results');
+  const descCheckbox = document.getElementById('global-search-desc-checkbox');
   if (!btn || !panel || !input || !closeBtn || !list) return;
 
-  const dataPath = 'data/memorials.json';
+  // Detect if we're in pages/ subfolder or root
+  const inPagesFolder = window.location.pathname.includes('/pages/');
+  const dataPath = inPagesFolder ? '../data/memorials.json' : 'data/memorials.json';
+  const memorialPath = inPagesFolder ? 'memorial.html' : 'pages/memorial.html';
+
   let all = [];
   let loaded = false;
   let debounce;
@@ -75,8 +80,15 @@
     const query = q.trim().toLowerCase();
     list.innerHTML = '';
     if (query.length < MIN) return;
+    
+    const searchDesc = descCheckbox && descCheckbox.checked;
     const matches = all
-      .filter(m => m.name.toLowerCase().includes(query))
+      .filter(m => {
+        const nameMatch = m.name.toLowerCase().includes(query);
+        if (!searchDesc) return nameMatch;
+        const descMatch = m.description && m.description.toLowerCase().includes(query);
+        return nameMatch || descMatch;
+      })
       .slice(0, MAX_RESULTS);
 
     if (!matches.length) {
@@ -88,7 +100,7 @@
     for (const m of matches) {
       const li = document.createElement('li');
       const a = document.createElement('a');
-      a.href = `pages/memorial.html?name=${encodeURIComponent(m.name)}`;
+      a.href = `${memorialPath}?name=${encodeURIComponent(m.name)}&from=global-search`;
       a.textContent = m.name;
       a.addEventListener('click', () => closePanel());
       li.appendChild(a);
@@ -117,6 +129,15 @@
     clearTimeout(debounce);
     debounce = setTimeout(() => render(input.value), 140);
   });
+
+  // Re-render when checkbox changes
+  if (descCheckbox) {
+    descCheckbox.addEventListener('change', () => {
+      if (input.value.trim().length >= MIN) {
+        render(input.value);
+      }
+    });
+  }
 
   // Prevent iOS rubber-band behind overlay
   panel.addEventListener('touchmove', e => {

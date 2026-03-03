@@ -5,6 +5,26 @@
   const refreshBtn = document.getElementById('refresh-geo');
   if (!statusEl || !listEl) return;
 
+  // Zone name mapping
+  const ZONE_NAMES = {
+    1: 'Special Forces',
+    2: 'Poppy Fields',
+    3: 'Ash Grove',
+    4: 'Merchant Navy',
+    5: 'Naval Review',
+    6: 'Children\'s Wood',
+    7: 'Yeomanry',
+    8: 'Far East',
+    9: 'Guiford',
+    10: 'Rememberance Centre',
+    11: 'The Beat',
+    12: 'Armed Forces Memorial',
+    13: 'RAF Wing',
+    14: 'Bastion Memorial',
+    15: 'Lichfield Wood',
+    16: 'Polish Memorial'
+  };
+
   const SAVED_KEY = 'savedMemorials';
   function loadSaved() {
     try { return JSON.parse(localStorage.getItem(SAVED_KEY) || '[]'); }
@@ -65,11 +85,24 @@
       const li = document.createElement('li');
       li.className = 'memorial-row';
 
+      const leftCol = document.createElement('div');
+      leftCol.className = 'mem-info';
+
       const a = document.createElement('a');
       a.className = 'mem-link';
-      a.href = `memorial.html?name=${encodeURIComponent(m.name)}`;
+      a.href = `memorial.html?name=${encodeURIComponent(m.name)}&from=nearby`;
       a.textContent = m.name;
-      li.appendChild(a);
+      leftCol.appendChild(a);
+
+      // Add zone name if available
+      if (m.zone && ZONE_NAMES[m.zone]) {
+        const zoneName = document.createElement('div');
+        zoneName.className = 'memorial-zone-name';
+        zoneName.textContent = ZONE_NAMES[m.zone];
+        leftCol.appendChild(zoneName);
+      }
+
+      li.appendChild(leftCol);
 
       const dist = document.createElement('span');
       dist.className = 'near-distance';

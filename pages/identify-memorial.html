@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Identify Memorial</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <style>
+    .vision-panel {
+      max-width: 980px;
+      margin: 0 auto;
+      padding: 1.25rem;
+      background: rgba(255,255,255,0.9);
+      border-radius: 18px;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+    }
+    .vision-grid {
+      display: grid;
+      gap: 1rem;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      align-items: start;
+    }
+    .camera-frame {
+      background: #111;
+      border-radius: 14px;
+      overflow: hidden;
+      min-height: 220px;
+    }
+    #camera, #snapshot {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+    .status {
+      margin-top: 0.5rem;
+      font-size: 0.95rem;
+      color: #333;
+    }
+    .status.error { color: #b00020; }
+    .status.success { color: #0a6a37; }
+    .matches {
+      margin-top: 1rem;
+      padding: 0.75rem 0.85rem;
+      background: #f6f7f9;
+      border-radius: 12px;
+    }
+    .matches h2 {
+      margin: 0 0 0.5rem 0;
+      font-size: 1.05rem;
+    }
+    #match-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: grid;
+      gap: 0.5rem;
+    }
+    .match-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+      background: #fff;
+      padding: 0.65rem 0.75rem;
+      border-radius: 10px;
+      border: 1px solid #e3e6ea;
+    }
+    .match-title {
+      font-weight: 600;
+    }
+    .match-score {
+      font-size: 0.9rem;
+      color: #4b5563;
+      white-space: nowrap;
+    }
+    .btn-secondary {
+      background: #e5e7eb;
+      color: #111827;
+    }
+  </style>
+</head>
+<body>
+  <button id="burger-menu" class="burger-button" aria-label="Open menu">&#9776;</button>
+
+  <button id="global-search-btn" class="search-toggle" aria-label="Search memorials">&#128269;</button>
+
+  <nav id="menu-items" aria-label="Main">
+    <a href="../home.html">Home</a>
+    <a href="map.html">Map</a>
+    <a href="memorials.html">Find a Memorial</a>
+    <a href="afm-list.html">Armed Forces Memorial</a>
+    <a href="search-by-zone.html">Search by Zone</a>
+    <a href="nearby-memorials.html">Nearby Memorials</a>
+    <a href="saved.html">Saved</a>
+  </nav>
+  <div id="menu-overlay"></div>
+
+  <div id="global-search-panel" aria-hidden="true">
+    <div class="gsp-inner">
+      <button id="gsp-close" class="gsp-close" aria-label="Close search">&#10005;</button>
+      <input id="global-search-input"
+             type="text"
+             placeholder="Search memorial titles..."
+             autocomplete="off"
+             aria-autocomplete="list"
+             aria-expanded="false">      <label class="gsp-desc-label">
+        <input type="checkbox" id="global-search-desc-checkbox">
+        Search description
+      </label>      <ul id="global-search-results" role="listbox"></ul>
+    </div>
+  </div>
+
+  <main class="container">
+    <div class="vision-panel">
+      <h1>Identify a Memorial</h1>
+      <p>Use your camera or a photo to match a memorial image and open the detail page.</p>
+
+      <div class="vision-grid">
+        <div>
+          <div class="camera-frame">
+            <video id="camera" playsinline></video>
+          </div>
+          <div class="controls" style="margin-top:0.75rem;">
+            <button id="start-camera" class="btn btn-primary" type="button">Start camera</button>
+            <button id="capture-photo" class="btn btn-accent" type="button">Capture</button>
+            <button id="stop-camera" class="btn btn-secondary" type="button">Stop camera</button>
+          </div>
+        </div>
+        <div>
+          <div class="camera-frame" style="background:#f3f4f6;">
+            <canvas id="snapshot"></canvas>
+          </div>
+          <div class="controls" style="margin-top:0.75rem;">
+            <button id="upload-photo" class="btn btn-secondary" type="button">Upload photo</button>
+            <input id="photo-input" type="file" accept="image/*" hidden>
+          </div>
+          <div id="status" class="status">Ready to scan.</div>
+          <div id="progress" class="status"></div>
+        </div>
+      </div>
+
+      <div class="matches">
+        <h2>Suggestions</h2>
+        <ul id="match-list"></ul>
+      </div>
+      <p class="status" style="margin-top:0.75rem;">Note: Matching runs on-device using a lightweight image hash and may be approximate.</p>
+    </div>
+  </main>
+
+  <script src="../js/app.js"></script>
+  <script src="../js/identify-memorial.js"></script>
+  <script src="js/gestures.js"></script>
+  <script src="../js/global-search.js"></script>
+  <script src="../js/ios-menu.js"></script>
+</body>
+</html>

@@ -79,7 +79,7 @@
 
       const a = document.createElement('a');
       a.className = 'mem-link';
-      a.href = `memorial.html?name=${encodeURIComponent(m.name)}`;
+      a.href = `memorial.html?name=${encodeURIComponent(m.name)}&from=search-by-zone`;
       a.textContent = m.name;
 
       const btn = document.createElement('button');

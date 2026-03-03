@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Armed Forces Memorial</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <style>
+    .filter-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.7);
+      z-index: 9999;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+    }
+    
+    .filter-modal.active {
+      display: flex;
+    }
+    
+    .filter-modal-content {
+      background: white;
+      border-radius: 12px;
+      padding: 1.5rem;
+      max-width: 500px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+      position: relative;
+    }
+    
+    .filter-modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+    }
+    
+    .filter-modal-header h2 {
+      margin: 0;
+      font-size: 1.5rem;
+    }
+    
+    .close-filter-modal {
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      padding: 0.25rem 0.5rem;
+      line-height: 1;
+      color: #666;
+    }
+    
+    .close-filter-modal:hover {
+      color: #000;
+    }
+    
+    .filter-group {
+      margin-bottom: 1.25rem;
+    }
+    
+    .filter-group label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      color: #333;
+    }
+    
+    .filter-group select {
+      width: 100%;
+      padding: 0.5rem;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 1rem;
+    }
+    
+    .filter-actions {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: 1.5rem;
+    }
+    
+    .filter-actions button {
+      flex: 1;
+      padding: 0.75rem;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 1rem;
+      font-weight: 600;
+    }
+    
+    .apply-filters {
+      background: #007bff;
+      color: white;
+    }
+    
+    .apply-filters:hover {
+      background: #0056b3;
+    }
+    
+    .reset-filters {
+      background: #6c757d;
+      color: white;
+    }
+    
+    .reset-filters:hover {
+      background: #5a6268;
+    }
+    
+    .afm-stats {
+      padding: 0.5rem 1rem;
+      background: rgba(255, 255, 255, 0.9);
+      border-radius: 8px;
+      margin-bottom: 1rem;
+      text-align: center;
+      font-weight: 600;
+      flex: 0 0 auto;
+    }
+    
+    /* Pagination controls */
+    .pagination-controls {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      padding: 0.75rem 1rem;
+      background: rgba(255, 255, 255, 0.9);
+      border-radius: 8px;
+      margin-bottom: 1rem;
+      flex: 0 0 auto;
+    }
+    
+    .pagination-controls.hidden {
+      display: none;
+    }
+    
+    .pagination-btn {
+      padding: 0.5rem 1rem;
+      background: #f16e34;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.95rem;
+      font-weight: 600;
+      transition: background .2s ease;
+      min-width: 140px;
+    }
+    
+    .pagination-btn:hover:not(:disabled) {
+      background: #d65c2e;
+    }
+    
+    .pagination-btn:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+      opacity: 0.6;
+    }
+    
+    .panel-indicator {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #333;
+      padding: 0.5rem 1rem;
+      background: rgba(241, 110, 52, 0.1);
+      border-radius: 6px;
+      min-width: 100px;
+      text-align: center;
+    }
+    
+    /* Mobile responsiveness for pagination */
+    @media (max-width: 600px) {
+      .pagination-controls {
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+      
+      .pagination-btn {
+        width: 100%;
+        min-width: auto;
+      }
+      
+      .panel-indicator {
+        width: 100%;
+        order: -1;
+      }
+    }
+    
+    .filter-btn {
+      padding: 0.6rem 1.2rem;
+      background: #f16e34;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 1rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+      box-shadow: 0 2px 8px rgba(241, 110, 52, 0.28);
+      transition: background .2s ease, box-shadow .2s ease;
+    }
+    
+    .filter-btn:hover {
+      background: #d65c2e;
+      box-shadow: 0 3px 12px rgba(241, 110, 52, 0.35);
+    }
+    
+    /* Ensure AFM list scrolls properly and has box styling like memorials */
+    #afm-list {
+      flex: 1 1 auto;
+      overflow-y: auto;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      scrollbar-gutter: stable;
+    }
+    
+    #afm-list li {
+      background: rgba(255,255,255,0.55);
+      border: 1px solid rgba(0,0,0,0.07);
+      margin: 0 0 6px;
+      padding: 10px 12px;
+      border-radius: 10px;
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    
+    #afm-list li:last-child {
+      margin-bottom: 2px;
+    }
+    
+    #afm-list .mem-link {
+      text-decoration: none;
+      color: var(--text, #123);
+      font-weight: 600;
+      flex: 1;
+    }
+    
+    #afm-list .mem-link:hover {
+      text-decoration: underline;
+    }
+    
+    #afm-list::-webkit-scrollbar {
+      width: 10px;
+    }
+    
+    #afm-list::-webkit-scrollbar-track {
+      background: rgba(255,255,255,0.25);
+      border-radius: 6px;
+    }
+    
+    #afm-list::-webkit-scrollbar-thumb {
+      background: rgba(0,0,0,0.25);
+      border-radius: 6px;
+    }
+    
+    #afm-list::-webkit-scrollbar-thumb:hover {
+      background: rgba(0,0,0,0.4);
+    }
+    
+    /* Toolbar layout for search and filter button */
+    .toolbar {
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+      flex: 0 0 auto;
+      padding-bottom: 8px;
+    }
+    
+    .toolbar .search-input {
+      flex: 1;
+      margin: 0;
+    }
+    
+    .toolbar .filter-btn {
+      flex: 0 0 auto;
+      margin: 0;
+      white-space: nowrap;
+    }
+    
+    /* Title styling */
+    .memorials-panel h1 {
+      flex: 0 0 auto;
+    }
+  </style>
+</head>
+<body class="memorials-bg">
+  <button id="burger-menu" class="burger-button" aria-label="Open menu">☰</button>
+
+  <nav id="menu-items" aria-label="Main">
+    <a href="../home.html">Home</a>
+    <a href="map.html">Map</a>
+    <a href="memorials.html">Find a Memorial</a>
+    <a href="afm-list.html">Armed Forces Memorial</a>
+    <a href="search-by-zone.html">Search by Zone</a>
+    <a href="nearby-memorials.html">Nearby Memorials</a>
+    <a href="saved.html">Saved</a>
+  </nav>
+
+  <div id="menu-overlay"></div>
+
+  <!-- Global search button -->
+  <button id="global-search-btn" class="search-toggle" aria-label="Search memorials">🔍</button>
+
+  <!-- Global search overlay -->
+  <div id="global-search-panel" aria-hidden="true">
+    <div class="gsp-inner">
+      <button id="gsp-close" class="gsp-close" aria-label="Close search">✕</button>
+      <input id="global-search-input"
+             type="text"
+             placeholder="Search memorial titles..."
+             autocomplete="off"
+             aria-autocomplete="list"
+             aria-expanded="false">
+      <label class="gsp-desc-label">
+        <input type="checkbox" id="global-search-desc-checkbox">
+        Search description
+      </label>
+      <ul id="global-search-results" role="listbox"></ul>
+    </div>
+  </div>
+
+  <main class="hero">
+    <div class="memorials-panel">
+      <h1 style="text-align: center; margin-bottom: 1rem;">Armed Forces Memorial</h1>
+      
+      <div class="afm-stats" id="afm-stats">
+        Showing <span id="result-count">0</span> of <span id="total-count">0</span> names
+      </div>
+      
+      <!-- Pagination controls (hidden when filtering) -->
+      <div class="pagination-controls" id="pagination-controls">
+        <button class="pagination-btn" id="prev-panel" type="button">← Previous Panel</button>
+        <span class="panel-indicator" id="panel-indicator">Panel 1</span>
+        <button class="pagination-btn" id="next-panel" type="button">Next Panel →</button>
+      </div>
+      
+      <div class="toolbar">
+        <input id="name-search" class="search-input" type="text" placeholder="Search names...">
+        <button class="filter-btn" id="open-filters" type="button">Filters</button>
+      </div>
+      
+      <ul id="afm-list"></ul>
+    </div>
+  </main>
+  
+  <!-- Filter Modal -->
+  <div class="filter-modal" id="filter-modal">
+    <div class="filter-modal-content">
+      <div class="filter-modal-header">
+        <h2>Filter Names</h2>
+        <button class="close-filter-modal" id="close-filter-modal" aria-label="Close filters">✕</button>
+      </div>
+      
+      <div class="filter-group">
+        <label for="service-filter">Service</label>
+        <select id="service-filter">
+          <option value="">All Services</option>
+          <option value="Army">Army</option>
+          <option value="Royal Navy">Royal Navy</option>
+          <option value="Royal Air Force">Royal Air Force</option>
+        </select>
+      </div>
+      
+      <div class="filter-group">
+        <label for="year-filter">Year of Death</label>
+        <select id="year-filter">
+          <option value="">All Years</option>
+        </select>
+      </div>
+      
+      <div class="filter-group">
+        <label for="panel-filter">Panel Number</label>
+        <select id="panel-filter">
+          <option value="">All Panels</option>
+        </select>
+      </div>
+      
+      <div class="filter-actions">
+        <button class="apply-filters" id="apply-filters" type="button">Apply Filters</button>
+        <button class="reset-filters" id="reset-filters" type="button">Reset</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="../js/app.js"></script>
+  <script src="../js/afm-list.js"></script>
+  <script src="../js/global-search.js"></script>
+  <script src="../js/ios-menu.js"></script>
+</body>
+</html>

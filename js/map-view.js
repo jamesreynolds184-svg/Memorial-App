@@ -18,7 +18,6 @@
   const btnLocate = document.getElementById('map-locate');
   const btnReset  = document.getElementById('map-reset');
   const btnExpand = document.getElementById('map-expand');
-  const btnTrack  = document.getElementById('map-track'); // ADDED
   const routeInfoEl = document.getElementById('route-info'); // ADDED
 
   let map, markersLayer;
@@ -32,14 +31,14 @@
   const ZOOM_DELTA  = 1;
   const ENABLE_GEOFENCE = false;
 
-  // --- Bridging / hop config ---
-  const BRIDGE_MAX_METERS = 5;
-  const BRIDGE_SECOND_PASS_MAX = 12;
+  // --- Improved Bridging / hop config ---
+  const BRIDGE_MAX_METERS = 3;           // Reduced from 5
+  const BRIDGE_SECOND_PASS_MAX = 8;      // Reduced from 12
   let  bridgingExpanded = false;
 
-  const HOP_MAX_METERS = 25;
-  const HOP_PENALTY    = 2.0;
-  const HOP_MAX_ITER   = 12;
+  const HOP_MAX_METERS = 15;             // Reduced from 25
+  const HOP_PENALTY    = 4.0;            // Increased from 2.0
+  const HOP_MAX_ITER   = 6;              // Reduced from 12
 
   // === Debug helpers (moved near top so dbg exists before use) ===
   let debugPanelEl = null;
@@ -83,9 +82,6 @@
 
   let userMarker = null;        // ADDED
   let userAccuracyCircle = null;// ADDED
-  let watchId = null;           // ADDED
-  let lastFixTs = 0;            // ADDED
-  const STALE_MS = 20000;       // ADDED (ignore >20s old)
   const MIN_ACCURACY_SHOW = 120;// ADDED (hide circle if worse)
 
   let memorials = [];
@@ -96,21 +92,30 @@
   let routeLayer = null; // ADDED
   let lastRouteDistance = 0; // ADDED
 
+  // Add this variable near the top with other state variables
+  let selectedMarker = null;
+
   function initMap(center=[52.75,-1.72], zoom=14){
     map = L.map(mapEl, {
       center,
       zoom,
-      attributionControl:false
+      attributionControl:false,
+      scrollWheelZoom: false,
+      dragging: false,
+      touchZoom: false,
+      doubleClickZoom: false,
+      boxZoom: false,
+      keyboard: false
     });
 
     L.tileLayer(
-      'https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png',
-      { attribution: '© OpenStreetMap contributors | Tiles © CARTO', maxZoom: 20 }
+      'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+      { attribution: 'Esri, DigitalGlobe, GeoEye, Earthstar Geographics, CNES/Airbus DS, USDA, USGS, AeroGRID, IGN, and the GIS User Community', maxZoom: 19 }
     ).addTo(map);
 
     L.control.attribution({ position:'bottomright' })
       .addTo(map)
-      .addAttribution('© OpenStreetMap contributors | Tiles © CARTO');
+      .addAttribution('Esri, DigitalGlobe, GeoEye, Earthstar Geographics');
 
     markersLayer = L.layerGroup().addTo(map);
   }
@@ -249,7 +254,7 @@
       mk.bindPopup(
         `<strong>${escapeHtml(m.name)}</strong><br>` +
         (m.zone?`Zone ${escapeHtml(m.zone)}<br>`:'') +
-        `<a href="memorial.html?name=${encodeURIComponent(m.name)}">Open page</a><br>` +
+        `<a href="memorial.html?name=${encodeURIComponent(m.name)}&from=map">Open page</a><br>` +
         `<button class="route-btn" data-name="${escapeHtml(m.name)}">Route</button>`,
         { autoPan:false, closeButton:true }
       );
@@ -326,6 +331,16 @@
     if (!mk) return;
     const latlng = mk.getLatLng();
 
+    // Hide all other markers
+    selectedMarker = m.name;
+    leafletMarkers.forEach((marker, name) => {
+      if (name !== m.name) {
+        marker.setOpacity(0); // or use marker.remove() to fully remove
+      } else {
+        marker.setOpacity(1);
+      }
+    });
+
     // Temporarily remove bounds so we can center cleanly (if near edge)
     let restoreFence = false;
     if (geoFence){
@@ -335,10 +350,15 @@
     map.setView(latlng, 18, { animate:true });
     setTimeout(()=>{
       mk.openPopup();
-      if (restoreFence && geoFence){
-        map.setMaxBounds(geoFence);
-      }
     }, 350);
+  }
+
+  // Add a function to show all markers again
+  function showAllMarkers(){
+    selectedMarker = null;
+    leafletMarkers.forEach((marker) => {
+      marker.setOpacity(1);
+    });
   }
 
   function expandToggle(){
@@ -353,7 +373,7 @@
     btnLocate.disabled = true;
     navigator.geolocation.getCurrentPosition(pos=>{
       btnLocate.disabled = false;
-      handlePosition(pos, { single:true });
+      handlePosition(pos);
     }, ()=>{
       btnLocate.disabled = false;
     }, {
@@ -363,55 +383,12 @@
     });
   }
 
-  // ADDED: start / stop continuous tracking
-  function startTracking(){
-    if (!navigator.geolocation || watchId != null) return;
-    btnTrack.textContent = '⏹';
-    btnTrack.title = 'Stop live tracking';
-    btnTrack.setAttribute('aria-pressed','true');
-    watchId = navigator.geolocation.watchPosition(
-      pos => handlePosition(pos, { single:false }),
-      err => {
-        console.warn('watchPosition error', err);
-        stopTracking();
-      },
-      {
-        enableHighAccuracy:true,
-        maximumAge:1000,  // allow up to 1s cached between rapid fixes
-        timeout:15000
-      }
-    );
-  }
-  function stopTracking(){
-    if (watchId != null){
-      navigator.geolocation.clearWatch(watchId);
-      watchId = null;
-    }
-    btnTrack.textContent = '▶︎';
-    btnTrack.title = 'Start live tracking';
-    btnTrack.setAttribute('aria-pressed','false');
-  }
-
-  // ADDED: generic handler for both single + watch
-  function handlePosition(pos, meta){
+  // ADDED: generic handler for position updates
+  function handlePosition(pos){
     const { latitude, longitude, accuracy } = pos.coords;
-    const ts = pos.timestamp || Date.now();
-
-    // Ignore stale (iOS sometimes replays)
-    if (Date.now() - ts > STALE_MS){
-      console.log('Ignoring stale position', new Date(ts).toISOString());
-      return;
-    }
-    // Ignore if duplicate timestamp
-    if (ts <= lastFixTs) return;
-    lastFixTs = ts;
-
     updateUserMarker(latitude, longitude, accuracy);
-
-    if (meta.single){
-      // For single locate also pan/zoom
-      map.setView([latitude, longitude], 17, { animate:true });
-    }
+    // Pan to user location
+    map.setView([latitude, longitude], 17, { animate:true });
   }
 
   // ADDED: update / create marker + accuracy circle
@@ -459,11 +436,6 @@
   zoneEl.addEventListener('change', render);
   if (btnExpand) btnExpand.addEventListener('click', expandToggle);
   if (btnLocate) btnLocate.addEventListener('click', locateUser);
-  if (btnTrack){
-    btnTrack.addEventListener('click', () => {
-      if (watchId == null) startTracking(); else stopTracking();
-    });
-  }
 
 // Optionally auto-start tracking on page load for faster first fix (uncomment to enable):
 // startTracking();
@@ -484,12 +456,12 @@
         // Remove any prior layer
         if (footpathsLayer) { map.removeLayer(footpathsLayer); footpathsLayer = null; }
 
-        // Add GeoJSON with ONLY black polylines (no point markers)
+        // Add GeoJSON but hide the lines (opacity 0) - only used for routing data
         footpathsLayer = L.geoJSON(gj, {
           style: ()=>({
             color:'#000',
             weight:2,
-            opacity:0.9
+            opacity:0  // Hidden: only used for routing calculations
           }),
           onEachFeature: (feat, layer)=>{
             // Optional: no popup, keep clean
@@ -548,7 +520,6 @@
     if (!map) return;
     dbg('---- PLAN ROUTE (usable path heuristic) ----');
     if (routeLayer){ map.removeLayer(routeLayer); routeLayer=null; }
-    // Do NOT clear base debug node markers (we keep them); remove only prior temp hop visuals:
     debugLayers = debugLayers.filter(l=>{
       if (l && l.options && l.options.className === 'hop-edge') { try{ map.removeLayer(l);}catch(_){ } return false; }
       return true;
@@ -558,7 +529,23 @@
       dbg('No memorial location'); return;
     }
     const targetLatLng = [memorial.location.lat, memorial.location.lng];
-    const START_POINT = getActiveStartPoint(); // dynamic start
+    let START_POINT = getActiveStartPoint(); // dynamic start
+    
+    // If start point is far from any path, snap to nearest path node first
+    let nearestPathNode = null;
+    let nearestPathDist = Infinity;
+    for (const n of footpathGraph.nodes){
+      const d = haversineMeters(START_POINT, [n.lat, n.lng]);
+      if (d < nearestPathDist){
+        nearestPathDist = d;
+        nearestPathNode = [n.lat, n.lng];
+      }
+    }
+    if (nearestPathDist > 30 && nearestPathNode){
+      dbg('Start point', nearestPathDist.toFixed(0),'m from paths, using nearest node');
+      START_POINT = nearestPathNode;
+    }
+    
     dbg('Memorial:', memorial.name, 'Target:', targetLatLng);
 
     if (footpathGraph.nodes.length < 2){
@@ -589,17 +576,34 @@
     });
 
     function snapPoint(lat,lng,label){
-      let bestNode=-1, bestNodeD=Infinity;
+      const isTarget = label === 'target';
+      const targetPos = isTarget ? [lat,lng] : targetLatLng;
+      
+      let bestNode=-1, bestNodeD=Infinity, bestNodeScore=Infinity;
       for (const n of routeNodes){
         const d=haversineMeters([lat,lng],[n.lat,n.lng]);
-        if (d<bestNodeD){ bestNodeD=d; bestNode=n.id; }
+        // Prefer nodes closer to target
+        const dToTarget = isTarget ? 0 : haversineMeters([n.lat,n.lng], targetPos);
+        const score = d + (dToTarget * 0.3); // 30% weight to target proximity
+        if (score < bestNodeScore){ 
+          bestNodeScore = score;
+          bestNodeD=d; 
+          bestNode=n.id; 
+        }
       }
-      let bestSeg=null;
+      
+      let bestSeg=null, bestSegScore=Infinity;
       for (const ed of edges){
         const A=routeNodes[ed.a], B=routeNodes[ed.b];
         const proj=projectLatLngToSegment([lat,lng],[A.lat,A.lng],[B.lat,B.lng]);
         if (!proj.onSegment) continue;
-        if (!bestSeg || proj.distMeters<bestSeg.distMeters){
+        
+        // Prefer segments closer to target
+        const dToTarget = isTarget ? 0 : haversineMeters([proj.lat,proj.lng], targetPos);
+        const score = proj.distMeters + (dToTarget * 0.3);
+        
+        if (score < bestSegScore){
+          bestSegScore = score;
           bestSeg={
             a:A.id, b:B.id,
             projLat:proj.lat, projLng:proj.lng,
@@ -608,7 +612,9 @@
           };
         }
       }
-      if (bestSeg){
+      
+      // Only use segment if significantly better than node
+      if (bestSeg && bestSegScore < bestNodeScore * 0.7){
         dbg(label,'snapped segment', bestSeg.a,'-',bestSeg.b,'offset',bestSeg.distMeters.toFixed(1),'m');
         return {type:'segment',...bestSeg};
       }
@@ -666,6 +672,13 @@
     dbg('Path node count', pathIds.length);
 
     let coords = pathIds.map(id=> [routeNodes[id].lat, routeNodes[id].lng]);
+
+    // Simplify path to remove unnecessary waypoints
+    if (coords.length > 3){
+      const simplified = simplifyPath(coords, 2.0); // 2m tolerance
+      dbg('Path simplified from', coords.length, 'to', simplified.length, 'points');
+      coords = simplified;
+    }
 
     // Start hop line if needed
     const distStartHop = haversineMeters(coords[0], START_POINT);
@@ -941,19 +954,50 @@
     }
   }
 
-  // Attach popup route button listener (after map exists)
+  // Modify attachRouteButtonHandler to handle popup open/close properly
   function attachRouteButtonHandler(){
     if (!map) return;
+    
     map.on('popupopen', e=>{
-      const el = e.popup.getElement();
-      if (!el) return;
-      const btn = el.querySelector('.route-btn');
-      if (!btn) return;
-      btn.onclick = ()=>{
-        const name = btn.getAttribute('data-name');
-        const mem = memorials.find(m=>m.name === name);
-        if (mem) planRouteTo(mem);
-      };
+      const popup = e.popup;
+      
+      // Find which memorial this popup belongs to
+      let popupMemorial = null;
+      leafletMarkers.forEach((marker, name) => {
+        if (marker.getPopup() === popup) {
+          popupMemorial = name;
+        }
+      });
+      
+      // Hide all other markers when popup opens
+      if (popupMemorial) {
+        selectedMarker = popupMemorial;
+        leafletMarkers.forEach((marker, name) => {
+          if (name !== popupMemorial) {
+            marker.setOpacity(0);
+          } else {
+            marker.setOpacity(1);
+          }
+        });
+      }
+      
+      // Attach route button handler
+      const btn = popup.getElement().querySelector('.route-btn');
+      if (btn){
+        btn.onclick = (ev)=>{
+          ev.preventDefault();
+          const name = btn.getAttribute('data-name');
+          const mem = memorials.find(m=>m.name===name);
+          if (mem) planRouteTo(mem);
+        };
+      }
+    });
+
+    // Show all markers when popup closes
+    map.on('popupclose', () => {
+      if (selectedMarker) {
+        showAllMarkers();
+      }
     });
   }
 
@@ -1040,5 +1084,65 @@
     return hops;
   }
 // === end ensureConnectedHeuristic ===
+
+  function simplifyPath(coords, tolerance = 2.0){
+    // Douglas-Peucker algorithm for path simplification
+    if (coords.length <= 2) return coords;
+    
+    function perpendicularDistance(point, lineStart, lineEnd){
+      const proj = projectLatLngToSegment(point, lineStart, lineEnd);
+      return proj.distMeters;
+    }
+    
+    function simplifyDouglasPeucker(points, epsilon){
+      if (points.length <= 2) return points;
+      
+      let dmax = 0;
+      let index = 0;
+      const end = points.length - 1;
+      
+      for (let i = 1; i < end; i++){
+        const d = perpendicularDistance(points[i], points[0], points[end]);
+        if (d > dmax){
+          index = i;
+          dmax = d;
+        }
+      }
+      
+      if (dmax > epsilon){
+        const left = simplifyDouglasPeucker(points.slice(0, index + 1), epsilon);
+        const right = simplifyDouglasPeucker(points.slice(index), epsilon);
+        return left.slice(0, -1).concat(right);
+      } else {
+        return [points[0], points[end]];
+      }
+    }
+    
+    return simplifyDouglasPeucker(coords, tolerance);
+  }
+
+  function isRouteReasonable(routeCoords, startPoint, endPoint){
+    const routeDist = computeLineDistance(routeCoords);
+    const directDist = haversineMeters(startPoint, endPoint);
+    const ratio = routeDist / directDist;
+    
+    dbg('Route quality check: route=', routeDist.toFixed(0), 'm, direct=', 
+        directDist.toFixed(0), 'm, ratio=', ratio.toFixed(2));
+    
+    // More lenient thresholds - footpaths are naturally longer
+    // Short routes: allow up to 3x direct distance
+    // Medium routes (100-500m): allow up to 2x
+    // Long routes (>500m): allow up to 1.8x
+    let threshold;
+    if (directDist < 100) {
+      threshold = 3.0;
+    } else if (directDist < 500) {
+      threshold = 2.0;
+    } else {
+      threshold = 1.8;
+    }
+    
+    return ratio <= threshold;
+  }
 
 })(); // close IIFE

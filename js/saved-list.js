@@ -83,7 +83,7 @@ function renderList(filter = '') {
     return `
       <li class="saved-item">
         <div class="saved-line">
-          <a class="mem-link" href="memorial.html?name=${encodeURIComponent(m.name)}">${escapeHtml(m.name)}</a>
+          <a class="mem-link" href="memorial.html?name=${encodeURIComponent(m.name)}&from=saved">${escapeHtml(m.name)}</a>
           <button type="button" class="unsave-btn" data-name="${escapeHtml(m.name)}" title="Remove from saved">✕</button>
         </div>
         ${desc ? `<div class="saved-desc">${escapeHtml(desc)}${m.description && m.description.length > 80 ? '…' : ''}</div>` : ''}

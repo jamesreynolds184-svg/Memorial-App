@@ -1,7 +1,26 @@
 (function () {
   const params = new URLSearchParams(location.search);
   const name = params.get('name');
+  const from = params.get('from');
   const root = document.getElementById('memorial-detail');
+
+  // Set up back button navigation
+  const backBtn = document.getElementById('back-btn');
+  if (backBtn) {
+    backBtn.addEventListener('click', () => {
+      const backPages = {
+        'saved': 'saved.html',
+        'memorials': 'memorials.html',
+        'search-by-zone': 'search-by-zone.html',
+        'nearby': 'nearby-memorials.html',
+        'map': 'map.html',
+        'identify': 'identify-memorial.html',
+        'manage': 'manage-memorials.html',
+        'global-search': 'memorials.html' // Default to memorials for global search
+      };
+      location.href = backPages[from] || 'memorials.html';
+    });
+  }
 
   if (!root) {
     console.error('#memorial-detail not found');
@@ -60,16 +79,24 @@
       if (imgPath) {
         const img = document.createElement('img');
         img.id = 'memorial-photo-img';
-        img.src = imgPath;
+        // Convert relative path to absolute path for iOS compatibility
+        img.src = resolveImagePath(imgPath);
         img.alt = item.name + ' photo';
         img.style.display = 'block';
         img.style.maxWidth = '60%';
         img.style.margin = '18px auto 0 auto';
         img.style.borderRadius = '18px';
         img.style.boxShadow = '0 4px 18px rgba(0,0,0,0.18)';
+        img.style.cursor = 'pointer';
+        
+        // Add fullscreen capability - pass the resolved path
+        img.addEventListener('click', () => {
+          createFullscreenOverlay(img.src, item.name); // Use img.src which is already resolved
+        });
+        
         img.onerror = function() {
           if (triedExtensions.length > 0) {
-            img.src = triedExtensions.shift();
+            img.src = resolveImagePath(triedExtensions.shift());
           } else {
             img.style.display = 'none';
           }
@@ -116,20 +143,26 @@ function initLeafletMemorialMap(coords) {
   const map = L.map(el, {
     center: [coords.lat, coords.lng],
     zoom: 17,
-    attributionControl: false
+    attributionControl: false,
+    scrollWheelZoom: false,
+    dragging: false,
+    touchZoom: false,
+    doubleClickZoom: false,
+    boxZoom: false,
+    keyboard: false
   });
 
   L.tileLayer(
-    'https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png',
+    'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
     {
-      maxZoom: 20,
-      attribution: '© OpenStreetMap contributors | Tiles © CARTO'
+      maxZoom: 19,
+      attribution: 'Esri, DigitalGlobe, GeoEye, Earthstar Geographics'
     }
   ).addTo(map);
 
   L.control.attribution({ position: 'bottomright' })
     .addTo(map)
-    .addAttribution('© OpenStreetMap contributors | Tiles © CARTO');
+    .addAttribution('Esri, DigitalGlobe, GeoEye, Earthstar Geographics');
 
   // --- Custom marker icon logic ---
   const memorial = window.currentMemorial;
@@ -384,4 +417,353 @@ function extractCoords(raw) {
     }
   }
   return null;
+}
+
+// Add fullscreen overlay functionality
+function createFullscreenOverlay(imgSrc, altText) {
+  // Ensure image path is absolute
+  const absoluteImgSrc = resolveImagePath(imgSrc);
+  
+  // Create overlay
+  const overlay = document.createElement('div');
+  overlay.className = 'fullscreen-overlay';
+  overlay.style.cssText = `
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.95);
+    z-index: 10000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    touch-action: none;
+    -webkit-tap-highlight-color: transparent;
+  `;
+
+  // Create image container for pinch-zoom
+  const imgContainer = document.createElement('div');
+  imgContainer.className = 'zoom-container';
+  imgContainer.style.cssText = `
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    touch-action: none;
+  `;
+
+  // Create image
+  const img = document.createElement('img');
+  img.src = absoluteImgSrc;
+  img.alt = altText + ' (fullscreen)';
+  img.style.cssText = `
+    max-width: 92%;
+    max-height: 92%;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    transform-origin: center center;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
+    touch-action: none;
+    pointer-events: auto;
+  `;
+
+  // Create close button
+  const closeBtn = document.createElement('button');
+  closeBtn.innerHTML = '✕';
+  closeBtn.setAttribute('aria-label', 'Close fullscreen image');
+  closeBtn.style.cssText = `
+    position: absolute;
+    top: max(20px, env(safe-area-inset-top, 20px));
+    right: 20px;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.9);
+    color: #000;
+    font-size: 24px;
+    font-weight: bold;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10002;
+    padding: 0;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+  `;
+
+  // Add elements to the DOM
+  imgContainer.appendChild(img);
+  overlay.appendChild(imgContainer);
+  overlay.appendChild(closeBtn);
+  document.body.appendChild(overlay);
+
+  // Prevent body scrolling while overlay is open
+  const originalOverflow = document.body.style.overflow;
+  const originalPosition = document.body.style.position;
+  document.body.style.overflow = 'hidden';
+  document.body.style.position = 'fixed';
+  document.body.style.width = '100%';
+
+  // Function to safely remove overlay
+  function removeOverlay() {
+    if (overlay.parentNode) {
+      document.body.removeChild(overlay);
+    }
+    document.body.style.overflow = originalOverflow;
+    document.body.style.position = originalPosition;
+    document.body.style.width = '';
+  }
+
+  // Close button handler - use both click and touchend for reliability
+  const closeHandler = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    removeOverlay();
+  };
+  
+  closeBtn.addEventListener('click', closeHandler, { passive: false });
+  closeBtn.addEventListener('touchend', closeHandler, { passive: false });
+
+  // Close overlay when clicking/tapping background (not the image)
+  overlay.addEventListener('click', (e) => {
+    if (e.target === overlay || e.target === imgContainer) {
+      removeOverlay();
+    }
+  });
+
+  // Also handle tap on background for mobile
+  overlay.addEventListener('touchend', (e) => {
+    if (e.target === overlay || e.target === imgContainer) {
+      e.preventDefault();
+      removeOverlay();
+    }
+  }, { passive: false });
+
+  // Initialize pinch-zoom functionality
+  initPinchZoom(imgContainer, img);
+
+  // Handle image load error
+  img.addEventListener('error', () => {
+    console.error('Failed to load fullscreen image:', absoluteImgSrc);
+    removeOverlay();
+    alert('Failed to load image');
+  });
+
+  // Prevent context menu on long press (mobile)
+  img.addEventListener('contextmenu', (e) => e.preventDefault());
+  
+  // Prevent default touch behavior on overlay
+  overlay.addEventListener('touchmove', (e) => {
+    // Allow gestures on the image container
+    if (e.target === img || e.target === imgContainer) {
+      return;
+    }
+    e.preventDefault();
+  }, { passive: false });
+}
+
+// Pinch-zoom and pan functionality
+function initPinchZoom(container, img) {
+  let currentScale = 1;
+  let startScale = 1;
+  let startDistance = 0;
+  let initialPinchCenter = { x: 0, y: 0 };
+  let isPanning = false;
+  
+  // For single touch panning
+  let lastTouchX = 0;
+  let lastTouchY = 0;
+  
+  // Transform values
+  let translateX = 0;
+  let translateY = 0;
+  
+  // Minimum and maximum scale
+  const MIN_SCALE = 1;
+  const MAX_SCALE = 5;
+
+  function getDistance(touches) {
+    return Math.hypot(
+      touches[0].clientX - touches[1].clientX,
+      touches[0].clientY - touches[1].clientY
+    );
+  }
+
+  function getMidpoint(touches) {
+    return {
+      x: (touches[0].clientX + touches[1].clientX) / 2,
+      y: (touches[0].clientY + touches[1].clientY) / 2
+    };
+  }
+
+  function updateTransform() {
+    img.style.transform = `translate(${translateX}px, ${translateY}px) scale(${currentScale})`;
+  }
+
+  function handleTouchStart(e) {
+    // Only handle touches on the image
+    if (e.target !== img) return;
+    
+    if (e.touches.length === 2) {
+      e.preventDefault();
+      // Two finger pinch to zoom
+      startDistance = getDistance(e.touches);
+      startScale = currentScale;
+      initialPinchCenter = getMidpoint(e.touches);
+      isPanning = false;
+    } else if (e.touches.length === 1) {
+      // Single finger pan (only if zoomed)
+      if (currentScale > 1) {
+        e.preventDefault();
+      }
+      lastTouchX = e.touches[0].clientX;
+      lastTouchY = e.touches[0].clientY;
+      isPanning = true;
+    }
+  }
+
+  function handleTouchMove(e) {
+    // Only handle touches on the image
+    if (e.target !== img) return;
+    
+    if (e.touches.length === 2) {
+      e.preventDefault();
+      // Pinch-zoom
+      const currentDistance = getDistance(e.touches);
+      const pinchRatio = currentDistance / startDistance;
+      currentScale = Math.min(Math.max(startScale * pinchRatio, MIN_SCALE), MAX_SCALE);
+      
+      // Adjust pan during pinch to keep pinch center stable
+      const currentCenter = getMidpoint(e.touches);
+      if (currentScale > MIN_SCALE) {
+        const dragOffsetX = currentCenter.x - initialPinchCenter.x;
+        const dragOffsetY = currentCenter.y - initialPinchCenter.y;
+        translateX += dragOffsetX / 5;
+        translateY += dragOffsetY / 5;
+        initialPinchCenter = currentCenter;
+      }
+      
+      updateTransform();
+    } else if (e.touches.length === 1 && isPanning && currentScale > 1) {
+      e.preventDefault();
+      // Pan (only if zoomed in)
+      const touchX = e.touches[0].clientX;
+      const touchY = e.touches[0].clientY;
+      
+      const deltaX = touchX - lastTouchX;
+      const deltaY = touchY - lastTouchY;
+      
+      translateX += deltaX;
+      translateY += deltaY;
+      
+      lastTouchX = touchX;
+      lastTouchY = touchY;
+      
+      updateTransform();
+    }
+  }
+
+  function handleTouchEnd(e) {
+    if (e.touches.length === 0) {
+      // Remove the auto-reset that was causing the issue
+      // Only do boundary checks now
+      
+      // Boundary check
+      const imgRect = img.getBoundingClientRect();
+      const maxTranslateX = (imgRect.width * (currentScale - 1)) / 2;
+      const maxTranslateY = (imgRect.height * (currentScale - 1)) / 2;
+      
+      if (Math.abs(translateX) > maxTranslateX) {
+        translateX = translateX > 0 ? maxTranslateX : -maxTranslateX;
+      }
+      
+      if (Math.abs(translateY) > maxTranslateY) {
+        translateY = translateY > 0 ? maxTranslateY : -maxTranslateY;
+      }
+      
+      updateTransform();
+      isPanning = false;
+    }
+  }
+
+  // Double tap to zoom
+  let lastTapTime = 0;
+  function handleDoubleTap(e) {
+    if (e.target !== img) return;
+    
+    const currentTime = new Date().getTime();
+    const tapLength = currentTime - lastTapTime;
+    
+    if (tapLength < 300 && tapLength > 0) {
+      e.preventDefault();
+      // Double tap detected
+      if (currentScale === 1) {
+        currentScale = 2.5;
+        const rect = container.getBoundingClientRect();
+        const touch = e.changedTouches[0];
+        translateX = (rect.width / 2 - touch.clientX) * 0.2;
+        translateY = (rect.height / 2 - touch.clientY) * 0.2;
+      } else {
+        currentScale = 1;
+        translateX = 0;
+        translateY = 0;
+      }
+      updateTransform();
+    }
+    lastTapTime = currentTime;
+  }
+
+  // Add event listeners
+  img.addEventListener('touchstart', handleTouchStart, { passive: false });
+  img.addEventListener('touchmove', handleTouchMove, { passive: false });
+  img.addEventListener('touchend', handleTouchEnd, { passive: false });
+  img.addEventListener('touchcancel', handleTouchEnd);
+  img.addEventListener('touchend', handleDoubleTap, { passive: false });
+
+  // Desktop mouse wheel zoom support
+  container.addEventListener('wheel', (e) => {
+    e.preventDefault();
+    const scaleFactor = 1 - e.deltaY * 0.01;
+    const newScale = Math.min(Math.max(currentScale * scaleFactor, MIN_SCALE), MAX_SCALE);
+    
+    if (newScale !== currentScale) {
+      const rect = container.getBoundingClientRect();
+      const mouseX = e.clientX - rect.left;
+      const mouseY = e.clientY - rect.top;
+      
+      const dx = mouseX - rect.width / 2;
+      const dy = mouseY - rect.height / 2;
+      const scaleDelta = newScale - currentScale;
+      
+      translateX -= dx * (scaleDelta / currentScale) * 0.5;
+      translateY -= dy * (scaleDelta / currentScale) * 0.5;
+      currentScale = newScale;
+      
+      updateTransform();
+    }
+  }, { passive: false });
+}
+
+// Add this helper function before extractCoords:
+function resolveImagePath(relativePath) {
+  if (!relativePath) return '';
+  // If already absolute, return as-is
+  if (relativePath.startsWith('http://') || relativePath.startsWith('https://') || relativePath.startsWith('/')) {
+    return relativePath;
+  }
+  // Convert relative path to absolute using current page location
+  const base = window.location.href.substring(0, window.location.href.lastIndexOf('/') + 1);
+  return new URL(relativePath, base).href;
 }

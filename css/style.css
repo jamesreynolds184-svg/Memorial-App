@@ -697,9 +697,9 @@ body {
 .search-toggle {
   position: fixed;
   /* base fallback then iOS safe-area offsets */
-  top: 12px;
-  top: calc(constant(safe-area-inset-top) + 12px);
-  top: calc(env(safe-area-inset-top) + 12px);
+  top: 500px; /* Changed from 12px to 112px (added 100px) */
+  top: calc(constant(safe-area-inset-top) + 500px);
+  top: calc(env(safe-area-inset-top) + 500px);
   right: 12px;
   z-index: 3200;
   background: rgba(255,255,255,0.65);
@@ -723,7 +723,7 @@ body {
   background: rgba(0,0,0,0.45);
   backdrop-filter: blur(4px);
   -webkit-backdrop-filter: blur(4px);
-  padding: 40px 16px;
+  padding: 140px 16px 40px 16px; /* Changed top padding from 40px to 140px */
   box-sizing: border-box;
 }
 #global-search-panel.active { display: flex; justify-content: center; align-items: flex-start; }
@@ -765,8 +765,25 @@ body {
   border-radius: 10px;
   border: 1px solid rgba(0,0,0,0.2);
   background: rgba(255,255,255,0.85);
-  margin-bottom: 12px;
+  margin-bottom: 8px;
   outline: none;
+}
+
+.gsp-desc-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.9rem;
+  color: var(--text,#123);
+  cursor: pointer;
+  margin-bottom: 12px;
+  user-select: none;
+}
+
+.gsp-desc-label input[type="checkbox"] {
+  cursor: pointer;
+  width: 16px;
+  height: 16px;
 }
 
 #global-search-results {
@@ -822,7 +839,7 @@ body.no-scroll {
 }
 
 #global-search-panel {
-  padding: calc(20px + env(safe-area-inset-top)) 12px 20px calc(12px + env(safe-area-inset-left));
+  padding: calc(120px + env(safe-area-inset-top)) 12px 20px calc(12px + env(safe-area-inset-left)); /* Changed from 20px to 120px */
 }
 
 #global-search-panel .gsp-inner {
@@ -986,8 +1003,8 @@ body.memorial-bg-set::before {
 }
 .memorial-row {
   display: flex;
-  gap: 10px;
   align-items: center;
+  gap: 12px;
 }
 .memorial-row .memorial-zone {
   font-size: 0.65rem;
@@ -1366,7 +1383,7 @@ body.memorial-bg-set::before {
 .search-toggle {
   position: fixed !important;
   right: 16px !important;
-  top: 64px !important;          /* match burger or tweak separately */
+  top: 48px !important;          /* Change this value - currently it's overriding your earlier rule */
   z-index: 9001 !important;
   pointer-events: auto !important;
 }
@@ -1388,4 +1405,168 @@ body.memorial-bg-set::before {
 .search-toggle {
   z-index: 9001 !important;
   pointer-events: auto !important;
+}
+
+/* Memorial header layout - back button + title on same line */
+.mem-header-line {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 1rem; /* Add space below notch area */
+  margin-bottom: 0.5rem;
+}
+
+.mem-header-line .btn-plain {
+  flex-shrink: 0; /* Prevent button from shrinking */
+  white-space: nowrap;
+}
+
+.mem-header-line .mem-title {
+  margin: 0;
+  font-size: 1.5rem; /* Adjust if needed */
+  flex: 1;
+}
+
+.mem-detail-actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+}
+
+/* iOS Bottom Menu Bar */
+.ios-bottom-menu {
+  display: none;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: white;
+  border-top: 1px solid #ddd;
+  z-index: 9999;
+  padding: 8px 0;
+  box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+}
+
+.ios-bottom-menu.show {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+}
+
+.ios-bottom-menu button {
+  flex: 1;
+  background: none;
+  border: none;
+  padding: 12px;
+  font-size: 14px;
+  color: #333;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.ios-bottom-menu button:active {
+  background: rgba(0,0,0,0.05);
+}
+
+.ios-bottom-menu button .icon {
+  font-size: 24px;
+}
+
+.ios-bottom-menu button .label {
+  font-size: 12px;
+}
+
+/* Hide top buttons on iOS when bottom menu is active */
+body.ios-mode #burger-menu,
+body.ios-mode #global-search-btn {
+  display: none !important;
+}
+
+/* Add padding to body when iOS menu is visible */
+body.ios-mode {
+  padding-bottom: 100px;
+  /* Add extra space for iOS devices with home indicator */
+  padding-bottom: calc(100px + env(safe-area-inset-bottom));
+  min-height: 100vh;
+}
+
+/* Ensure containers have proper bottom spacing */
+body.ios-mode .container {
+  padding-bottom: 120px;
+  padding-bottom: calc(120px + env(safe-area-inset-bottom));
+}
+
+/* Ensure main content doesn't get hidden behind bottom menu */
+body.ios-mode main,
+body.ios-mode .content {
+  margin-bottom: 0;
+  padding-bottom: 120px;
+  padding-bottom: calc(120px + env(safe-area-inset-bottom));
+}
+
+/* Add padding to lists and scrollable containers */
+body.ios-mode #memorial-list,
+body.ios-mode .zone-list,
+body.ios-mode .content-wrapper {
+  padding-bottom: 120px;
+  padding-bottom: calc(120px + env(safe-area-inset-bottom));
+}
+
+/* Ensure memorial detail page content isn't hidden */
+body.ios-mode #memorial-detail {
+  margin-bottom: 0;
+  padding-bottom: 120px;
+  padding-bottom: calc(120px + env(safe-area-inset-bottom));
+  /* Adjust height to account for iOS bottom menu */
+  height: calc(100vh - 80px);
+  height: calc(100vh - 80px - env(safe-area-inset-bottom));
+}
+
+/* Ensure map and photos are fully visible */
+body.ios-mode #mem-gmap,
+body.ios-mode .mem-photo,
+body.ios-mode #mem-photo-wrapper {
+  margin-bottom: 40px;
+}
+
+/* Ensure map panel page has proper spacing */
+body.ios-mode .map-panel {
+  margin-bottom: 120px;
+  margin-bottom: calc(120px + env(safe-area-inset-bottom));
+}
+
+body.ios-mode .map-wrap {
+  margin-bottom: 20px;
+}
+
+/* Nearby memorials specific styling */
+.memorial-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.mem-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.memorial-zone-name {
+  font-size: 0.85rem;
+  color: #666;
+  font-weight: 500;
+}
+
+.near-distance {
+  font-size: 0.9rem;
+  color: var(--accent);
+  font-weight: 600;
+  white-space: nowrap;
 }

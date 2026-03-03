@@ -144,7 +144,7 @@
     for (const m of items) {
       const li = document.createElement('li'); li.className = 'memorial-row';
       const a = document.createElement('a');
-      a.className = 'mem-link'; a.href = `memorial.html?name=${encodeURIComponent(m.name)}`; a.textContent = m.name;
+      a.className = 'mem-link'; a.href = `memorial.html?name=${encodeURIComponent(m.name)}&from=manage`; a.textContent = m.name;
       const del = document.createElement('button'); del.type = 'button'; del.className = 'del-btn'; del.dataset.name = m.name; del.textContent = 'Delete';
       li.appendChild(a); li.appendChild(del); adminListEl.appendChild(li);
     }
