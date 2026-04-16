@@ -942,12 +942,12 @@ class ARMemorialView {
     const x = this.canvas.width / 2 + 
               (relativeAngle / this.fov) * this.canvas.width;
     
-    // y: Position based on distance and optional pitch
-    // Closer memorials appear lower on screen, farther ones higher
-    const maxViewDistance = 100; // meters
-    const normalizedDistance = Math.min(distance / maxViewDistance, 1);
-    const baseY = this.canvas.height * 0.6; // Base position (60% down screen)
-    const y = baseY - (normalizedDistance * this.canvas.height * 0.2); // Closer = lower
+    // y: Position locked to device tilt
+    // When phone tilts up (negative pitch), memorials move down (higher Y)
+    // When phone tilts down (positive pitch), memorials move up (lower Y)
+    const baseY = this.canvas.height * 0.5; // Center of screen
+    const pitchOffset = (this.userPitch / 90) * this.canvas.height * 0.5; // Scale pitch to screen
+    const y = baseY + pitchOffset; // Add pitch offset (positive pitch = move up)
     
     return { x, y, distance };
   }
