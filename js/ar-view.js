@@ -26,10 +26,10 @@ class ARFootpathView {
     this.locationHistory = [];
     this.headingHistory = [];
     this.pitchHistory = [];
-    this.smoothingWindow = 10; // Increased from 5 to 10 for more stability
-    this.minHeadingChange = 1; // Reduced from 2 to 1 for smoother tracking
-    this.minLocationChange = 0.000005; // Lat/Lon - ignore tiny GPS drift
-    this.minPitchChange = 1; // Degrees - ignore small tilt changes
+    this.smoothingWindow = 20; // Increased to 20 for maximum stability
+    this.minHeadingChange = 3; // Increased to 3 degrees to reduce jitter
+    this.minLocationChange = 0.00001; // Increased threshold - ignore more GPS drift
+    this.minPitchChange = 5; // Increased to 5 degrees - less sensitive to tilt
     
     // Testing mode - offset paths to user location
     this.testingMode = false;
@@ -123,10 +123,11 @@ class ARFootpathView {
   async init() {
     // Setup manual controls first so they work even if camera fails
     console.log('========================================');
-    console.log('AR View v2.7.1 - Build 2026-04-16 18:15 (iPhone Button Fix)');
+    console.log('AR View v2.8 - Build 2026-04-16 18:30 (Max Stability)');
     console.log('Mobile device:', this.isMobile);
     console.log('User interacted:', this.userInteracted);
     console.log('User agent:', navigator.userAgent);
+    console.log('Smoothing window:', this.smoothingWindow, 'readings');
     console.log('========================================');
     console.log('AR View: Setting up manual controls...');
     this.setupManualControls();
@@ -719,21 +720,13 @@ class ARFootpathView {
     const x = this.canvas.width / 2 + 
               (relativeAngle / this.fov) * this.canvas.width;
     
-    // y: Adjust based on distance AND device pitch (tilt)
-    // Base Y position from distance (closer objects lower on screen)
+    // y: FIXED position - ignore device tilt to keep paths stable
+    // Position based on distance only - paths stay locked to compass direction
+    // This prevents paths from moving when you tilt the phone up/down
     const maxViewDistance = 50; // meters
     const normalizedDistance = Math.min(distance / maxViewDistance, 1);
-    let y = this.canvas.height * (0.5 + normalizedDistance * 0.3);
-    
-    // Adjust Y based on device pitch (tilt up/down)
-    // When tilting up (negative pitch), paths move down
-    // When tilting down (positive pitch), paths move up
-    // Assume paths are at ground level (0 elevation relative to user)
-    const pitchAdjustment = (this.userPitch / 90) * (this.canvas.height * 0.5);
-    y -= pitchAdjustment;
-    
-    // Clamp Y to screen bounds
-    y = Math.max(0, Math.min(this.canvas.height, y));
+    const baseY = this.canvas.height * 0.65; // Fixed baseline (65% down screen)
+    const y = baseY - (normalizedDistance * this.canvas.height * 0.15); // Closer = slightly lower
     
     return { x, y, distance };
   }
