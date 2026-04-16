@@ -902,6 +902,7 @@ class ARMemorialView {
       justify-content: center;
       overflow-y: auto;
       padding: 20px;
+      padding-bottom: 100px;
       box-sizing: border-box;
     `;
 
