@@ -171,8 +171,8 @@
 
   <div id="ar-overlay">
     <div id="ar-info">
-      <strong>AR Footpath View v2.5</strong><br>
-      <small style="opacity: 0.7;">Build: 2026-04-16 16:30 (Stabilized)</small><br>
+      <strong>AR Footpath View v2.6</strong><br>
+      <small style="opacity: 0.7;">Build: 2026-04-16 16:45 (Testing Mode)</small><br>
       <div style="margin: 10px 0;">
         <label style="font-size: 12px;">
           <input type="checkbox" id="manual-location-toggle">
@@ -200,6 +200,12 @@
           <input type="number" id="manual-heading" min="0" max="360" step="1" value="0"
                  style="width: 60px; padding: 3px;" disabled>°
         </label>
+      </div>
+      <div style="margin-top: 8px;">
+        <button id="test-mode-btn" onclick="window.arView?.toggleTestingMode()" 
+                style="padding: 8px 12px; background: #0096ff; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 12px; width: 100%;">
+          Move Paths to My Location (Testing)
+        </button>
       </div>
     </div>
   </div>

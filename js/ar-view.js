@@ -28,6 +28,10 @@ class ARFootpathView {
     this.minHeadingChange = 2; // Degrees - ignore changes smaller than this
     this.minLocationChange = 0.000005; // Lat/Lon - ignore tiny GPS drift
     
+    // Testing mode - offset paths to user location
+    this.testingMode = false;
+    this.pathOffset = { lat: 0, lon: 0 };
+    
     // Camera field of view (adjustable based on device)
     this.fov = 60; // degrees
     this.maxDistance = 100; // meters - max distance to show paths
@@ -527,9 +531,15 @@ class ARFootpathView {
           const point1 = coords[i];
           const point2 = coords[i + 1];
           
+          // Apply offset if in testing mode
+          const lat1 = point1[1] + this.pathOffset.lat;
+          const lon1 = point1[0] + this.pathOffset.lon;
+          const lat2 = point2[1] + this.pathOffset.lat;
+          const lon2 = point2[0] + this.pathOffset.lon;
+          
           // Calculate distance to segment midpoint for simplicity
-          const midLon = (point1[0] + point2[0]) / 2;
-          const midLat = (point1[1] + point2[1]) / 2;
+          const midLon = (lon1 + lon2) / 2;
+          const midLat = (lat1 + lat2) / 2;
           
           const distance = this.calculateDistance(
             this.userLat, this.userLon,
@@ -555,15 +565,21 @@ class ARFootpathView {
     const point1 = segment[0]; // [lon, lat]
     const point2 = segment[1];
     
+    // Apply offset if in testing mode
+    let lat1 = point1[1] + this.pathOffset.lat;
+    let lon1 = point1[0] + this.pathOffset.lon;
+    let lat2 = point2[1] + this.pathOffset.lat;
+    let lon2 = point2[0] + this.pathOffset.lon;
+    
     // Project both points
-    const proj1 = this.projectPoint(point1[1], point1[0]);
-    const proj2 = this.projectPoint(point2[1], point2[0]);
+    const proj1 = this.projectPoint(lat1, lon1);
+    const proj2 = this.projectPoint(lat2, lon2);
     
     if (!proj1 || !proj2) return;
     
-    // Draw line
+    // Draw line - 3x thicker (was 4, now 12)
     this.ctx.strokeStyle = 'rgba(0, 150, 255, 0.8)';
-    this.ctx.lineWidth = 4;
+    this.ctx.lineWidth = 12;
     this.ctx.lineCap = 'round';
     
     this.ctx.beginPath();
@@ -743,7 +759,61 @@ class ARFootpathView {
           this.userHeading = parseFloat(e.target.value) || 0;
           document.getElementById('user-heading').textContent = 
             Math.round(this.userHeading) + ' (Manual)';
-          console.log('Manual heading set:', this.userHeading);
+   
+  
+  movePathsToMyLocation() {
+    if (!this.userLat || !this.userLon) {
+      alert('Wait for GPS location first!');
+      return;
+    }
+    
+    if (this.footpaths.length === 0) {
+      alert('No footpaths loaded!');
+      return;
+    }
+    
+    // Get first point of first path
+    const firstPath = this.footpaths[0];
+    if (firstPath.geometry.type === 'LineString' && firstPath.geometry.coordinates.length > 0) {
+      const firstPoint = firstPath.geometry.coordinates[0];
+      
+      // Calculate offset needed to move first point to user location
+      this.pathOffset.lat = this.userLat - firstPoint[1];
+      this.pathOffset.lon = this.userLon - firstPoint[0];
+      
+      this.testingMode = true;
+      
+      console.log('Testing mode enabled - paths moved to your location');
+      console.log('Offset:', this.pathOffset);
+      
+      const btn = document.getElementById('test-mode-btn');
+      if (btn) {
+        btn.textContent = 'Reset Paths to Real Location';
+        btn.style.background = '#ff6600';
+      }
+    }
+  }
+  
+  resetPathLocations() {
+    this.pathOffset = { lat: 0, lon: 0 };
+  window.arView = new ARFootpathView();
+  
+  // Cleanup on page unload
+  window.addEventListener('beforeunload', () => {
+    window.const btn = document.getElementById('test-mode-btn');
+    if (btn) {
+      btn.textContent = 'Move Paths to My Location (Testing)';
+      btn.style.background = '#0096ff';
+    }
+  }
+  
+  toggleTestingMode() {
+    if (this.testingMode) {
+      this.resetPathLocations();
+    } else {
+      this.movePathsToMyLocation();
+    }
+  }       console.log('Manual heading set:', this.userHeading);
         }
       });
     }
