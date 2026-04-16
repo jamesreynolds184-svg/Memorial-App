@@ -244,11 +244,11 @@ class ARFootpathView {
       (error) => this.onLocationError(error),
       options
     );
-  }if (this.manualLocationMode) return; // Ignore GPS updates in manual mode
-    
-    
+  }
 
   onLocationUpdate(position) {
+    if (this.manualLocationMode) return; // Ignore GPS updates in manual mode
+    
     this.userLat = position.coords.latitude;
     this.userLon = position.coords.longitude;
     
@@ -276,9 +276,9 @@ class ARFootpathView {
         break;
       default:
         message += 'Unknown error';
+    }
     console.warn(message, '- Use Manual Location mode');
     // Don't show error, just log it - user can use manual mode
-    this.showError(message);
   }
 
   setupOrientation() {
