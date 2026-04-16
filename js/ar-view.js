@@ -1,16 +1,21 @@
 /**
- * AR Footpath View
- * Displays footpaths from footpathsTEMP.geojson overlaid on device camera
+ * AR Memorial View
+ * Displays memorial images overlaid on device camera
  * using GPS location and device orientation
  */
 
-class ARFootpathView {
+class ARMemorialView {
   constructor() {
+    // TESTING MODE - Force location for development
+    this.forcedTestLocation = true;
+    this.testLat = 52.728256; // 52°43'41.72"N
+    this.testLon = -1.729161; // 1°43'44.98"W
+    
     this.userLat = null;
     this.userLon = null;
     this.userHeading = 0;
     this.userPitch = 0; // Device tilt (up/down)
-    this.footpaths = [];
+    this.memorials = [];
     this.canvas = null;
     this.ctx = null;
     this.video = null;
@@ -22,6 +27,10 @@ class ARFootpathView {
     this.renderingStarted = false;
     this.userInteracted = false;
     
+    // Memorial AR specific
+    this.memorialElements = new Map(); // Track image elements for each memorial
+    this.preloadedImages = new Map(); // Preloaded images
+    
     // Smoothing for GPS and heading
     this.locationHistory = [];
     this.headingHistory = [];
@@ -31,19 +40,24 @@ class ARFootpathView {
     this.minLocationChange = 0.00001; // Increased threshold - ignore more GPS drift
     this.minPitchChange = 5; // Increased to 5 degrees - less sensitive to tilt
     
-    // Testing mode - offset paths to user location
-    this.testingMode = false;
-    this.pathOffset = { lat: 0, lon: 0 };
-    
-    // Vertical offset for simulating different elevations (e.g., 2nd floor)
-    this.yOffset = 0; // Pixels to shift paths up (-) or down (+)
-    
     // Camera field of view (adjustable based on device)
     this.fov = 60; // degrees
-    this.maxDistance = 100; // meters - max distance to show paths
+    this.maxDistance = 200; // meters - max distance to show memorials
+    this.minDistance = 5; // meters - minimum distance to show memorial
+    
+    // Image sizing
+    this.baseImageSize = 150; // pixels at close range
+    this.minImageSize = 50; // pixels at max distance
     
     // Check if this is iOS/mobile
     this.isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+    
+    // Set forced test location if enabled
+    if (this.forcedTestLocation) {
+      this.userLat = this.testLat;
+      this.userLon = this.testLon;
+      console.log(`🔧 FORCED TEST LOCATION: ${this.testLat}, ${this.testLon}`);
+    }
     
     // Always require user interaction for better cross-browser compatibility
     console.log('Waiting for user to click Start button...');
@@ -126,11 +140,14 @@ class ARFootpathView {
   async init() {
     // Setup manual controls first so they work even if camera fails
     console.log('========================================');
-    console.log('AR View v2.9 - Build 2026-04-16 18:45 (Thick Lines + Elevation)');
+    console.log('AR Memorial View v3.0 - Build 2026-04-16');
     console.log('Mobile device:', this.isMobile);
     console.log('User interacted:', this.userInteracted);
     console.log('User agent:', navigator.userAgent);
-    console.log('Smoothing window:', this.smoothingWindow, 'readings');
+    console.log('Forced Test Location:', this.forcedTestLocation ? 'ENABLED' : 'DISABLED');
+    if (this.forcedTestLocation) {
+      console.log('Test Location:', this.testLat, this.testLon);
+    }
     console.log('========================================');
     console.log('AR View: Setting up manual controls...');
     this.setupManualControls();
@@ -150,25 +167,24 @@ class ARFootpathView {
             <li>Data failed to load (check console for errors)</li>
           </ul>
           <button onclick="location.reload()" style="padding: 10px 20px; margin: 5px; background: white; color: #cc0000; border: none; border-radius: 5px; cursor: pointer;">Reload Page</button>
-          <button onclick="enableManualMode(); document.getElementById('loading').style.display='none';" style="padding: 10px 20px; margin: 5px; background: #0096ff; color: white; border: none; border-radius: 5px; cursor: pointer;">Use Manual Mode</button>
         </div>
       `;
     }, 10000); // 10 second timeout
     
     console.log('AR View: Starting initialization...');
     
-    // Load footpaths data
+    // Load memorials data
     try {
-      console.log('AR View: Loading footpaths...');
-      await this.loadFootpaths();
-      console.log('AR View: Footpaths loaded successfully');
+      console.log('AR View: Loading memorials...');
+      await this.loadMemorials();
+      console.log('AR View: Memorials loaded successfully');
     } catch (error) {
-      this.showError('Failed to load footpaths: ' + error.message);
-      console.error('Footpaths loading error:', error);
+      this.showError('Failed to load memorials: ' + error.message);
+      console.error('Memorials loading error:', error);
       return;
     }
     
-    // Setup canvas (always needed)
+    // Setup canvas (always needed for overlay container)
     console.log('AR View: Setting up canvas...');
     this.setupCanvas();
     
@@ -184,9 +200,16 @@ class ARFootpathView {
       if (video) video.style.display = 'none';
     }
     
-    // Get user location (optional - continue if fails)
-    console.log('AR View: Starting location tracking...');
-    this.startLocationTracking();
+    // Get user location (optional if using forced location)
+    if (!this.forcedTestLocation) {
+      console.log('AR View: Starting location tracking...');
+      this.startLocationTracking();
+    } else {
+      console.log('AR View: Using forced test location - skipping GPS');
+      document.getElementById('user-location').textContent = 
+        `${this.testLat.toFixed(6)}, ${this.testLon.toFixed(6)} (TEST MODE)`;
+      document.getElementById('location-accuracy').textContent = 'Forced';
+    }
     
     // Setup device orientation (optional - continue if fails)
     console.log('AR View: Setting up orientation...');
@@ -205,7 +228,7 @@ class ARFootpathView {
     
     // Show message if camera not available
     if (!this.video || !this.video.srcObject) {
-      alert('Camera not available. Please use Manual Location mode for testing.');
+      alert('Camera not available. You can still test with manual heading controls.');
     }
     
     // Hide calibration notice after 5 seconds
@@ -244,10 +267,10 @@ class ARFootpathView {
     }
   }
 
-  async loadFootpaths() {
+  async loadMemorials() {
     try {
-      console.log('Fetching footpaths from: ../data/footpathsTEMP.geojson');
-      const response = await fetch('../data/footpathsTEMP.geojson');
+      console.log('Fetching memorials from: ../data/memorials.json');
+      const response = await fetch('../data/memorials.json');
       
       if (!response.ok) {
         throw new Error(`HTTP ${response.status}: ${response.statusText}`);
@@ -255,16 +278,67 @@ class ARFootpathView {
       
       const data = await response.json();
       
-      if (!data.features || !Array.isArray(data.features)) {
-        throw new Error('Invalid GeoJSON format');
+      if (!Array.isArray(data)) {
+        throw new Error('Invalid memorials data format');
       }
       
-      this.footpaths = data.features;
-      console.log(`Loaded ${this.footpaths.length} footpaths`);
+      // Filter memorials that have valid coordinates
+      this.memorials = data.filter(memorial => {
+        const lat = parseFloat(memorial.lat || memorial.location?.lat);
+        const lng = parseFloat(memorial.lng || memorial.location?.lng);
+        return !isNaN(lat) && !isNaN(lng);
+      }).map(memorial => {
+        // Normalize the data structure
+        const lat = parseFloat(memorial.lat || memorial.location?.lat);
+        const lng = parseFloat(memorial.lng || memorial.location?.lng);
+        return {
+          name: memorial.name,
+          zone: memorial.zone,
+          lat: lat,
+          lng: lng,
+          description: memorial.description
+        };
+      });
+      
+      console.log(`Loaded ${this.memorials.length} memorials with valid coordinates`);
+      
+      // Preload images for memorials
+      await this.preloadMemorialImages();
+      
     } catch (error) {
-      console.error('Footpaths loading error:', error);
-      throw new Error('Could not load footpaths data: ' + error.message);
+      console.error('Memorials loading error:', error);
+      throw new Error('Could not load memorials data: ' + error.message);
     }
+  }
+  
+  async preloadMemorialImages() {
+    console.log('Preloading memorial images...');
+    let loaded = 0;
+    let failed = 0;
+    
+    const promises = this.memorials.map(memorial => {
+      return new Promise((resolve) => {
+        const img = new Image();
+        const imagePath = `../img/zone${memorial.zone}/${memorial.name}.jpeg`;
+        
+        img.onload = () => {
+          this.preloadedImages.set(memorial.name, img);
+          loaded++;
+          resolve();
+        };
+        
+        img.onerror = () => {
+          console.warn(`Failed to load image for: ${memorial.name}`);
+          failed++;
+          resolve();
+        };
+        
+        img.src = imagePath;
+      });
+    });
+    
+    await Promise.all(promises);
+    console.log(`Preloaded ${loaded} images, ${failed} failed`);
   }
 
   async setupCamera() {
@@ -347,6 +421,7 @@ class ARFootpathView {
   }
 
   onLocationUpdate(position) {
+    if (this.forcedTestLocation) return; // Ignore GPS updates when using forced location
     if (this.manualLocationMode) return; // Ignore GPS updates in manual mode
     
     const newLat = position.coords.latitude;
@@ -582,94 +657,146 @@ class ARFootpathView {
     // Clear canvas
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
     
+    // Remove all existing memorial elements
+    this.memorialElements.forEach(element => {
+      if (element.parentNode) {
+        element.parentNode.removeChild(element);
+      }
+    });
+    this.memorialElements.clear();
+    
     if (!this.userLat || !this.userLon) {
       return; // Wait for location
     }
 
-    // Find nearby paths
-    const nearbyPaths = this.findNearbyPaths();
-    document.getElementById('paths-count').textContent = nearbyPaths.length;
+    // Find nearby memorials
+    const nearbyMemorials = this.findNearbyMemorials();
+    document.getElementById('paths-count').textContent = nearbyMemorials.length;
     
-    // Draw each path
-    nearbyPaths.forEach(pathData => {
-      this.drawPath(pathData);
+    // Draw each memorial
+    nearbyMemorials.forEach(memorialData => {
+      this.drawMemorial(memorialData);
     });
   }
 
-  findNearbyPaths() {
+  findNearbyMemorials() {
     const nearby = [];
     
-    this.footpaths.forEach(feature => {
-      if (feature.geometry.type === 'LineString') {
-        const coords = feature.geometry.coordinates;
-        
-        // Check each segment of the path
-        for (let i = 0; i < coords.length - 1; i++) {
-          const point1 = coords[i];
-          const point2 = coords[i + 1];
-          
-          // Apply offset if in testing mode
-          const lat1 = point1[1] + this.pathOffset.lat;
-          const lon1 = point1[0] + this.pathOffset.lon;
-          const lat2 = point2[1] + this.pathOffset.lat;
-          const lon2 = point2[0] + this.pathOffset.lon;
-          
-          // Calculate distance to segment midpoint for simplicity
-          const midLon = (lon1 + lon2) / 2;
-          const midLat = (lat1 + lat2) / 2;
-          
-          const distance = this.calculateDistance(
-            this.userLat, this.userLon,
-            midLat, midLon
-          );
-          
-          if (distance <= this.maxDistance) {
-            nearby.push({
-              feature: feature,
-              segment: [point1, point2],
-              distance: distance
-            });
-          }
-        }
+    this.memorials.forEach(memorial => {
+      const distance = this.calculateDistance(
+        this.userLat, this.userLon,
+        memorial.lat, memorial.lng
+      );
+      
+      if (distance >= this.minDistance && distance <= this.maxDistance) {
+        nearby.push({
+          memorial: memorial,
+          distance: distance
+        });
       }
     });
+    
+    // Sort by distance (closest first)
+    nearby.sort((a, b) => a.distance - b.distance);
     
     return nearby;
   }
 
-  drawPath(pathData) {
-    const segment = pathData.segment;
-    const point1 = segment[0]; // [lon, lat]
-    const point2 = segment[1];
+  drawMemorial(memorialData) {
+    const memorial = memorialData.memorial;
+    const distance = memorialData.distance;
     
-    // Apply offset if in testing mode
-    let lat1 = point1[1] + this.pathOffset.lat;
-    let lon1 = point1[0] + this.pathOffset.lon;
-    let lat2 = point2[1] + this.pathOffset.lat;
-    let lon2 = point2[0] + this.pathOffset.lon;
+    // Project the memorial location to screen coordinates
+    const projection = this.projectPoint(memorial.lat, memorial.lng);
     
-    // Project both points
-    const proj1 = this.projectPoint(lat1, lon1);
-    const proj2 = this.projectPoint(lat2, lon2);
+    if (!projection) return; // Memorial not in view
     
-    if (!proj1 || !proj2) return;
+    // Get preloaded image
+    const img = this.preloadedImages.get(memorial.name);
+    if (!img) {
+      // Draw placeholder if image not available
+      this.drawPlaceholder(memorial.name, projection.x, projection.y, distance);
+      return;
+    }
     
-    // Draw line - 5x thicker (was 4, now 20)
-    this.ctx.strokeStyle = 'rgba(0, 150, 255, 0.8)';
-    this.ctx.lineWidth = 20;
-    this.ctx.lineCap = 'round';
+    // Calculate image size based on distance
+    const distanceRatio = 1 - (distance / this.maxDistance);
+    const imageSize = this.minImageSize + (this.baseImageSize - this.minImageSize) * distanceRatio;
     
+    // Create or update image element
+    let imgElement = this.memorialElements.get(memorial.name);
+    if (!imgElement) {
+      imgElement = document.createElement('div');
+      imgElement.className = 'ar-memorial-image';
+      imgElement.style.position = 'absolute';
+      imgElement.style.cursor = 'pointer';
+      imgElement.style.transition = 'all 0.3s ease';
+      imgElement.style.zIndex = '500';
+      
+      // Image
+      const imgTag = document.createElement('img');
+      imgTag.src = img.src;
+      imgTag.style.width = '100%';
+      imgTag.style.height = '100%';
+      imgTag.style.objectFit = 'cover';
+      imgTag.style.borderRadius = '10px';
+      imgTag.style.border = '3px solid rgba(0, 150, 255, 0.8)';
+      imgTag.style.boxShadow = '0 4px 15px rgba(0, 0, 0, 0.5)';
+      
+      // Label
+      const label = document.createElement('div');
+      label.textContent = `${memorial.name} (${Math.round(distance)}m)`;
+      label.style.position = 'absolute';
+      label.style.bottom = '-25px';
+      label.style.left = '50%';
+      label.style.transform = 'translateX(-50%)';
+      label.style.background = 'rgba(0, 0, 0, 0.8)';
+      label.style.color = 'white';
+      label.style.padding = '4px 8px';
+      label.style.borderRadius = '5px';
+      label.style.fontSize = '12px';
+      label.style.whiteSpace = 'nowrap';
+      label.style.maxWidth = '200px';
+      label.style.overflow = 'hidden';
+      label.style.textOverflow = 'ellipsis';
+      
+      imgElement.appendChild(imgTag);
+      imgElement.appendChild(label);
+      
+      // Click handler
+      imgElement.onclick = () => {
+        alert(`${memorial.name}\n\nDistance: ${Math.round(distance)}m\n\n${memorial.description.substring(0, 200)}...`);
+      };
+      
+      this.memorialElements.set(memorial.name, imgElement);
+      document.getElementById('ar-scene').appendChild(imgElement);
+    }
+    
+    // Update position and size
+    imgElement.style.left = `${projection.x - imageSize / 2}px`;
+    imgElement.style.top = `${projection.y - imageSize / 2}px`;
+    imgElement.style.width = `${imageSize}px`;
+    imgElement.style.height = `${imageSize}px`;
+    
+    // Update distance in label
+    const label = imgElement.querySelector('div');
+    if (label) {
+      label.textContent = `${memorial.name} (${Math.round(distance)}m)`;
+    }
+  }
+
+  drawPlaceholder(name, x, y, distance) {
+    // Draw a simple circle placeholder when image is not available
     this.ctx.beginPath();
-    this.ctx.moveTo(proj1.x, proj1.y);
-    this.ctx.lineTo(proj2.x, proj2.y);
+    this.ctx.arc(x, y, 30, 0, 2 * Math.PI);
+    this.ctx.fillStyle = 'rgba(0, 150, 255, 0.6)';
+    this.ctx.fill();
+    this.ctx.strokeStyle = 'rgba(255, 255, 255, 0.8)';
+    this.ctx.lineWidth = 2;
     this.ctx.stroke();
     
-    // Draw distance label at midpoint
-    const midX = (proj1.x + proj2.x) / 2;
-    const midY = (proj1.y + proj2.y) / 2;
-    
-    const distance = Math.round(pathData.distance);
-    this.drawLabel(`${distance}m`, midX, midY);
+    // Draw name
+    this.drawLabel(`${name.substring(0, 20)}...\n${Math.round(distance)}m`, x, y + 45);
   }
 
   drawLabel(text, x, y) {
@@ -723,16 +850,12 @@ class ARFootpathView {
     const x = this.canvas.width / 2 + 
               (relativeAngle / this.fov) * this.canvas.width;
     
-    // y: FIXED position - ignore device tilt to keep paths stable
-    // Position based on distance only - paths stay locked to compass direction
-    // This prevents paths from moving when you tilt the phone up/down
-    const maxViewDistance = 50; // meters
+    // y: Position based on distance and optional pitch
+    // Closer memorials appear lower on screen, farther ones higher
+    const maxViewDistance = 100; // meters
     const normalizedDistance = Math.min(distance / maxViewDistance, 1);
-    const baseY = this.canvas.height * 0.65; // Fixed baseline (65% down screen)
-    let y = baseY - (normalizedDistance * this.canvas.height * 0.15); // Closer = slightly lower
-    
-    // Apply vertical offset for elevation adjustment (e.g., 2nd floor testing)
-    y += this.yOffset;
+    const baseY = this.canvas.height * 0.6; // Base position (60% down screen)
+    const y = baseY - (normalizedDistance * this.canvas.height * 0.2); // Closer = lower
     
     return { x, y, distance };
   }
@@ -849,57 +972,27 @@ class ARFootpathView {
     console.log('Manual controls setup complete');
   }
   
-  movePathsToMyLocation() {
-    if (!this.userLat || !this.userLon) {
-      alert('Wait for GPS location first!');
-      return;
-    }
+  toggleForcedLocation() {
+    this.forcedTestLocation = !this.forcedTestLocation;
     
-    if (this.footpaths.length === 0) {
-      alert('No footpaths loaded!');
-      return;
+    if (this.forcedTestLocation) {
+      this.userLat = this.testLat;
+      this.userLon = this.testLon;
+      document.getElementById('user-location').textContent = 
+        `${this.testLat.toFixed(6)}, ${this.testLon.toFixed(6)} (TEST MODE)`;
+      console.log('🔧 Forced test location ENABLED');
+    } else {
+      // Resume GPS tracking
+      this.userLat = null;
+      this.userLon = null;
+      console.log('📡 GPS location tracking RESUMED');
     }
-    
-    // Get first point of first path
-    const firstPath = this.footpaths[0];
-    if (firstPath.geometry.type === 'LineString' && firstPath.geometry.coordinates.length > 0) {
-      const firstPoint = firstPath.geometry.coordinates[0];
-      
-      // Calculate offset needed to move first point to user location
-      this.pathOffset.lat = this.userLat - firstPoint[1];
-      this.pathOffset.lon = this.userLon - firstPoint[0];
-      
-      this.testingMode = true;
-      
-      console.log('Testing mode enabled - paths moved to your location');
-      console.log('Offset:', this.pathOffset);
-      
-      const btn = document.getElementById('test-mode-btn');
-      if (btn) {
-        btn.textContent = 'Reset Paths to Real Location';
-        btn.style.background = '#ff6600';
-      }
-    }
-  }
-  
-  resetPathLocations() {
-    this.pathOffset = { lat: 0, lon: 0 };
-    this.testingMode = false;
-    
-    console.log('Testing mode disabled - paths at real locations');
     
     const btn = document.getElementById('test-mode-btn');
     if (btn) {
-      btn.textContent = 'Move Paths to My Location (Testing)';
-      btn.style.background = '#0096ff';
-    }
-  }
-  
-  toggleTestingMode() {
-    if (this.testingMode) {
-      this.resetPathLocations();
-    } else {
-      this.movePathsToMyLocation();
+      btn.textContent = this.forcedTestLocation ? 
+        'Disable Test Location' : 'Enable Test Location';
+      btn.style.background = this.forcedTestLocation ? '#ff6600' : '#0096ff';
     }
   }
   
@@ -1132,7 +1225,7 @@ class ARFootpathView {
 
 // Initialize when page loads
 document.addEventListener('DOMContentLoaded', () => {
-  window.arView = new ARFootpathView();
+  window.arView = new ARMemorialView();
   
   // Attach test mode button handler
   const testModeBtn = document.getElementById('test-mode-btn');
@@ -1140,72 +1233,16 @@ document.addEventListener('DOMContentLoaded', () => {
     testModeBtn.addEventListener('click', () => {
       console.log('Test mode button clicked');
       if (window.arView) {
-        window.arView.toggleTestingMode();
+        window.arView.toggleForcedLocation();
       }
     });
     console.log('Test mode button handler attached');
   }
   
-  // Attach map toggle button handler
-  const mapToggleBtn = document.getElementById('map-toggle-btn');
-  if (mapToggleBtn) {
-    mapToggleBtn.addEventListener('click', () => {
-      console.log('Map toggle button clicked');
-      if (window.arView) {
-        window.arView.toggleMapView();
-      }
-    });
-    console.log('Map toggle button handler attached');
-  }
-  
-  // Attach back to AR button handler (in map overlay)
-  const backToArBtn = document.getElementById('back-to-ar-btn');
-  if (backToArBtn) {
-    backToArBtn.addEventListener('click', () => {
-      console.log('Back to AR button clicked');
-      if (window.arView) {
-        window.arView.toggleMapView();
-      }
-    });
-    console.log('Back to AR button handler attached');
-  }
-  
-  // Attach elevation adjustment button handlers
-  const elevationUpBtn = document.getElementById('elevation-up-btn');
-  if (elevationUpBtn) {
-    elevationUpBtn.addEventListener('click', () => {
-      console.log('Elevation UP button clicked');
-      if (window.arView) {
-        window.arView.adjustElevationUp();
-      }
-    });
-    console.log('Elevation UP button handler attached');
-  }
-  
-  const elevationDownBtn = document.getElementById('elevation-down-btn');
-  if (elevationDownBtn) {
-    elevationDownBtn.addEventListener('click', () => {
-      console.log('Elevation DOWN button clicked');
-      if (window.arView) {
-        window.arView.adjustElevationDown();
-      }
-    });
-    console.log('Elevation DOWN button handler attached');
-  }
-  
-  const elevationResetBtn = document.getElementById('elevation-reset-btn');
-  if (elevationResetBtn) {
-    elevationResetBtn.addEventListener('click', () => {
-      console.log('Elevation RESET button clicked');
-      if (window.arView) {
-        window.arView.resetElevation();
-      }
-    });
-    console.log('Elevation RESET button handler attached');
-  }
-  
   // Cleanup on page unload
   window.addEventListener('beforeunload', () => {
-    window.arView.cleanup();
+    if (window.arView) {
+      window.arView.cleanup();
+    }
   });
 });

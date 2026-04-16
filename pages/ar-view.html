@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>AR Footpath View</title>
+  <title>AR Memorial View</title>
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <link rel="stylesheet" href="../css/style.css">
   <style>
@@ -123,15 +123,12 @@
       pointer-events: none;
     }
 
-    .path-label {
-      position: absolute;
-      background: rgba(0, 0, 0, 0.7);
-      color: white;
-      padding: 5px 10px;
-      border-radius: 5px;
-      font-size: 12px;
-      white-space: nowrap;
-      pointer-events: none;
+    .ar-memorial-image {
+      transform-origin: center;
+    }
+    
+    .ar-memorial-image:hover {
+      transform: scale(1.1);
     }
   </style>
 </head>
@@ -140,20 +137,20 @@
 
   <div id="loading" class="loading-spinner" style="display: flex;">
     <div class="spinner"></div>
-    <p>Initializing AR View...</p>
-    <p style="font-size: 14px; opacity: 0.7;">Version 2.9 - Build 2026-04-16 18:45</p>
-    <p style="font-size: 12px; margin-top: 10px;">Thicker Lines + Elevation Adjustment</p>
+    <p>Initializing AR Memorial View...</p>
+    <p style="font-size: 14px; opacity: 0.7;">Version 3.0 - Build 2026-04-16</p>
+    <p style="font-size: 12px; margin-top: 10px;">Memorial Image Overlay</p>
   </div>
 
   <div id="start-button-screen" style="position: fixed; top: 0; left: 0; width: 100%; height: 100vh; background: rgba(0,0,0,0.9); z-index: 2000; display: none; align-items: center; justify-content: center;">
     <div style="text-align: center; color: white; padding: 30px;">
-      <h2 style="margin-bottom: 20px;">AR Footpath View</h2>
+      <h2 style="margin-bottom: 20px;">AR Memorial View</h2>
       <p style="margin-bottom: 30px; font-size: 16px;">Click Start to enable camera and location access.</p>
       <button id="start-ar-button" style="padding: 20px 40px; font-size: 18px; background: #0096ff; color: white; border: none; border-radius: 10px; cursor: pointer; box-shadow: 0 4px 10px rgba(0,150,255,0.3);">
         Start AR View
       </button>
       <p style="margin-top: 20px; font-size: 14px; opacity: 0.7;">You may be asked to allow camera and location</p>
-      <p style="margin-top: 10px; font-size: 12px; opacity: 0.5;">Version 2.9 - Elevation Controls</p>
+      <p style="margin-top: 10px; font-size: 12px; opacity: 0.5;">Version 3.0 - Memorial Images</p>
     </div>
   </div>
 
@@ -171,8 +168,8 @@
 
   <div id="ar-overlay">
     <div id="ar-info">
-      <strong>AR Footpath View v2.9</strong><br>
-      <small style="opacity: 0.7;">Build: 2026-04-16 18:45 (Elevation)</small><br>
+      <strong>AR Memorial View v3.0</strong><br>
+      <small style="opacity: 0.7;">Build: 2026-04-16 (Image Overlay)</small><br>
       <div style="margin: 10px 0;">
         <label style="font-size: 12px;">
           <input type="checkbox" id="manual-location-toggle">
@@ -181,9 +178,9 @@
       </div>
       <div id="manual-location-inputs" style="display: none; margin: 5px 0;">
         <input type="number" id="manual-lat" placeholder="Latitude" step="0.000001" 
-               style="width: 48%; padding: 5px; margin: 2px 1%;" value="52.92640">
+               style="width: 48%; padding: 5px; margin: 2px 1%;" value="52.728256">
         <input type="number" id="manual-lon" placeholder="Longitude" step="0.000001"
-               style="width: 48%; padding: 5px; margin: 2px 1%;" value="-1.49800">
+               style="width: 48%; padding: 5px; margin: 2px 1%;" value="-1.729161">
         <button id="set-manual-location" 
                 style="width: 98%; padding: 8px; margin: 5px 1%; background: #0096ff; color: white; border: none; border-radius: 5px;">
           Set Location
@@ -191,7 +188,7 @@
       </div>
       Location: <span id="user-location">Detecting...</span><br>
       Accuracy: <span id="location-accuracy">--</span>m<br>
-      Paths visible: <span id="paths-count">0</span><br>
+      Memorials visible: <span id="paths-count">0</span><br>
       Heading: <span id="user-heading">--</span>°<br>
       <div style="margin-top: 5px;">
         <label style="font-size: 12px;">
@@ -203,33 +200,9 @@
       </div>
       <div style="margin-top: 8px;">
         <button id="test-mode-btn" 
-                style="padding: 8px 12px; background: #0096ff; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 12px; width: 100%;">
-          Move Paths to My Location (Testing)
+                style="padding: 8px 12px; background: #ff6600; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 12px; width: 100%;">
+          Disable Test Location
         </button>
-      </div>
-      <div style="margin-top: 8px;">
-        <button id="map-toggle-btn" 
-                style="padding: 8px 12px; background: #00cc66; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 12px; width: 100%;">
-          📍 Swap to Map Overview
-        </button>
-      </div>
-      <div style="margin-top: 12px; padding-top: 8px; border-top: 1px solid rgba(255,255,255,0.3);">
-        <strong style="font-size: 11px;">Elevation Adjustment:</strong><br>
-        <span id="elevation-offset" style="font-size: 11px; opacity: 0.8;">Ground Level</span>
-        <div style="display: flex; gap: 5px; margin-top: 5px;">
-          <button id="elevation-up-btn" 
-                  style="flex: 1; padding: 6px; background: #ff9900; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 11px;">
-            ⬆️ Higher
-          </button>
-          <button id="elevation-reset-btn" 
-                  style="flex: 1; padding: 6px; background: #666; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 11px;">
-            Reset
-          </button>
-          <button id="elevation-down-btn" 
-                  style="flex: 1; padding: 6px; background: #ff9900; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 11px;">
-            ⬇️ Lower
-          </button>
-        </div>
       </div>
     </div>
   </div>
@@ -241,23 +214,6 @@
   <div id="ar-scene">
     <video id="camera-view" autoplay playsinline></video>
     <canvas id="ar-canvas"></canvas>
-  </div>
-
-  <!-- Map Overview -->
-  <div id="map-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100vh; background: white; z-index: 3000;">
-    <canvas id="map-canvas" style="width: 100%; height: 100vh; background: #f0f0f0;"></canvas>
-    <div style="position: fixed; top: 10px; right: 10px; z-index: 3001;">
-      <button id="back-to-ar-btn" 
-              style="padding: 12px 20px; background: #0096ff; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 14px; box-shadow: 0 2px 8px rgba(0,0,0,0.3);">
-        📷 Back to AR View
-      </button>
-    </div>
-    <div id="map-info" style="position: fixed; bottom: 10px; left: 10px; background: rgba(0,0,0,0.8); color: white; padding: 15px; border-radius: 8px; font-size: 14px; z-index: 3001;">
-      <strong>Map Overview</strong><br>
-      <span style="color: #ff0000;">●</span> Your Location<br>
-      <span style="color: #0096ff;">━</span> Footpaths<br>
-      Distance: <span id="map-scale">50m</span> scale
-    </div>
   </div>
 
   <script>
