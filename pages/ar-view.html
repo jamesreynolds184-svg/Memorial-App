@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>AR Footpath View</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <link rel="stylesheet" href="../css/style.css">
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+    }
+    
+    #ar-scene {
+      width: 100%;
+      height: 100vh;
+      position: relative;
+    }
+
+    #ar-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      z-index: 1000;
+      background: rgba(0, 0, 0, 0.7);
+      color: white;
+      padding: 15px;
+      font-family: Arial, sans-serif;
+    }
+
+    #ar-info {
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    #close-ar {
+      position: fixed;
+      top: 15px;
+      right: 15px;
+      z-index: 1001;
+      background: rgba(255, 255, 255, 0.9);
+      border: none;
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      font-size: 24px;
+      cursor: pointer;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+    }
+
+    #calibration-notice {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 1001;
+      background: rgba(0, 150, 255, 0.9);
+      color: white;
+      padding: 15px 25px;
+      border-radius: 10px;
+      font-size: 14px;
+      text-align: center;
+      max-width: 80%;
+    }
+
+    #error-message {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 1002;
+      background: rgba(255, 0, 0, 0.9);
+      color: white;
+      padding: 20px;
+      border-radius: 10px;
+      text-align: center;
+      max-width: 80%;
+      display: none;
+    }
+
+    .loading-spinner {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 1003;
+      text-align: center;
+      color: white;
+      font-size: 18px;
+    }
+
+    .spinner {
+      border: 4px solid rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      border-top: 4px solid white;
+      width: 50px;
+      height: 50px;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 15px;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    #camera-view {
+      width: 100%;
+      height: 100vh;
+      object-fit: cover;
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
+
+    #ar-canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100vh;
+      pointer-events: none;
+    }
+
+    .path-label {
+      position: absolute;
+      background: rgba(0, 0, 0, 0.7);
+      color: white;
+      padding: 5px 10px;
+      border-radius: 5px;
+      font-size: 12px;
+      white-space: nowrap;
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body>
+  <button id="close-ar" onclick="window.location.href='../home.html'">✕</button>
+
+  <div id="loading" class="loading-spinner">
+    <div class="spinner"></div>
+    <p>Initializing AR View...</p>
+  </div>
+
+  <div id="error-message"></div>
+
+  <div id="ar-overlay">
+    <div id="ar-info">
+      <strong>AR Footpath View</strong><br>
+      <div style="margin: 10px 0;">
+        <label style="font-size: 12px;">
+          <input type="checkbox" id="manual-location-toggle">
+          Manual Location (Testing)
+        </label>
+      </div>
+      <div id="manual-location-inputs" style="display: none; margin: 5px 0;">
+        <input type="number" id="manual-lat" placeholder="Latitude" step="0.000001" 
+               style="width: 48%; padding: 5px; margin: 2px 1%;" value="52.92640">
+        <input type="number" id="manual-lon" placeholder="Longitude" step="0.000001"
+               style="width: 48%; padding: 5px; margin: 2px 1%;" value="-1.49800">
+        <button id="set-manual-location" 
+                style="width: 98%; padding: 8px; margin: 5px 1%; background: #0096ff; color: white; border: none; border-radius: 5px;">
+          Set Location
+        </button>
+      </div>
+      Location: <span id="user-location">Detecting...</span><br>
+      Accuracy: <span id="location-accuracy">--</span>m<br>
+      Paths visible: <span id="paths-count">0</span><br>
+      Heading: <span id="user-heading">--</span>°<br>
+      <div style="margin-top: 5px;">
+        <label style="font-size: 12px;">
+          <input type="checkbox" id="manual-heading-toggle">
+          Manual Heading: 
+          <input type="number" id="manual-heading" min="0" max="360" step="1" value="0"
+                 style="width: 60px; padding: 3px;" disabled>°
+        </label>
+      </div>
+    </div>
+  </div>
+
+  <div id="calibration-notice">
+    Move your device slowly in a figure-8 pattern to calibrate the compass
+  </div>
+
+  <div id="ar-scene">
+    <video id="camera-view" autoplay playsinline></video>
+    <canvas id="ar-canvas"></canvas>
+  </div>
+
+  <script src="../js/ar-view.js"></script>
+</body>
+</html>
