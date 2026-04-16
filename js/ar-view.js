@@ -30,7 +30,7 @@ class ARFootpathView {
   async init() {
     // Setup manual controls first so they work even if camera fails
     console.log('========================================');
-    console.log('AR View v2.1 - Build 2026-04-16 15:30');
+    console.log('AR View v2.2 - Build 2026-04-16 15:45 (Syntax Fixed)');
     console.log('========================================');
     console.log('AR View: Setting up manual controls...');
     this.setupManualControls();
