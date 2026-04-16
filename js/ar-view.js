@@ -676,6 +676,13 @@ class ARMemorialView {
     const nearbyMemorials = this.findNearbyMemorials();
     document.getElementById('paths-count').textContent = nearbyMemorials.length;
     
+    // Check if any memorials are within 50m (ignore search mode)
+    if (!this.searchActive && nearbyMemorials.length === 0) {
+      this.showNoMemorialsWarning();
+    } else {
+      this.hideNoMemorialsWarning();
+    }
+    
     // Draw each memorial
     nearbyMemorials.forEach(memorialData => {
       this.drawMemorial(memorialData);
@@ -684,6 +691,30 @@ class ARMemorialView {
     // Update directional arrow if search is active
     if (this.searchActive) {
       this.updateDirectionalArrow();
+    }
+  }
+
+  showNoMemorialsWarning() {
+    let warning = document.getElementById('no-memorials-warning');
+    if (!warning) {
+      warning = document.createElement('div');
+      warning.id = 'no-memorials-warning';
+      warning.style.cssText = 'position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 1000; background: rgba(0, 0, 0, 0.9); color: white; padding: 30px; border-radius: 15px; text-align: center; max-width: 80%; box-shadow: 0 4px 20px rgba(0,0,0,0.5);';
+      warning.innerHTML = `
+        <div style="font-size: 48px; margin-bottom: 15px;">📍</div>
+        <h3 style="margin: 0 0 10px 0; font-size: 20px;">No Memorials Nearby</h3>
+        <p style="margin: 0; font-size: 14px; opacity: 0.8;">There are no memorials within 50 meters of your current location.</p>
+        <p style="margin: 10px 0 0 0; font-size: 12px; opacity: 0.6;">Try using the search feature to find specific memorials further away.</p>
+      `;
+      document.body.appendChild(warning);
+    }
+    warning.style.display = 'block';
+  }
+
+  hideNoMemorialsWarning() {
+    const warning = document.getElementById('no-memorials-warning');
+    if (warning) {
+      warning.style.display = 'none';
     }
   }
 
@@ -775,7 +806,8 @@ class ARMemorialView {
       const label = document.createElement('div');
       label.textContent = `${memorial.name} (${Math.round(distance)}m)`;
       label.style.position = 'absolute';
-      label.style.bottom = '-45px'; // Increased from -30px to ensure it's below image
+      label.style.top = '100%'; // Position right below the image container
+      label.style.marginTop = '5px'; // Small gap between image and label
       label.style.left = '50%';
       label.style.transform = 'translateX(-50%)';
       label.style.background = 'rgba(0, 0, 0, 0.8)';

@@ -80,8 +80,15 @@
       return;
     }
 
+    // Filter to only show memorials within 50 meters
+    const nearby = withDist.filter(m => m._distance <= 50);
+    if (!nearby.length) {
+      listEl.innerHTML = '<li class="empty" style="padding: 40px 20px; text-align: center;"><div style="font-size: 36px; margin-bottom: 10px;">📍</div><strong>No Memorials Within 50 Meters</strong><div style="margin-top: 8px; font-size: 14px; opacity: 0.7;">Visit the memorial site to see nearby memorials.</div></li>';
+      return;
+    }
+
     const frag = document.createDocumentFragment();
-    for (const m of withDist) {
+    for (const m of nearby) {
       const li = document.createElement('li');
       li.className = 'memorial-row';
 
