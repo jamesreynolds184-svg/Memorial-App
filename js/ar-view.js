@@ -35,6 +35,9 @@ class ARFootpathView {
     this.testingMode = false;
     this.pathOffset = { lat: 0, lon: 0 };
     
+    // Vertical offset for simulating different elevations (e.g., 2nd floor)
+    this.yOffset = 0; // Pixels to shift paths up (-) or down (+)
+    
     // Camera field of view (adjustable based on device)
     this.fov = 60; // degrees
     this.maxDistance = 100; // meters - max distance to show paths
@@ -123,7 +126,7 @@ class ARFootpathView {
   async init() {
     // Setup manual controls first so they work even if camera fails
     console.log('========================================');
-    console.log('AR View v2.8 - Build 2026-04-16 18:30 (Max Stability)');
+    console.log('AR View v2.9 - Build 2026-04-16 18:45 (Thick Lines + Elevation)');
     console.log('Mobile device:', this.isMobile);
     console.log('User interacted:', this.userInteracted);
     console.log('User agent:', navigator.userAgent);
@@ -651,9 +654,9 @@ class ARFootpathView {
     
     if (!proj1 || !proj2) return;
     
-    // Draw line - 3x thicker (was 4, now 12)
+    // Draw line - 5x thicker (was 4, now 20)
     this.ctx.strokeStyle = 'rgba(0, 150, 255, 0.8)';
-    this.ctx.lineWidth = 12;
+    this.ctx.lineWidth = 20;
     this.ctx.lineCap = 'round';
     
     this.ctx.beginPath();
@@ -726,7 +729,10 @@ class ARFootpathView {
     const maxViewDistance = 50; // meters
     const normalizedDistance = Math.min(distance / maxViewDistance, 1);
     const baseY = this.canvas.height * 0.65; // Fixed baseline (65% down screen)
-    const y = baseY - (normalizedDistance * this.canvas.height * 0.15); // Closer = slightly lower
+    let y = baseY - (normalizedDistance * this.canvas.height * 0.15); // Closer = slightly lower
+    
+    // Apply vertical offset for elevation adjustment (e.g., 2nd floor testing)
+    y += this.yOffset;
     
     return { x, y, distance };
   }
@@ -894,6 +900,37 @@ class ARFootpathView {
       this.resetPathLocations();
     } else {
       this.movePathsToMyLocation();
+    }
+  }
+  
+  adjustElevationUp() {
+    this.yOffset -= 50; // Move paths up 50px (simulate being higher)
+    console.log('Elevation adjusted UP - Y offset:', this.yOffset);
+    this.updateElevationDisplay();
+  }
+  
+  adjustElevationDown() {
+    this.yOffset += 50; // Move paths down 50px (simulate being lower)
+    console.log('Elevation adjusted DOWN - Y offset:', this.yOffset);
+    this.updateElevationDisplay();
+  }
+  
+  resetElevation() {
+    this.yOffset = 0;
+    console.log('Elevation RESET - Y offset:', this.yOffset);
+    this.updateElevationDisplay();
+  }
+  
+  updateElevationDisplay() {
+    const display = document.getElementById('elevation-offset');
+    if (display) {
+      if (this.yOffset === 0) {
+        display.textContent = 'Ground Level';
+      } else if (this.yOffset < 0) {
+        display.textContent = `${Math.abs(this.yOffset)}px up (${Math.round(Math.abs(this.yOffset) / 100)}+ floors)`;
+      } else {
+        display.textContent = `${this.yOffset}px down`;
+      }
     }
   }
   
@@ -1131,6 +1168,40 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
     console.log('Back to AR button handler attached');
+  }
+  
+  // Attach elevation adjustment button handlers
+  const elevationUpBtn = document.getElementById('elevation-up-btn');
+  if (elevationUpBtn) {
+    elevationUpBtn.addEventListener('click', () => {
+      console.log('Elevation UP button clicked');
+      if (window.arView) {
+        window.arView.adjustElevationUp();
+      }
+    });
+    console.log('Elevation UP button handler attached');
+  }
+  
+  const elevationDownBtn = document.getElementById('elevation-down-btn');
+  if (elevationDownBtn) {
+    elevationDownBtn.addEventListener('click', () => {
+      console.log('Elevation DOWN button clicked');
+      if (window.arView) {
+        window.arView.adjustElevationDown();
+      }
+    });
+    console.log('Elevation DOWN button handler attached');
+  }
+  
+  const elevationResetBtn = document.getElementById('elevation-reset-btn');
+  if (elevationResetBtn) {
+    elevationResetBtn.addEventListener('click', () => {
+      console.log('Elevation RESET button clicked');
+      if (window.arView) {
+        window.arView.resetElevation();
+      }
+    });
+    console.log('Elevation RESET button handler attached');
   }
   
   // Cleanup on page unload
