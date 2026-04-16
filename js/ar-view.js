@@ -46,7 +46,8 @@ class ARMemorialView {
     
     // Camera field of view (adjustable based on device)
     this.fov = 60; // degrees
-    this.maxDistance = 100; // meters - max distance to show memorials
+    this.maxDistance = 50; // meters - default max distance to show memorials
+    this.searchMaxDistance = 200; // meters - max distance when searching for a specific memorial
     this.minDistance = 5; // meters - minimum distance to show memorial
     
     // Image sizing
@@ -689,6 +690,9 @@ class ARMemorialView {
   findNearbyMemorials() {
     const nearby = [];
     
+    // Use larger distance when searching for a specific memorial
+    const effectiveMaxDistance = this.searchActive ? this.searchMaxDistance : this.maxDistance;
+    
     this.memorials.forEach(memorial => {
       // Apply search filter if active
       if (this.searchActive && this.searchQuery) {
@@ -702,8 +706,8 @@ class ARMemorialView {
         memorial.lat, memorial.lng
       );
       
-      // Force strict distance check - always filter by maxDistance
-      if (distance >= this.minDistance && distance <= this.maxDistance) {
+      // Use effectiveMaxDistance (50m default, 200m when searching)
+      if (distance >= this.minDistance && distance <= effectiveMaxDistance) {
         nearby.push({
           memorial: memorial,
           distance: distance
@@ -714,7 +718,7 @@ class ARMemorialView {
     // Sort by distance (closest first)
     nearby.sort((a, b) => a.distance - b.distance);
     
-    console.log(`Showing ${nearby.length} memorials within ${this.maxDistance}m`);
+    console.log(`Showing ${nearby.length} memorials within ${effectiveMaxDistance}m`);
     
     return nearby;
   }
@@ -1187,18 +1191,12 @@ class ARMemorialView {
       searchResults.style.display = 'block';
     };
     
-    // Helper function to perform search
+    // Helper function to perform search (only renders results, does NOT activate search)
     this.performSearch = (query) => {
       this.renderSearchResults(query);
       
-      // Update active search state
-      if (query.length >= MIN_SEARCH_LENGTH) {
-        this.searchQuery = query;
-        this.searchActive = true;
-      } else {
-        this.searchQuery = '';
-        this.searchActive = false;
-      }
+      // Don't set searchActive here - user must select a memorial from the list
+      // This ensures exact memorial selection, not partial matching
     };
     
     // Helper function to select a memorial
@@ -1232,15 +1230,18 @@ class ARMemorialView {
       return;
     }
     
-    // Find the searched memorial
-    const searchedMemorial = this.memorials.find(m => 
+    // Count how many memorials match the search query
+    const matchingMemorials = this.memorials.filter(m => 
       m.name.toLowerCase().includes(this.searchQuery.toLowerCase())
     );
     
-    if (!searchedMemorial) {
+    // Only show arrow if EXACTLY 1 memorial matches
+    if (matchingMemorials.length !== 1) {
       document.getElementById('ar-direction-arrow').style.display = 'none';
       return;
     }
+    
+    const searchedMemorial = matchingMemorials[0];
     
     // Check if memorial is on screen
     const projection = this.projectPoint(searchedMemorial.lat, searchedMemorial.lng);

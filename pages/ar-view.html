@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>AR Memorial View</title>
-  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
   <link rel="stylesheet" href="../css/style.css">
   <style>
     body {
@@ -150,8 +150,8 @@
     </div>
   </div>
   
-  <!-- Directional Arrow for off-screen memorial -->
-  <div id="ar-direction-arrow" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 999; font-size: 60px; color: rgba(255, 102, 0, 0.9); text-shadow: 0 0 10px rgba(0,0,0,0.5); pointer-events: none;"></div>
+  <!-- Directional Arrow for off-screen memorial (only shows when exactly 1 memorial matches search) -->
+  <div id="ar-direction-arrow" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 999; font-size: 120px; color: rgba(255, 102, 0, 0.9); text-shadow: 0 0 15px rgba(0,0,0,0.7); pointer-events: none;"></div>
 
   <div id="loading" class="loading-spinner" style="display: flex;">
     <div class="spinner"></div>
