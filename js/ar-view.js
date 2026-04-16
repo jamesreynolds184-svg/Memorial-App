@@ -19,18 +19,46 @@ class ARFootpathView {
     this.manualLocationMode = false;
     this.manualHeadingMode = false;
     this.renderingStarted = false;
+    this.userInteracted = false;
     
     // Camera field of view (adjustable based on device)
     this.fov = 60; // degrees
     this.maxDistance = 100; // meters - max distance to show paths
     
-    this.init();
+    // Check if this is iOS/mobile - require user interaction first
+    this.isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+    
+    if (this.isMobile) {
+      this.setupStartButton();
+    } else {
+      this.init();
+    }
+  }
+
+  setupStartButton() {
+    console.log('Mobile device detected - showing Start button for permissions');
+    const startScreen = document.getElementById('start-button-screen');
+    const startButton = document.getElementById('start-ar-button');
+    const loading = document.getElementById('loading');
+    
+    loading.style.display = 'none';
+    startScreen.style.display = 'flex';
+    
+    startButton.onclick = () => {
+      console.log('User clicked Start AR - initiating with user interaction');
+      this.userInteracted = true;
+      startScreen.style.display = 'none';
+      loading.style.display = 'block';
+      this.init();
+    };
   }
 
   async init() {
     // Setup manual controls first so they work even if camera fails
     console.log('========================================');
-    console.log('AR View v2.2 - Build 2026-04-16 15:45 (Syntax Fixed)');
+    console.log('AR View v2.3 - Build 2026-04-16 16:00 (iOS Fix)');
+    console.log('Mobile device:', this.isMobile);
+    console.log('User interacted:', this.userInteracted);
     console.log('========================================');
     console.log('AR View: Setting up manual controls...');
     this.setupManualControls();
@@ -286,14 +314,19 @@ class ARFootpathView {
     if (typeof DeviceOrientationEvent !== 'undefined' && 
         typeof DeviceOrientationEvent.requestPermission === 'function') {
       
-      console.log('iOS device detected - orientation permission required');
-      console.log('User must interact with page first (e.g., click a button)');
+      console.log('iOS device - orientation permission required (user gesture needed)');
+      
+      // Only show button if user hasn't interacted yet
+      if (!this.userInteracted) {
+        console.log('No user interaction yet - will request permission via button');
+      }
       
       // Create a button to request permission on iOS
       const requestBtn = document.createElement('button');
-      requestBtn.textContent = 'Enable Device Orientation';
-      requestBtn.style.cssText = 'position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 9999; padding: 20px 40px; font-size: 18px; background: #0096ff; color: white; border: none; border-radius: 10px; cursor: pointer;';
+      requestBtn.textContent = 'Enable Compass';
+      requestBtn.style.cssText = 'position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%); z-index: 9999; padding: 15px 30px; font-size: 16px; background: #0096ff; color: white; border: none; border-radius: 10px; cursor: pointer; box-shadow: 0 2px 10px rgba(0,150,255,0.5);';
       requestBtn.onclick = () => {
+        console.log('User clicked Enable Compass button');
         DeviceOrientationEvent.requestPermission()
           .then(response => {
             console.log('Orientation permission response:', response);
@@ -303,11 +336,13 @@ class ARFootpathView {
             } else {
               console.warn('Orientation permission denied');
               requestBtn.textContent = 'Permission Denied - Use Manual Heading';
+              requestBtn.style.background = '#cc0000';
             }
           })
           .catch(err => {
             console.error('Orientation permission error:', err);
-            requestBtn.remove();
+            requestBtn.textContent = 'Error - Use Manual Heading';
+            requestBtn.style.background = '#cc0000';
           });
       };
       document.body.appendChild(requestBtn);
