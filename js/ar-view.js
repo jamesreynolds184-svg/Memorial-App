@@ -29,8 +29,31 @@ class ARFootpathView {
 
   async init() {
     // Setup manual controls first so they work even if camera fails
+    console.log('========================================');
+    console.log('AR View v2.1 - Build 2026-04-16 15:30');
+    console.log('========================================');
     console.log('AR View: Setting up manual controls...');
     this.setupManualControls();
+    
+    // Set a timeout to detect if initialization hangs
+    const initTimeout = setTimeout(() => {
+      console.error('INITIALIZATION TIMEOUT - Something is stuck!');
+      console.error('Check if waiting for user interaction (camera/location permission)');
+      document.getElementById('loading').innerHTML = `
+        <div style="padding: 20px; background: rgba(255,0,0,0.9); color: white; border-radius: 10px;">
+          <h3>Initialization Timeout</h3>
+          <p>The page has been loading for over 10 seconds.</p>
+          <p>Possible causes:</p>
+          <ul style="text-align: left; margin: 10px 0;">
+            <li>Waiting for camera permission (check browser prompt)</li>
+            <li>Waiting for location permission (check browser prompt)</li>
+            <li>Data failed to load (check console for errors)</li>
+          </ul>
+          <button onclick="location.reload()" style="padding: 10px 20px; margin: 5px; background: white; color: #cc0000; border: none; border-radius: 5px; cursor: pointer;">Reload Page</button>
+          <button onclick="enableManualMode(); document.getElementById('loading').style.display='none';" style="padding: 10px 20px; margin: 5px; background: #0096ff; color: white; border: none; border-radius: 5px; cursor: pointer;">Use Manual Mode</button>
+        </div>
+      `;
+    }, 10000); // 10 second timeout
     
     console.log('AR View: Starting initialization...');
     
@@ -73,8 +96,12 @@ class ARFootpathView {
     console.log('AR View: Starting render loop...');
     this.startRendering();
     
+    // Clear timeout since we completed successfully
+    clearTimeout(initTimeout);
+    
     document.getElementById('loading').style.display = 'none';
     console.log('AR View: Initialization complete!');
+    console.log('========================================');
     
     // Show message if camera not available
     if (!this.video || !this.video.srcObject) {
