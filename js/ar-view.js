@@ -38,7 +38,11 @@ class ARMemorialView {
     this.smoothingWindow = 20; // Increased to 20 for maximum stability
     this.minHeadingChange = 3; // Increased to 3 degrees to reduce jitter
     this.minLocationChange = 0.00001; // Increased threshold - ignore more GPS drift
-    this.minPitchChange = 5; // Increased to 5 degrees - less sensitive to tilt
+    this.minPitchChange = 1; // Reduced to 1 degree for responsive tilt
+    
+    // Search functionality
+    this.searchQuery = '';
+    this.searchActive = false;
     
     // Camera field of view (adjustable based on device)
     this.fov = 60; // degrees
@@ -151,6 +155,7 @@ class ARMemorialView {
     console.log('========================================');
     console.log('AR View: Setting up manual controls...');
     this.setupManualControls();
+    this.setupSearchControls();
     
     // Set a timeout to detect if initialization hangs
     const initTimeout = setTimeout(() => {
@@ -588,17 +593,9 @@ class ARMemorialView {
         // Normalize to -90 to 90 (clamped to reasonable tilt range)
         newPitch = Math.max(-90, Math.min(90, newPitch));
         
-        // Check if change is significant
-        if (this.userPitch !== 0) {
-          const pitchDiff = Math.abs(newPitch - this.userPitch);
-          if (pitchDiff < this.minPitchChange) {
-            return;
-          }
-        }
-        
         // Add to history for smoothing
         this.pitchHistory.push(newPitch);
-        if (this.pitchHistory.length > this.smoothingWindow) {
+        if (this.pitchHistory.length > 5) { // Smaller window for more responsive tilt
           this.pitchHistory.shift();
         }
         
@@ -608,6 +605,11 @@ class ARMemorialView {
         avgPitch /= this.pitchHistory.length;
         
         this.userPitch = avgPitch;
+        
+        // Debug log
+        if (Math.abs(avgPitch) > 5) {
+          console.log('Device pitch:', avgPitch.toFixed(1) + '°');
+        }
       }
     };
     
@@ -677,17 +679,30 @@ class ARMemorialView {
     nearbyMemorials.forEach(memorialData => {
       this.drawMemorial(memorialData);
     });
+    
+    // Update directional arrow if search is active
+    if (this.searchActive) {
+      this.updateDirectionalArrow();
+    }
   }
 
   findNearbyMemorials() {
     const nearby = [];
     
     this.memorials.forEach(memorial => {
+      // Apply search filter if active
+      if (this.searchActive && this.searchQuery) {
+        if (!memorial.name.toLowerCase().includes(this.searchQuery.toLowerCase())) {
+          return; // Skip this memorial
+        }
+      }
+      
       const distance = this.calculateDistance(
         this.userLat, this.userLon,
         memorial.lat, memorial.lng
       );
       
+      // Force strict distance check - always filter by maxDistance
       if (distance >= this.minDistance && distance <= this.maxDistance) {
         nearby.push({
           memorial: memorial,
@@ -698,6 +713,8 @@ class ARMemorialView {
     
     // Sort by distance (closest first)
     nearby.sort((a, b) => a.distance - b.distance);
+    
+    console.log(`Showing ${nearby.length} memorials within ${this.maxDistance}m`);
     
     return nearby;
   }
@@ -743,30 +760,35 @@ class ARMemorialView {
       imgTag.style.border = '3px solid rgba(0, 150, 255, 0.8)';
       imgTag.style.boxShadow = '0 4px 15px rgba(0, 0, 0, 0.5)';
       
-      // Label
+      // Label - multi-line support
       const label = document.createElement('div');
       label.textContent = `${memorial.name} (${Math.round(distance)}m)`;
       label.style.position = 'absolute';
-      label.style.bottom = '-25px';
+      label.style.bottom = '-30px';
       label.style.left = '50%';
       label.style.transform = 'translateX(-50%)';
       label.style.background = 'rgba(0, 0, 0, 0.8)';
       label.style.color = 'white';
       label.style.padding = '4px 8px';
       label.style.borderRadius = '5px';
-      label.style.fontSize = '12px';
-      label.style.whiteSpace = 'nowrap';
-      label.style.maxWidth = '200px';
-      label.style.overflow = 'hidden';
-      label.style.textOverflow = 'ellipsis';
+      label.style.fontSize = '11px';
+      label.style.whiteSpace = 'normal';
+      label.style.wordWrap = 'break-word';
+      label.style.maxWidth = '250px';
+      label.style.textAlign = 'center';
+      label.style.lineHeight = '1.3';
       
       imgElement.appendChild(imgTag);
       imgElement.appendChild(label);
       
-      // Click handler
-      imgElement.onclick = () => {
+      // Click/Touch handlers for cross-platform compatibility
+      const showPopup = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
         this.showMemorialPopup(memorial, distance, img.src);
       };
+      imgElement.addEventListener('click', showPopup);
+      imgElement.addEventListener('touchend', showPopup);
       
       this.memorialElements.set(memorial.name, imgElement);
       document.getElementById('ar-scene').appendChild(imgElement);
@@ -858,32 +880,10 @@ class ARMemorialView {
       position: relative;
     `;
 
-    // Close button
-    const closeBtn = document.createElement('button');
-    closeBtn.innerHTML = '✕';
-    closeBtn.style.cssText = `
-      position: absolute;
-      top: 10px;
-      right: 10px;
-      background: rgba(0, 0, 0, 0.7);
-      color: white;
-      border: none;
-      border-radius: 50%;
-      width: 40px;
-      height: 40px;
-      font-size: 24px;
-      cursor: pointer;
-      z-index: 1;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    `;
-    closeBtn.onclick = () => popup.remove();
-
     // Content HTML
     content.innerHTML = `
-      <div style="padding: 20px;">
-        <h2 style="margin-top: 0; padding-right: 40px; color: #333;">${memorial.name}</h2>
+      <div style="padding: 20px; padding-top: 50px;">
+        <h2 style="margin-top: 0; color: #333;">${memorial.name}</h2>
         <p style="color: #666; font-size: 14px; margin: 5px 0;">
           <strong>Zone:</strong> ${memorial.zone} | 
           <strong>Distance:</strong> ${Math.round(distance)}m away
@@ -899,7 +899,37 @@ class ARMemorialView {
       </div>
     `;
 
-    content.appendChild(closeBtn);
+    // Orange X close button in top-right corner
+    const closeBtn = document.createElement('button');
+    closeBtn.innerHTML = '✕';
+    closeBtn.style.cssText = `
+      position: fixed;
+      top: 15px;
+      right: 15px;
+      background: #ff6600;
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 45px;
+      height: 45px;
+      font-size: 28px;
+      font-weight: bold;
+      cursor: pointer;
+      z-index: 10001;
+      box-shadow: 0 4px 12px rgba(255, 102, 0, 0.4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    `;
+    const closePopup = (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      popup.remove();
+    };
+    closeBtn.addEventListener('click', closePopup);
+    closeBtn.addEventListener('touchend', closePopup);
+    
+    popup.appendChild(closeBtn);
     popup.appendChild(content);
     document.body.appendChild(popup);
 
@@ -1062,6 +1092,107 @@ class ARMemorialView {
     }
     
     console.log('Manual controls setup complete');
+  }
+  
+  setupSearchControls() {
+    console.log('Setting up search controls...');
+    
+    const searchBtn = document.getElementById('ar-search-btn');
+    const searchPanel = document.getElementById('ar-search-panel');
+    const searchInput = document.getElementById('ar-search-input');
+    const applyBtn = document.getElementById('ar-search-apply-btn');
+    const clearBtn = document.getElementById('ar-search-clear-btn');
+    
+    if (!searchBtn || !searchPanel || !searchInput || !applyBtn || !clearBtn) {
+      console.error('Search control elements not found!');
+      return;
+    }
+    
+    // Toggle search panel
+    searchBtn.addEventListener('click', () => {
+      const isVisible = searchPanel.style.display !== 'none';
+      searchPanel.style.display = isVisible ? 'none' : 'block';
+      if (!isVisible) {
+        searchInput.focus();
+      }
+    });
+    
+    // Apply search
+    const applySearch = () => {
+      this.searchQuery = searchInput.value.trim();
+      this.searchActive = this.searchQuery.length > 0;
+      searchPanel.style.display = 'none';
+      console.log('Search applied:', this.searchQuery);
+      this.updateDirectionalArrow();
+    };
+    
+    applyBtn.addEventListener('click', applySearch);
+    searchInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        applySearch();
+      }
+    });
+    
+    // Clear search
+    clearBtn.addEventListener('click', () => {
+      searchInput.value = '';
+      this.searchQuery = '';
+      this.searchActive = false;
+      searchPanel.style.display = 'none';
+      document.getElementById('ar-direction-arrow').style.display = 'none';
+      console.log('Search cleared');
+    });
+    
+    console.log('Search controls setup complete');
+  }
+  
+  updateDirectionalArrow() {
+    if (!this.searchActive || !this.userLat || !this.userLon) {
+      document.getElementById('ar-direction-arrow').style.display = 'none';
+      return;
+    }
+    
+    // Find the searched memorial
+    const searchedMemorial = this.memorials.find(m => 
+      m.name.toLowerCase().includes(this.searchQuery.toLowerCase())
+    );
+    
+    if (!searchedMemorial) {
+      document.getElementById('ar-direction-arrow').style.display = 'none';
+      return;
+    }
+    
+    // Check if memorial is on screen
+    const projection = this.projectPoint(searchedMemorial.lat, searchedMemorial.lng);
+    
+    if (!projection) {
+      // Memorial is off-screen, show directional arrow
+      const bearing = this.calculateBearing(
+        this.userLat, this.userLon,
+        searchedMemorial.lat, searchedMemorial.lng
+      );
+      
+      let relativeAngle = bearing - this.userHeading;
+      while (relativeAngle > 180) relativeAngle -= 360;
+      while (relativeAngle < -180) relativeAngle += 360;
+      
+      // Determine arrow direction
+      let arrow = '';
+      if (relativeAngle > 15) {
+        arrow = '→'; // Turn right
+      } else if (relativeAngle < -15) {
+        arrow = '←'; // Turn left
+      } else {
+        arrow = '↑'; // Straight ahead (but may be outside FOV vertically)
+      }
+      
+      const arrowElement = document.getElementById('ar-direction-arrow');
+      arrowElement.innerHTML = arrow;
+      arrowElement.style.display = 'block';
+    } else {
+      // Memorial is visible
+      document.getElementById('ar-direction-arrow').style.display = 'none';
+    }
   }
   
   toggleForcedLocation() {
