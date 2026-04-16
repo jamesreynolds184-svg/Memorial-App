@@ -83,10 +83,9 @@ class ARFootpathView {
   async init() {
     // Setup manual controls first so they work even if camera fails
     console.log('========================================');
-    console.log('AR View v2.5 - Build 2026-04-16 16:30 (Stabilized)');
+    console.log('AR View v2.4 - Build 2026-04-16 16:15 (Button Fix)');
     console.log('Mobile device:', this.isMobile);
     console.log('User interacted:', this.userInteracted);
-    console.log('Smoothing enabled: GPS window=' + this.smoothingWindow + ', Heading window=' + this.smoothingWindow);
     console.log('========================================');
     console.log('AR View: Setting up manual controls...');
     this.setupManualControls();
@@ -308,13 +307,13 @@ class ARFootpathView {
     const newLat = position.coords.latitude;
     const newLon = position.coords.longitude;
     
-    // Check if change is significant enough (reduce GPS jitter)
-    if (this.userLat !== null) {
+    // Check if change is significant (reduce GPS drift)
+    if (this.userLat !== null && this.userLon !== null) {
       const latDiff = Math.abs(newLat - this.userLat);
       const lonDiff = Math.abs(newLon - this.userLon);
       
       if (latDiff < this.minLocationChange && lonDiff < this.minLocationChange) {
-        // Change too small, ignore to prevent jitter
+        // Change too small, skip to prevent jitter
         return;
       }
     }
@@ -345,7 +344,7 @@ class ARFootpathView {
       `${this.userLat.toFixed(6)}, ${this.userLon.toFixed(6)}`;
     document.getElementById('location-accuracy').textContent = accuracy;
     
-    console.log(`Location updated (smoothed): ${this.userLat.toFixed(6)}, ${this.userLon.toFixed(6)} (±${accuracy}m)`);
+    console.log(`Location updated: ${this.userLat}, ${this.userLon} (±${accuracy}m)`);
   }
 
   onLocationError(error) {
@@ -387,6 +386,36 @@ class ARFootpathView {
         console.log('User clicked Enable Compass button');
         DeviceOrientationEvent.requestPermission()
           .then(response => {
+            console.log('Orientation permission response:', response);
+            if (response === 'granted') {
+              this.startOrientationTracking();
+              requestBtn.remove();
+            } else {
+              console.warn('Orientation permission denied');
+              requestBtn.textContent = 'Permission Denied - Use Manual Heading';
+              requestBtn.style.background = '#cc0000';
+            }
+          })
+          .catch(err => {
+            console.error('Orientation permission error:', err);
+            requestBtn.textContent = 'Error - Use Manual Heading';
+            requestBtn.style.background = '#cc0000';
+          });
+      };
+      document.body.appendChild(requestBtn);
+    } else {
+      // Non-iOS or older iOS
+      console.log('Direct orientation access (no permission needed)');
+      this.startOrientationTracking();
+    }
+  }
+
+  startOrientationTracking() {
+    // Use DeviceOrientationEvent for compass heading
+    this.orientationHandler = (event) => {
+      if (this.manualHeadingMode) return; // Ignore device orientation in manual mode
+      
+      if (event.alpha !== null) {
         let newHeading;
         
         // alpha is compass heading (0-360)
@@ -452,38 +481,11 @@ class ARFootpathView {
     x /= angles.length;
     y /= angles.length;
     
-    let avg = Math.atan2(y, x) * 180 / Math.PI;
-    return ((avg % 360) + 360) % 360
-      console.log('Direct orientation access (no permission needed)');
-      this.startOrientationTracking();
-    }
-  }
-
-  startOrientationTracking() {
-    // Use DeviceOrientationEvent for compass heading
-    this.orientationHandler = (event) => {
-      if (this.manualHeadingMode) return; // Ignore device orientation in manual mode
-      
-      if (event.alpha !== null) {
-        // alpha is compass heading (0-360)
-        // On iOS with webkitCompassHeading
-        if (event.webkitCompassHeading) {
-          this.userHeading = event.webkitCompassHeading;
-        } else {
-          // Android/other devices
-          this.userHeading = 360 - event.alpha;
-        }
-        
-        this.isCalibrated = true;
-        document.getElementById('user-heading').textContent = 
-          Math.round(this.userHeading);
-      }
-    };
+    let avgRad = Math.atan2(y, x);
+    let avgDeg = avgRad * 180 / Math.PI;
     
-    window.addEventListener('deviceorientation', this.orientationHandler);
-    
-    // Also listen to deviceorientationabsolute for better support
-    window.addEventListener('deviceorientationabsolute', this.orientationHandler);
+    // Normalize to 0-360
+    return ((avgDeg % 360) + 360) % 360;
   }
 
   startRendering() {
