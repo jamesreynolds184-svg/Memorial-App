@@ -120,7 +120,7 @@ class ARFootpathView {
   async init() {
     // Setup manual controls first so they work even if camera fails
     console.log('========================================');
-    console.log('AR View v2.6 - Build 2026-04-16 17:15 (Testing Mode + Debug)');
+    console.log('AR View v2.6.2 - Build 2026-04-16 17:30 (iPhone Debug)');
     console.log('Mobile device:', this.isMobile);
     console.log('User interacted:', this.userInteracted);
     console.log('User agent:', navigator.userAgent);
