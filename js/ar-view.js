@@ -740,6 +740,13 @@ class ARMemorialView {
     const distanceRatio = 1 - (distance / this.maxDistance);
     const imageSize = this.minImageSize + (this.baseImageSize - this.minImageSize) * distanceRatio;
     
+    // Click/Touch handlers for cross-platform compatibility (defined before element check)
+    const showPopup = (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      this.showMemorialPopup(memorial, distance, img.src);
+    };
+    
     // Create or update image element
     let imgElement = this.memorialElements.get(memorial.name);
     if (!imgElement) {
@@ -781,12 +788,7 @@ class ARMemorialView {
       imgElement.appendChild(imgTag);
       imgElement.appendChild(label);
       
-      // Click/Touch handlers for cross-platform compatibility
-      const showPopup = (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        this.showMemorialPopup(memorial, distance, img.src);
-      };
+      // Add event listeners
       imgElement.addEventListener('click', showPopup);
       imgElement.addEventListener('touchend', showPopup);
       
@@ -972,12 +974,9 @@ class ARMemorialView {
     const x = this.canvas.width / 2 + 
               (relativeAngle / this.fov) * this.canvas.width;
     
-    // y: Position locked to device tilt
-    // When phone tilts up (negative pitch), memorials move down (higher Y)
-    // When phone tilts down (positive pitch), memorials move up (lower Y)
-    const baseY = this.canvas.height * 0.5; // Center of screen
-    const pitchOffset = (this.userPitch / 90) * this.canvas.height * 0.5; // Scale pitch to screen
-    const y = baseY + pitchOffset; // Add pitch offset (positive pitch = move up)
+    // y: Center all memorials vertically (ignore pitch for ground-level memorials)
+    // This is important when user is elevated (e.g., second floor) looking at ground-level memorials
+    const y = this.canvas.height * 0.5; // Always center vertically
     
     return { x, y, distance };
   }
@@ -1100,13 +1099,17 @@ class ARMemorialView {
     const searchBtn = document.getElementById('ar-search-btn');
     const searchPanel = document.getElementById('ar-search-panel');
     const searchInput = document.getElementById('ar-search-input');
-    const applyBtn = document.getElementById('ar-search-apply-btn');
+    const searchResults = document.getElementById('ar-search-results');
     const clearBtn = document.getElementById('ar-search-clear-btn');
     
-    if (!searchBtn || !searchPanel || !searchInput || !applyBtn || !clearBtn) {
+    if (!searchBtn || !searchPanel || !searchInput || !searchResults || !clearBtn) {
       console.error('Search control elements not found!');
       return;
     }
+    
+    let searchDebounce = null;
+    const MIN_SEARCH_LENGTH = 2;
+    const MAX_RESULTS = 30;
     
     // Toggle search panel
     searchBtn.addEventListener('click', () => {
@@ -1114,34 +1117,111 @@ class ARMemorialView {
       searchPanel.style.display = isVisible ? 'none' : 'block';
       if (!isVisible) {
         searchInput.focus();
+      } else {
+        // Clear search when closing panel
+        this.clearSearch();
       }
     });
     
-    // Apply search
-    const applySearch = () => {
-      this.searchQuery = searchInput.value.trim();
-      this.searchActive = this.searchQuery.length > 0;
-      searchPanel.style.display = 'none';
-      console.log('Search applied:', this.searchQuery);
-      this.updateDirectionalArrow();
-    };
-    
-    applyBtn.addEventListener('click', applySearch);
-    searchInput.addEventListener('keypress', (e) => {
-      if (e.key === 'Enter') {
-        applySearch();
-      }
+    // Search as user types (with debouncing)
+    searchInput.addEventListener('input', () => {
+      clearTimeout(searchDebounce);
+      searchDebounce = setTimeout(() => {
+        this.performSearch(searchInput.value.trim());
+      }, 300); // 300ms debounce
     });
     
     // Clear search
     clearBtn.addEventListener('click', () => {
+      this.clearSearch();
+    });
+    
+    // Helper function to render search results
+    this.renderSearchResults = (query) => {
+      searchResults.innerHTML = '';
+      
+      if (query.length < MIN_SEARCH_LENGTH) {
+        searchResults.style.display = 'none';
+        return;
+      }
+      
+      const queryLower = query.toLowerCase();
+      const matches = this.memorials
+        .filter(m => m.name.toLowerCase().includes(queryLower))
+        .sort((a, b) => a.name.localeCompare(b.name))
+        .slice(0, MAX_RESULTS);
+      
+      if (matches.length === 0) {
+        searchResults.innerHTML = '<li style="padding: 10px; color: #666; text-align: center;">No matches</li>';
+        searchResults.style.display = 'block';
+        return;
+      }
+      
+      matches.forEach(memorial => {
+        const li = document.createElement('li');
+        li.textContent = memorial.name;
+        li.style.cssText = `
+          padding: 10px;
+          cursor: pointer;
+          border-bottom: 1px solid #eee;
+          color: #333;
+          font-size: 14px;
+        `;
+        
+        // Hover effect
+        li.addEventListener('mouseenter', () => {
+          li.style.background = '#f0f0f0';
+        });
+        li.addEventListener('mouseleave', () => {
+          li.style.background = 'white';
+        });
+        
+        // Click to select memorial
+        li.addEventListener('click', () => {
+          this.selectMemorial(memorial.name);
+        });
+        
+        searchResults.appendChild(li);
+      });
+      
+      searchResults.style.display = 'block';
+    };
+    
+    // Helper function to perform search
+    this.performSearch = (query) => {
+      this.renderSearchResults(query);
+      
+      // Update active search state
+      if (query.length >= MIN_SEARCH_LENGTH) {
+        this.searchQuery = query;
+        this.searchActive = true;
+      } else {
+        this.searchQuery = '';
+        this.searchActive = false;
+      }
+    };
+    
+    // Helper function to select a memorial
+    this.selectMemorial = (memorialName) => {
+      searchInput.value = memorialName;
+      this.searchQuery = memorialName;
+      this.searchActive = true;
+      searchResults.style.display = 'none';
+      console.log('Memorial selected:', memorialName);
+      this.updateDirectionalArrow();
+    };
+    
+    // Helper function to clear search
+    this.clearSearch = () => {
       searchInput.value = '';
+      searchResults.innerHTML = '';
+      searchResults.style.display = 'none';
       this.searchQuery = '';
       this.searchActive = false;
       searchPanel.style.display = 'none';
       document.getElementById('ar-direction-arrow').style.display = 'none';
       console.log('Search cleared');
-    });
+    };
     
     console.log('Search controls setup complete');
   }
