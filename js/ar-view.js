@@ -21,6 +21,13 @@ class ARFootpathView {
     this.renderingStarted = false;
     this.userInteracted = false;
     
+    // Smoothing for GPS and heading
+    this.locationHistory = [];
+    this.headingHistory = [];
+    this.smoothingWindow = 5; // Number of readings to average
+    this.minHeadingChange = 2; // Degrees - ignore changes smaller than this
+    this.minLocationChange = 0.000005; // Lat/Lon - ignore tiny GPS drift
+    
     // Camera field of view (adjustable based on device)
     this.fov = 60; // degrees
     this.maxDistance = 100; // meters - max distance to show paths
@@ -72,9 +79,10 @@ class ARFootpathView {
   async init() {
     // Setup manual controls first so they work even if camera fails
     console.log('========================================');
-    console.log('AR View v2.4 - Build 2026-04-16 16:15 (Button Fix)');
+    console.log('AR View v2.5 - Build 2026-04-16 16:30 (Stabilized)');
     console.log('Mobile device:', this.isMobile);
     console.log('User interacted:', this.userInteracted);
+    console.log('Smoothing enabled: GPS window=' + this.smoothingWindow + ', Heading window=' + this.smoothingWindow);
     console.log('========================================');
     console.log('AR View: Setting up manual controls...');
     this.setupManualControls();
@@ -293,8 +301,38 @@ class ARFootpathView {
   onLocationUpdate(position) {
     if (this.manualLocationMode) return; // Ignore GPS updates in manual mode
     
-    this.userLat = position.coords.latitude;
-    this.userLon = position.coords.longitude;
+    const newLat = position.coords.latitude;
+    const newLon = position.coords.longitude;
+    
+    // Check if change is significant enough (reduce GPS jitter)
+    if (this.userLat !== null) {
+      const latDiff = Math.abs(newLat - this.userLat);
+      const lonDiff = Math.abs(newLon - this.userLon);
+      
+      if (latDiff < this.minLocationChange && lonDiff < this.minLocationChange) {
+        // Change too small, ignore to prevent jitter
+        return;
+      }
+    }
+    
+    // Add to history for smoothing
+    this.locationHistory.push({ lat: newLat, lon: newLon });
+    if (this.locationHistory.length > this.smoothingWindow) {
+      this.locationHistory.shift();
+    }
+    
+    // Calculate smoothed average
+    let avgLat = 0;
+    let avgLon = 0;
+    this.locationHistory.forEach(loc => {
+      avgLat += loc.lat;
+      avgLon += loc.lon;
+    });
+    avgLat /= this.locationHistory.length;
+    avgLon /= this.locationHistory.length;
+    
+    this.userLat = avgLat;
+    this.userLon = avgLon;
     
     const accuracy = Math.round(position.coords.accuracy);
     
@@ -303,7 +341,7 @@ class ARFootpathView {
       `${this.userLat.toFixed(6)}, ${this.userLon.toFixed(6)}`;
     document.getElementById('location-accuracy').textContent = accuracy;
     
-    console.log(`Location updated: ${this.userLat}, ${this.userLon} (±${accuracy}m)`);
+    console.log(`Location updated (smoothed): ${this.userLat.toFixed(6)}, ${this.userLon.toFixed(6)} (±${accuracy}m)`);
   }
 
   onLocationError(error) {
@@ -345,25 +383,73 @@ class ARFootpathView {
         console.log('User clicked Enable Compass button');
         DeviceOrientationEvent.requestPermission()
           .then(response => {
-            console.log('Orientation permission response:', response);
-            if (response === 'granted') {
-              this.startOrientationTracking();
-              requestBtn.remove();
-            } else {
-              console.warn('Orientation permission denied');
-              requestBtn.textContent = 'Permission Denied - Use Manual Heading';
-              requestBtn.style.background = '#cc0000';
-            }
-          })
-          .catch(err => {
-            console.error('Orientation permission error:', err);
-            requestBtn.textContent = 'Error - Use Manual Heading';
-            requestBtn.style.background = '#cc0000';
-          });
-      };
-      document.body.appendChild(requestBtn);
-    } else {
-      // Non-iOS or older iOS
+        let newHeading;
+        
+        // alpha is compass heading (0-360)
+        // On iOS with webkitCompassHeading
+        if (event.webkitCompassHeading) {
+          newHeading = event.webkitCompassHeading;
+        } else {
+          // Android/other devices
+          newHeading = 360 - event.alpha;
+        }
+        
+        // Normalize to 0-360
+        newHeading = ((newHeading % 360) + 360) % 360;
+        
+        // Check if change is significant (reduce compass jitter)
+        if (this.userHeading !== 0) {
+          let headingDiff = Math.abs(newHeading - this.userHeading);
+          // Handle wraparound (e.g., 359° to 1° is only 2° difference)
+          if (headingDiff > 180) {
+            headingDiff = 360 - headingDiff;
+          }
+          
+          if (headingDiff < this.minHeadingChange) {
+            // Change too small, ignore to prevent jitter
+            return;
+          }
+        }
+        
+        // Add to history for smoothing
+        this.headingHistory.push(newHeading);
+        if (this.headingHistory.length > this.smoothingWindow) {
+          this.headingHistory.shift();
+        }
+        
+        // Calculate smoothed average (with wraparound handling)
+        let avgHeading = this.averageAngles(this.headingHistory);
+        
+        this.userHeading = avgHeading;
+        this.isCalibrated = true;
+        
+        document.getElementById('user-heading').textContent = 
+          Math.round(this.userHeading);
+      }
+    };
+    
+    window.addEventListener('deviceorientation', this.orientationHandler);
+    
+    // Also listen to deviceorientationabsolute for better support
+    window.addEventListener('deviceorientationabsolute', this.orientationHandler);
+  }
+  
+  // Helper function to average angles (handles 359° + 1° = 0° correctly)
+  averageAngles(angles) {
+    let x = 0;
+    let y = 0;
+    
+    angles.forEach(angle => {
+      const rad = angle * Math.PI / 180;
+      x += Math.cos(rad);
+      y += Math.sin(rad);
+    });
+    
+    x /= angles.length;
+    y /= angles.length;
+    
+    let avg = Math.atan2(y, x) * 180 / Math.PI;
+    return ((avg % 360) + 360) % 360
       console.log('Direct orientation access (no permission needed)');
       this.startOrientationTracking();
     }
