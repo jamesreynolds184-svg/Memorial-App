@@ -123,7 +123,7 @@ class ARFootpathView {
   async init() {
     // Setup manual controls first so they work even if camera fails
     console.log('========================================');
-    console.log('AR View v2.7 - Build 2026-04-16 18:00 (Pitch Fix + Map)');
+    console.log('AR View v2.7.1 - Build 2026-04-16 18:15 (iPhone Button Fix)');
     console.log('Mobile device:', this.isMobile);
     console.log('User interacted:', this.userInteracted);
     console.log('User agent:', navigator.userAgent);
@@ -1103,6 +1103,42 @@ class ARFootpathView {
 // Initialize when page loads
 document.addEventListener('DOMContentLoaded', () => {
   window.arView = new ARFootpathView();
+  
+  // Attach test mode button handler
+  const testModeBtn = document.getElementById('test-mode-btn');
+  if (testModeBtn) {
+    testModeBtn.addEventListener('click', () => {
+      console.log('Test mode button clicked');
+      if (window.arView) {
+        window.arView.toggleTestingMode();
+      }
+    });
+    console.log('Test mode button handler attached');
+  }
+  
+  // Attach map toggle button handler
+  const mapToggleBtn = document.getElementById('map-toggle-btn');
+  if (mapToggleBtn) {
+    mapToggleBtn.addEventListener('click', () => {
+      console.log('Map toggle button clicked');
+      if (window.arView) {
+        window.arView.toggleMapView();
+      }
+    });
+    console.log('Map toggle button handler attached');
+  }
+  
+  // Attach back to AR button handler (in map overlay)
+  const backToArBtn = document.getElementById('back-to-ar-btn');
+  if (backToArBtn) {
+    backToArBtn.addEventListener('click', () => {
+      console.log('Back to AR button clicked');
+      if (window.arView) {
+        window.arView.toggleMapView();
+      }
+    });
+    console.log('Back to AR button handler attached');
+  }
   
   // Cleanup on page unload
   window.addEventListener('beforeunload', () => {
