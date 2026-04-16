@@ -45,47 +45,85 @@ class ARFootpathView {
   }
 
   setupStartButton() {
-    console.log('Setting up Start button...');
+    console.log('=== setupStartButton() called ===');
+    console.log('Document ready state:', document.readyState);
+    console.log('User agent:', navigator.userAgent);
+    console.log('Is mobile:', this.isMobile);
     
     // Wait for DOM to be ready
     if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', () => this.setupStartButtonElements());
+      console.log('DOM still loading, waiting for DOMContentLoaded event...');
+      document.addEventListener('DOMContentLoaded', () => {
+        console.log('DOMContentLoaded event fired!');
+        this.setupStartButtonElements();
+      });
     } else {
+      console.log('DOM already ready, setting up button elements immediately');
       this.setupStartButtonElements();
     }
+    
+    // Failsafe: try again after a short delay in case of timing issues
+    setTimeout(() => {
+      const startScreen = document.getElementById('start-button-screen');
+      if (startScreen && startScreen.style.display === 'none') {
+        console.warn('FAILSAFE: Button still hidden after delay, attempting to show again...');
+        this.setupStartButtonElements();
+      }
+    }, 100);
   }
   
   setupStartButtonElements() {
+    console.log('=== setupStartButtonElements() called ===');
     const startScreen = document.getElementById('start-button-screen');
     const startButton = document.getElementById('start-ar-button');
     const loading = document.getElementById('loading');
     
+    console.log('Elements found:', {
+      startScreen: !!startScreen,
+      startButton: !!startButton,
+      loading: !!loading
+    });
+    
     if (!startScreen || !startButton || !loading) {
-      console.error('Start button elements not found!', { startScreen, startButton, loading });
+      console.error('CRITICAL: Start button elements not found!');
+      console.error('Missing elements:', {
+        'start-button-screen': !startScreen,
+        'start-ar-button': !startButton,
+        'loading': !loading
+      });
+      console.error('All body elements:', document.body ? document.body.children.length : 'NO BODY');
       return;
     }
     
-    console.log('Start button elements found, showing screen');
+    console.log('All elements found! Showing start screen...');
+    console.log('Loading display before:', loading.style.display);
+    console.log('Start screen display before:', startScreen.style.display);
+    
     loading.style.display = 'none';
     startScreen.style.display = 'flex';
     
+    console.log('Loading display after:', loading.style.display);
+    console.log('Start screen display after:', startScreen.style.display);
+    
     startButton.addEventListener('click', () => {
-      console.log('START BUTTON CLICKED!');
+      console.log('=== START BUTTON CLICKED ===');
+      console.log('Time:', new Date().toISOString());
       this.userInteracted = true;
       startScreen.style.display = 'none';
       loading.style.display = 'flex';
       this.init();
     });
     
-    console.log('Start button click handler attached');
+    console.log('Start button click handler attached successfully!');
   }
 
   async init() {
     // Setup manual controls first so they work even if camera fails
     console.log('========================================');
-    console.log('AR View v2.4 - Build 2026-04-16 16:15 (Button Fix)');
+    console.log('AR View v2.6 - Build 2026-04-16 17:15 (Testing Mode + Debug)');
     console.log('Mobile device:', this.isMobile);
     console.log('User interacted:', this.userInteracted);
+    console.log('User agent:', navigator.userAgent);
     console.log('========================================');
     console.log('AR View: Setting up manual controls...');
     this.setupManualControls();
