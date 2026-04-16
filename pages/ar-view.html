@@ -141,7 +141,7 @@
   <div id="loading" class="loading-spinner" style="display: flex;">
     <div class="spinner"></div>
     <p>Initializing AR View...</p>
-    <p style="font-size: 14px; opacity: 0.7;">Version 2.6.2 - Build 2026-04-16 17:30</p>
+    <p style="font-size: 14px; opacity: 0.7;">Version 2.7 - Build 2026-04-16 18:00</p>
     <p style="font-size: 12px; margin-top: 10px;">Opening console to see detailed logs...</p>
   </div>
 
@@ -153,7 +153,7 @@
         Start AR View
       </button>
       <p style="margin-top: 20px; font-size: 14px; opacity: 0.7;">You may be asked to allow camera and location</p>
-      <p style="margin-top: 10px; font-size: 12px; opacity: 0.5;">Version 2.6.2 - Build 17:30</p>
+      <p style="margin-top: 10px; font-size: 12px; opacity: 0.5;">Version 2.7 - Build 18:00</p>
     </div>
   </div>
 
@@ -171,8 +171,8 @@
 
   <div id="ar-overlay">
     <div id="ar-info">
-      <strong>AR Footpath View v2.6.2</strong><br>
-      <small style="opacity: 0.7;">Build: 2026-04-16 17:30 (iPhone Debug)</small><br>
+      <strong>AR Footpath View v2.7</strong><br>
+      <small style="opacity: 0.7;">Build: 2026-04-16 18:00 (Pitch + Map)</small><br>
       <div style="margin: 10px 0;">
         <label style="font-size: 12px;">
           <input type="checkbox" id="manual-location-toggle">
@@ -207,6 +207,12 @@
           Move Paths to My Location (Testing)
         </button>
       </div>
+      <div style="margin-top: 8px;">
+        <button id="map-toggle-btn" onclick="window.arView?.toggleMapView()" 
+                style="padding: 8px 12px; background: #00cc66; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 12px; width: 100%;">
+          📍 Swap to Map Overview
+        </button>
+      </div>
     </div>
   </div>
 
@@ -217,6 +223,23 @@
   <div id="ar-scene">
     <video id="camera-view" autoplay playsinline></video>
     <canvas id="ar-canvas"></canvas>
+  </div>
+
+  <!-- Map Overview -->
+  <div id="map-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100vh; background: white; z-index: 3000;">
+    <canvas id="map-canvas" style="width: 100%; height: 100vh; background: #f0f0f0;"></canvas>
+    <div style="position: fixed; top: 10px; right: 10px; z-index: 3001;">
+      <button onclick="window.arView?.toggleMapView()" 
+              style="padding: 12px 20px; background: #0096ff; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 14px; box-shadow: 0 2px 8px rgba(0,0,0,0.3);">
+        📷 Back to AR View
+      </button>
+    </div>
+    <div id="map-info" style="position: fixed; bottom: 10px; left: 10px; background: rgba(0,0,0,0.8); color: white; padding: 15px; border-radius: 8px; font-size: 14px; z-index: 3001;">
+      <strong>Map Overview</strong><br>
+      <span style="color: #ff0000;">●</span> Your Location<br>
+      <span style="color: #0096ff;">━</span> Footpaths<br>
+      Distance: <span id="map-scale">50m</span> scale
+    </div>
   </div>
 
   <script>

@@ -9,6 +9,7 @@ class ARFootpathView {
     this.userLat = null;
     this.userLon = null;
     this.userHeading = 0;
+    this.userPitch = 0; // Device tilt (up/down)
     this.footpaths = [];
     this.canvas = null;
     this.ctx = null;
@@ -24,9 +25,11 @@ class ARFootpathView {
     // Smoothing for GPS and heading
     this.locationHistory = [];
     this.headingHistory = [];
-    this.smoothingWindow = 5; // Number of readings to average
-    this.minHeadingChange = 2; // Degrees - ignore changes smaller than this
+    this.pitchHistory = [];
+    this.smoothingWindow = 10; // Increased from 5 to 10 for more stability
+    this.minHeadingChange = 1; // Reduced from 2 to 1 for smoother tracking
     this.minLocationChange = 0.000005; // Lat/Lon - ignore tiny GPS drift
+    this.minPitchChange = 1; // Degrees - ignore small tilt changes
     
     // Testing mode - offset paths to user location
     this.testingMode = false;
@@ -120,7 +123,7 @@ class ARFootpathView {
   async init() {
     // Setup manual controls first so they work even if camera fails
     console.log('========================================');
-    console.log('AR View v2.6.2 - Build 2026-04-16 17:30 (iPhone Debug)');
+    console.log('AR View v2.7 - Build 2026-04-16 18:00 (Pitch Fix + Map)');
     console.log('Mobile device:', this.isMobile);
     console.log('User interacted:', this.userInteracted);
     console.log('User agent:', navigator.userAgent);
@@ -449,7 +452,7 @@ class ARFootpathView {
   }
 
   startOrientationTracking() {
-    // Use DeviceOrientationEvent for compass heading
+    // Use DeviceOrientationEvent for compass heading and device tilt
     this.orientationHandler = (event) => {
       if (this.manualHeadingMode) return; // Ignore device orientation in manual mode
       
@@ -496,6 +499,36 @@ class ARFootpathView {
         
         document.getElementById('user-heading').textContent = 
           Math.round(this.userHeading);
+      }
+      
+      // Track pitch (device tilt up/down) - beta property
+      // beta: -180 to 180 (negative = tilted up, positive = tilted down)
+      if (event.beta !== null) {
+        let newPitch = event.beta;
+        
+        // Normalize to -90 to 90 (clamped to reasonable tilt range)
+        newPitch = Math.max(-90, Math.min(90, newPitch));
+        
+        // Check if change is significant
+        if (this.userPitch !== 0) {
+          const pitchDiff = Math.abs(newPitch - this.userPitch);
+          if (pitchDiff < this.minPitchChange) {
+            return;
+          }
+        }
+        
+        // Add to history for smoothing
+        this.pitchHistory.push(newPitch);
+        if (this.pitchHistory.length > this.smoothingWindow) {
+          this.pitchHistory.shift();
+        }
+        
+        // Calculate smoothed average
+        let avgPitch = 0;
+        this.pitchHistory.forEach(p => avgPitch += p);
+        avgPitch /= this.pitchHistory.length;
+        
+        this.userPitch = avgPitch;
       }
     };
     
@@ -686,11 +719,21 @@ class ARFootpathView {
     const x = this.canvas.width / 2 + 
               (relativeAngle / this.fov) * this.canvas.width;
     
-    // y: map distance to screen height (closer = lower on screen)
-    // This is a simple projection - more sophisticated AR would use device tilt
+    // y: Adjust based on distance AND device pitch (tilt)
+    // Base Y position from distance (closer objects lower on screen)
     const maxViewDistance = 50; // meters
     const normalizedDistance = Math.min(distance / maxViewDistance, 1);
-    const y = this.canvas.height * (0.5 + normalizedDistance * 0.3);
+    let y = this.canvas.height * (0.5 + normalizedDistance * 0.3);
+    
+    // Adjust Y based on device pitch (tilt up/down)
+    // When tilting up (negative pitch), paths move down
+    // When tilting down (positive pitch), paths move up
+    // Assume paths are at ground level (0 elevation relative to user)
+    const pitchAdjustment = (this.userPitch / 90) * (this.canvas.height * 0.5);
+    y -= pitchAdjustment;
+    
+    // Clamp Y to screen bounds
+    y = Math.max(0, Math.min(this.canvas.height, y));
     
     return { x, y, distance };
   }
@@ -859,6 +902,175 @@ class ARFootpathView {
     } else {
       this.movePathsToMyLocation();
     }
+  }
+  
+  toggleMapView() {
+    const mapOverlay = document.getElementById('map-overlay');
+    const arScene = document.getElementById('ar-scene');
+    const arOverlay = document.getElementById('ar-overlay');
+    
+    if (!mapOverlay) return;
+    
+    if (mapOverlay.style.display === 'none') {
+      // Show map view
+      mapOverlay.style.display = 'block';
+      if (arScene) arScene.style.display = 'none';
+      if (arOverlay) arOverlay.style.display = 'none';
+      this.renderMapView();
+      
+      // Update map every second while visible
+      this.mapRenderInterval = setInterval(() => this.renderMapView(), 1000);
+    } else {
+      // Show AR view
+      mapOverlay.style.display = 'none';
+      if (arScene) arScene.style.display = 'block';
+      if (arOverlay) arOverlay.style.display = 'block';
+      
+      // Stop map updates
+      if (this.mapRenderInterval) {
+        clearInterval(this.mapRenderInterval);
+        this.mapRenderInterval = null;
+      }
+    }
+  }
+  
+  renderMapView() {
+    const canvas = document.getElementById('map-canvas');
+    if (!canvas) return;
+    
+    // Set canvas size to match display size
+    canvas.width = canvas.offsetWidth;
+    canvas.height = canvas.offsetHeight;
+    
+    const ctx = canvas.getContext('2d');
+    
+    // Clear canvas
+    ctx.fillStyle = '#f0f0f0';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    
+    if (!this.userLat || !this.userLon) {
+      ctx.fillStyle = '#666';
+      ctx.font = '16px Arial';
+      ctx.textAlign = 'center';
+      ctx.fillText('Waiting for GPS location...', canvas.width / 2, canvas.height / 2);
+      return;
+    }
+    
+    // Map scale: meters per pixel
+    const mapScale = 100; // Show 100m radius
+    const metersPerPixel = (mapScale * 2) / Math.min(canvas.width, canvas.height);
+    
+    // Center of canvas is user location
+    const centerX = canvas.width / 2;
+    const centerY = canvas.height / 2;
+    
+    // Draw scale circles
+    ctx.strokeStyle = '#ddd';
+    ctx.lineWidth = 1;
+    for (let radius = 25; radius <= 100; radius += 25) {
+      const pixelRadius = radius / metersPerPixel;
+      ctx.beginPath();
+      ctx.arc(centerX, centerY, pixelRadius, 0, Math.PI * 2);
+      ctx.stroke();
+      
+      // Label
+      ctx.fillStyle = '#999';
+      ctx.font = '12px Arial';
+      ctx.textAlign = 'center';
+      ctx.fillText(radius + 'm', centerX, centerY - pixelRadius - 5);
+    }
+    
+    // Draw footpaths
+    this.footpaths.forEach(feature => {
+      if (feature.geometry.type === 'LineString') {
+        const coords = feature.geometry.coordinates;
+        
+        ctx.strokeStyle = '#0096ff';
+        ctx.lineWidth = 3;
+        ctx.lineCap = 'round';
+        ctx.beginPath();
+        
+        let started = false;
+        for (let i = 0; i < coords.length; i++) {
+          const point = coords[i];
+          const lat = point[1] + this.pathOffset.lat;
+          const lon = point[0] + this.pathOffset.lon;
+          
+          // Convert lat/lon to map coordinates
+          const mapCoords = this.latLonToMapXY(lat, lon, this.userLat, this.userLon, metersPerPixel, centerX, centerY);
+          
+          if (mapCoords) {
+            if (!started) {
+              ctx.moveTo(mapCoords.x, mapCoords.y);
+              started = true;
+            } else {
+              ctx.lineTo(mapCoords.x, mapCoords.y);
+            }
+          }
+        }
+        
+        ctx.stroke();
+      }
+    });
+    
+    // Draw user location (red dot)
+    ctx.fillStyle = '#ff0000';
+    ctx.beginPath();
+    ctx.arc(centerX, centerY, 8, 0, Math.PI * 2);
+    ctx.fill();
+    
+    // Draw user heading indicator (arrow)
+    if (this.userHeading !== undefined) {
+      const headingRad = (this.userHeading - 90) * Math.PI / 180; // Convert to radians, adjust for canvas orientation
+      const arrowLength = 30;
+      const arrowEndX = centerX + Math.cos(headingRad) * arrowLength;
+      const arrowEndY = centerY + Math.sin(headingRad) * arrowLength;
+      
+      ctx.strokeStyle = '#ff0000';
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.moveTo(centerX, centerY);
+      ctx.lineTo(arrowEndX, arrowEndY);
+      ctx.stroke();
+      
+      // Arrowhead
+      const arrowheadSize = 10;
+      const angle1 = headingRad + Math.PI * 0.75;
+      const angle2 = headingRad - Math.PI * 0.75;
+      ctx.beginPath();
+      ctx.moveTo(arrowEndX, arrowEndY);
+      ctx.lineTo(arrowEndX + Math.cos(angle1) * arrowheadSize, arrowEndY + Math.sin(angle1) * arrowheadSize);
+      ctx.moveTo(arrowEndX, arrowEndY);
+      ctx.lineTo(arrowEndX + Math.cos(angle2) * arrowheadSize, arrowEndY + Math.sin(angle2) * arrowheadSize);
+      ctx.stroke();
+    }
+    
+    // Draw compass rose (N, E, S, W)
+    ctx.fillStyle = '#333';
+    ctx.font = 'bold 14px Arial';
+    ctx.textAlign = 'center';
+    ctx.fillText('N', centerX, 25);
+    ctx.fillText('S', centerX, canvas.height - 10);
+    ctx.textAlign = 'left';
+    ctx.fillText('E', canvas.width - 25, centerY + 5);
+    ctx.textAlign = 'right';
+    ctx.fillText('W', 25, centerY + 5);
+  }
+  
+  latLonToMapXY(lat, lon, centerLat, centerLon, metersPerPixel, centerX, centerY) {
+    // Calculate distance and bearing from center to point
+    const distance = this.calculateDistance(centerLat, centerLon, lat, lon);
+    const bearing = this.calculateBearing(centerLat, centerLon, lat, lon);
+    
+    // Convert to map coordinates
+    // Bearing 0° = North = up on map = negative Y
+    const bearingRad = (bearing - 90) * Math.PI / 180; // Adjust for canvas coordinate system
+    
+    const pixelDistance = distance / metersPerPixel;
+    const x = centerX + Math.cos(bearingRad) * pixelDistance;
+    const y = centerY + Math.sin(bearingRad) * pixelDistance;
+    
+    return { x, y };
   }
 
   showError(message) {
