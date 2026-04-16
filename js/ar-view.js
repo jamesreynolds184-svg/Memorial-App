@@ -42,7 +42,7 @@ class ARMemorialView {
     
     // Camera field of view (adjustable based on device)
     this.fov = 60; // degrees
-    this.maxDistance = 200; // meters - max distance to show memorials
+    this.maxDistance = 100; // meters - max distance to show memorials
     this.minDistance = 5; // meters - minimum distance to show memorial
     
     // Image sizing
@@ -765,7 +765,7 @@ class ARMemorialView {
       
       // Click handler
       imgElement.onclick = () => {
-        alert(`${memorial.name}\n\nDistance: ${Math.round(distance)}m\n\n${memorial.description.substring(0, 200)}...`);
+        this.showMemorialPopup(memorial, distance, img.src);
       };
       
       this.memorialElements.set(memorial.name, imgElement);
@@ -817,6 +817,98 @@ class ARMemorialView {
     // Text
     this.ctx.fillStyle = 'white';
     this.ctx.fillText(text, x, y);
+  }
+
+  showMemorialPopup(memorial, distance, imageSrc) {
+    // Remove existing popup if any
+    const existingPopup = document.getElementById('ar-memorial-popup');
+    if (existingPopup) {
+      existingPopup.remove();
+    }
+
+    // Create popup overlay
+    const popup = document.createElement('div');
+    popup.id = 'ar-memorial-popup';
+    popup.style.cssText = `
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100vh;
+      background: rgba(0, 0, 0, 0.9);
+      z-index: 10000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow-y: auto;
+      padding: 20px;
+      box-sizing: border-box;
+    `;
+
+    // Create popup content
+    const content = document.createElement('div');
+    content.style.cssText = `
+      background: white;
+      border-radius: 12px;
+      max-width: 600px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+      position: relative;
+    `;
+
+    // Close button
+    const closeBtn = document.createElement('button');
+    closeBtn.innerHTML = '✕';
+    closeBtn.style.cssText = `
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: rgba(0, 0, 0, 0.7);
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      font-size: 24px;
+      cursor: pointer;
+      z-index: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    `;
+    closeBtn.onclick = () => popup.remove();
+
+    // Content HTML
+    content.innerHTML = `
+      <div style="padding: 20px;">
+        <h2 style="margin-top: 0; padding-right: 40px; color: #333;">${memorial.name}</h2>
+        <p style="color: #666; font-size: 14px; margin: 5px 0;">
+          <strong>Zone:</strong> ${memorial.zone} | 
+          <strong>Distance:</strong> ${Math.round(distance)}m away
+        </p>
+        <div style="margin: 15px 0;">
+          <img src="${imageSrc}" 
+               alt="${memorial.name}" 
+               style="width: 100%; height: auto; border-radius: 8px; border: 2px solid #ddd;" />
+        </div>
+        <div style="color: #444; line-height: 1.6; white-space: pre-wrap; font-size: 15px;">
+          ${memorial.description || 'No description available.'}
+        </div>
+      </div>
+    `;
+
+    content.appendChild(closeBtn);
+    popup.appendChild(content);
+    document.body.appendChild(popup);
+
+    // Close on background click
+    popup.onclick = (e) => {
+      if (e.target === popup) {
+        popup.remove();
+      }
+    };
   }
 
   projectPoint(lat, lon) {
