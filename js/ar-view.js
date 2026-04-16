@@ -771,11 +771,11 @@ class ARMemorialView {
       imgTag.style.border = '3px solid rgba(0, 150, 255, 0.8)';
       imgTag.style.boxShadow = '0 4px 15px rgba(0, 0, 0, 0.5)';
       
-      // Label - multi-line support
+      // Label - positioned well below image to avoid overlap
       const label = document.createElement('div');
       label.textContent = `${memorial.name} (${Math.round(distance)}m)`;
       label.style.position = 'absolute';
-      label.style.bottom = '-30px';
+      label.style.bottom = '-45px'; // Increased from -30px to ensure it's below image
       label.style.left = '50%';
       label.style.transform = 'translateX(-50%)';
       label.style.background = 'rgba(0, 0, 0, 0.8)';
@@ -1180,10 +1180,13 @@ class ARMemorialView {
           li.style.background = 'white';
         });
         
-        // Click to select memorial
-        li.addEventListener('click', () => {
+        // Click/Touch to select memorial (cross-platform compatibility)
+        const selectHandler = (e) => {
+          e.preventDefault();
           this.selectMemorial(memorial.name);
-        });
+        };
+        li.addEventListener('click', selectHandler);
+        li.addEventListener('touchend', selectHandler);
         
         searchResults.appendChild(li);
       });
