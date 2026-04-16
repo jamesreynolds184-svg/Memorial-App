@@ -18,6 +18,7 @@ class ARFootpathView {
     this.orientationHandler = null;
     this.manualLocationMode = false;
     this.manualHeadingMode = false;
+    this.renderingStarted = false;
     
     // Camera field of view (adjustable based on device)
     this.fov = 60; // degrees
@@ -27,6 +28,10 @@ class ARFootpathView {
   }
 
   async init() {
+    // Setup manual controls first so they work even if camera fails
+    console.log('AR View: Setting up manual controls...');
+    this.setupManualControls();
+    
     try {
       console.log('AR View: Starting initialization...');
       
@@ -52,10 +57,6 @@ class ARFootpathView {
       console.log('AR View: Setting up orientation...');
       this.setupOrientation();
       
-      // Setup manual controls
-      console.log('AR View: Setting up manual controls...');
-      this.setupManualControls();
-      
       // Start rendering
       console.log('AR View: Starting render loop...');
       this.startRendering();
@@ -76,6 +77,34 @@ class ARFootpathView {
     } catch (error) {
       this.showError('Failed to initialize AR view: ' + error.message);
       console.error('AR initialization error:', error);
+      
+      // Even if camera fails, set up basic rendering with manual mode
+      this.setupBasicFallback();
+    }
+  }
+  
+  setupBasicFallback() {
+    console.log('AR View: Setting up fallback mode without camera');
+    try {
+      // Setup canvas for drawing
+      if (!this.canvas) {
+        this.setupCanvas();
+      }
+      
+      // Start location tracking (will work or fail silently)
+      this.startLocationTracking();
+      
+      // Setup orientation
+      this.setupOrientation();
+      
+      // Start rendering even without camera
+      if (!this.renderingStarted) {
+        this.startRendering();
+      }
+      
+      console.log('AR View: Fallback mode ready - use manual controls');
+    } catch (e) {
+      console.error('Fallback setup error:', e);
     }
   }
 
@@ -235,10 +264,10 @@ class ARFootpathView {
   }
 
   startOrientationTracking() {
-    // Usethis.manualHeadingMode) return; // Ignore device orientation in manual mode
-      
-      if ( DeviceOrientationEvent for compass heading
+    // Use DeviceOrientationEvent for compass heading
     this.orientationHandler = (event) => {
+      if (this.manualHeadingMode) return; // Ignore device orientation in manual mode
+      
       if (event.alpha !== null) {
         // alpha is compass heading (0-360)
         // On iOS with webkitCompassHeading
@@ -262,11 +291,18 @@ class ARFootpathView {
   }
 
   startRendering() {
+    if (this.renderingStarted) {
+      console.log('Rendering already started, skipping');
+      return;
+    }
+    this.renderingStarted = true;
+    
     const render = () => {
       this.renderFrame();
       requestAnimationFrame(render);
     };
     render();
+    console.log('Render loop started');
   }
 
   renderFrame() {
@@ -441,22 +477,44 @@ class ARFootpathView {
     
     // Normalize to 0-360
     bearing = (bearing + 360) % 360;
-   etupManualControls() {
+    
+    return bearing;
+  }
+
+  setupManualControls() {
+    console.log('Setting up manual controls...');
+    
     // Manual location toggle
     const manualToggle = document.getElementById('manual-location-toggle');
     const manualInputs = document.getElementById('manual-location-inputs');
     const setLocationBtn = document.getElementById('set-manual-location');
     
+    if (!manualToggle || !manualInputs || !setLocationBtn) {
+      console.error('Manual control elements not found!');
+      return;
+    }
+    
     manualToggle.addEventListener('change', (e) => {
+      console.log('Manual location toggle:', e.target.checked);
       this.manualLocationMode = e.target.checked;
       manualInputs.style.display = e.target.checked ? 'block' : 'none';
       
       if (e.target.checked) {
         document.getElementById('location-accuracy').textContent = 'Manual';
+        // Auto-set initial location
+        const lat = parseFloat(document.getElementById('manual-lat').value);
+        const lon = parseFloat(document.getElementById('manual-lon').value);
+        if (!isNaN(lat) && !isNaN(lon)) {
+          this.userLat = lat;
+          this.userLon = lon;
+          document.getElementById('user-location').textContent = 
+            `${lat.toFixed(6)}, ${lon.toFixed(6)} (Manual)`;
+        }
       }
     });
     
     setLocationBtn.addEventListener('click', () => {
+      console.log('Set location button clicked');
       const lat = parseFloat(document.getElementById('manual-lat').value);
       const lon = parseFloat(document.getElementById('manual-lon').value);
       
@@ -466,6 +524,8 @@ class ARFootpathView {
         document.getElementById('user-location').textContent = 
           `${lat.toFixed(6)}, ${lon.toFixed(6)} (Manual)`;
         console.log(`Manual location set: ${lat}, ${lon}`);
+      } else {
+        console.error('Invalid coordinates:', { lat, lon });
       }
     });
     
@@ -473,28 +533,30 @@ class ARFootpathView {
     const headingToggle = document.getElementById('manual-heading-toggle');
     const headingInput = document.getElementById('manual-heading');
     
-    headingToggle.addEventListener('change', (e) => {
-      this.manualHeadingMode = e.target.checked;
-      headingInput.disabled = !e.target.checked;
+    if (headingToggle && headingInput) {
+      headingToggle.addEventListener('change', (e) => {
+        console.log('Manual heading toggle:', e.target.checked);
+        this.manualHeadingMode = e.target.checked;
+        headingInput.disabled = !e.target.checked;
+        
+        if (e.target.checked) {
+          this.userHeading = parseFloat(headingInput.value) || 0;
+          document.getElementById('user-heading').textContent = 
+            Math.round(this.userHeading) + ' (Manual)';
+        }
+      });
       
-      if (e.target.checked) {
-        this.userHeading = parseFloat(headingInput.value) || 0;
-        document.getElementById('user-heading').textContent = 
-          Math.round(this.userHeading) + ' (Manual)';
-      }
-    });
+      headingInput.addEventListener('input', (e) => {
+        if (this.manualHeadingMode) {
+          this.userHeading = parseFloat(e.target.value) || 0;
+          document.getElementById('user-heading').textContent = 
+            Math.round(this.userHeading) + ' (Manual)';
+          console.log('Manual heading set:', this.userHeading);
+        }
+      });
+    }
     
-    headingInput.addEventListener('input', (e) => {
-      if (this.manualHeadingMode) {
-        this.userHeading = parseFloat(e.target.value) || 0;
-        document.getElementById('user-heading').textContent = 
-          Math.round(this.userHeading) + ' (Manual)';
-      }
-    });
-  }
-
-  s 
-    return bearing;
+    console.log('Manual controls setup complete');
   }
 
   showError(message) {

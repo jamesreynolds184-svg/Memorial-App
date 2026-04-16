@@ -200,11 +200,25 @@
 
   <script>
     function enableManualMode() {
+      console.log('enableManualMode called');
       document.getElementById('error-message').style.display = 'none';
       document.getElementById('loading').style.display = 'none';
-      document.getElementById('manual-location-toggle').checked = true;
-      document.getElementById('manual-location-inputs').style.display = 'block';
-      document.getElementById('manual-location-toggle').dispatchEvent(new Event('change'));
+      
+      const toggle = document.getElementById('manual-location-toggle');
+      const inputs = document.getElementById('manual-location-inputs');
+      
+      if (toggle && inputs) {
+        toggle.checked = true;
+        inputs.style.display = 'block';
+        
+        // Trigger the change event to activate manual mode in the AR view
+        const event = new Event('change', { bubbles: true });
+        toggle.dispatchEvent(event);
+        
+        console.log('Manual mode enabled');
+      } else {
+        console.error('Manual controls not found');
+      }
     }
   </script>
   <script src="../js/ar-view.js"></script>
