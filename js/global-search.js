@@ -130,6 +130,15 @@
     debounce = setTimeout(() => render(input.value), 140);
   });
 
+  // Hidden admin page trigger
+  input.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && input.value.trim() === '5201') {
+      e.preventDefault();
+      const adminPath = inPagesFolder ? 'admin.html' : 'pages/admin.html';
+      window.location.href = adminPath;
+    }
+  });
+
   // Re-render when checkbox changes
   if (descCheckbox) {
     descCheckbox.addEventListener('change', () => {

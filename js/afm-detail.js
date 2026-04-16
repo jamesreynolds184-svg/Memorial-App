@@ -85,6 +85,13 @@
     // Determine which wall JSON file to load based on panel number
     // Panels 1-77: AFM-Wall-A.json
     // Panels 78-118: AFM-Wall-B.json
+    // Panels 119-134: AFM-Wall-C.json
+    // Panels 135-150: AFM-Wall-D.json
+    // Panels 151-166: AFM-Wall-E.json
+    // Panels 167-182: AFM-Wall-F.json
+    // Panels 183-205: AFM-Wall-G.json
+    // Panels 207-223: AFM-Wall-H.json
+    // Panels 224-230: AFM-Wall-I.json
     let wallFile, pinIndex;
     if (panelNumber >= 1 && panelNumber <= 77) {
       wallFile = '../data/AFM-Wall-A.json';
@@ -92,6 +99,27 @@
     } else if (panelNumber >= 78 && panelNumber <= 118) {
       wallFile = '../data/AFM-Wall-B.json';
       pinIndex = panelNumber - 78; // Panel 78 = index 0
+    } else if (panelNumber >= 119 && panelNumber <= 134) {
+      wallFile = '../data/AFM-Wall-C.json';
+      pinIndex = panelNumber - 119; // Panel 119 = index 0
+    } else if (panelNumber >= 135 && panelNumber <= 150) {
+      wallFile = '../data/AFM-Wall-D.json';
+      pinIndex = panelNumber - 135; // Panel 135 = index 0
+    } else if (panelNumber >= 151 && panelNumber <= 166) {
+      wallFile = '../data/AFM-Wall-E.json';
+      pinIndex = panelNumber - 151; // Panel 151 = index 0
+    } else if (panelNumber >= 167 && panelNumber <= 182) {
+      wallFile = '../data/AFM-Wall-F.json';
+      pinIndex = panelNumber - 167; // Panel 167 = index 0
+    } else if (panelNumber >= 183 && panelNumber <= 205) {
+      wallFile = '../data/AFM-Wall-G.json';
+      pinIndex = panelNumber - 183; // Panel 183 = index 0
+    } else if (panelNumber >= 207 && panelNumber <= 223) {
+      wallFile = '../data/AFM-Wall-H.json';
+      pinIndex = panelNumber - 207; // Panel 207 = index 0
+    } else if (panelNumber >= 224 && panelNumber <= 230) {
+      wallFile = '../data/AFM-Wall-I.json';
+      pinIndex = panelNumber - 224; // Panel 224 = index 0
     } else {
       console.error(`Invalid panel number: ${panelNumber}`);
       return;

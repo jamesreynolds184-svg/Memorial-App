@@ -3,26 +3,32 @@
   const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || 
                 (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
   
+  // Detect Android
+  const isAndroid = /Android/.test(navigator.userAgent);
+  
+  // Check if running on mobile device (iOS or Android)
+  const isMobile = isIOS || isAndroid;
+  
   // Also check if running as standalone (installed as PWA)
   const isStandalone = window.matchMedia('(display-mode: standalone)').matches ||
                        window.navigator.standalone === true;
 
-  if (!isIOS) return;
+  if (!isMobile) return;
 
-  // Add iOS mode class to body
-  document.body.classList.add('ios-mode');
+  // Add mobile mode class to body
+  document.body.classList.add('mobile-mode');
 
   // Note: Bottom padding is handled by CSS (body.ios-mode)
 
   // Create bottom menu bar
   const bottomMenu = document.createElement('div');
-  bottomMenu.className = 'ios-bottom-menu show';
+  bottomMenu.className = 'mobile-bottom-menu show';
   bottomMenu.innerHTML = `
-    <button id="ios-menu-btn" aria-label="Open menu">
+    <button id="mobile-menu-btn" aria-label="Open menu">
       <span class="icon">☰</span>
       <span class="label">Menu</span>
     </button>
-    <button id="ios-search-btn" aria-label="Search">
+    <button id="mobile-search-btn" aria-label="Search">
       <span class="icon">🔍</span>
       <span class="label">Search</span>
     </button>
@@ -32,7 +38,7 @@
   document.body.appendChild(bottomMenu);
 
   // Hook up menu button
-  const menuBtn = document.getElementById('ios-menu-btn');
+  const menuBtn = document.getElementById('mobile-menu-btn');
   const burgerBtn = document.getElementById('burger-menu');
   if (menuBtn && burgerBtn) {
     menuBtn.addEventListener('click', () => {
@@ -41,7 +47,7 @@
   }
 
   // Hook up search button
-  const searchBtn = document.getElementById('ios-search-btn');
+  const searchBtn = document.getElementById('mobile-search-btn');
   const globalSearchBtn = document.getElementById('global-search-btn');
   if (searchBtn && globalSearchBtn) {
     searchBtn.addEventListener('click', () => {

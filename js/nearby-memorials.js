@@ -130,7 +130,21 @@
   }
 
   function onLocError(err) {
-    statusEl.textContent = `Location error: ${err.message}`;
+    let msg = 'Location error: ';
+    switch(err.code) {
+      case err.PERMISSION_DENIED:
+        msg += 'Permission denied. Please enable location in your device settings and browser.';
+        break;
+      case err.POSITION_UNAVAILABLE:
+        msg += 'Position unavailable. Please ensure GPS is enabled.';
+        break;
+      case err.TIMEOUT:
+        msg += 'Request timed out. Please try again.';
+        break;
+      default:
+        msg += err.message;
+    }
+    statusEl.textContent = msg;
     retryBtn.style.display = 'inline-block';
   }
 
@@ -142,10 +156,21 @@
       statusEl.textContent = 'Geolocation not supported.';
       return;
     }
+    
+    // Check for HTTPS on Android (required for geolocation)
+    if (location.protocol !== 'https:' && location.hostname !== 'localhost') {
+      const isAndroid = /Android/.test(navigator.userAgent);
+      if (isAndroid) {
+        console.warn('Geolocation requires HTTPS on Android');
+      }
+    }
+    
+    // Android devices often need more time, especially for first permission request
+    // and GPS acquisition. iOS is generally faster.
     navigator.geolocation.getCurrentPosition(onLocSuccess, onLocError, {
       enableHighAccuracy: true,
-      timeout: 10000,
-      maximumAge: 10000
+      timeout: 30000,        // Increased to 30 seconds for Android compatibility
+      maximumAge: 60000      // Accept cached position up to 60 seconds old
     });
   }
 

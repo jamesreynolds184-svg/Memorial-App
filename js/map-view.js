@@ -109,13 +109,12 @@
     });
 
     L.tileLayer(
-      'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
-      { attribution: 'Esri, DigitalGlobe, GeoEye, Earthstar Geographics, CNES/Airbus DS, USDA, USGS, AeroGRID, IGN, and the GIS User Community', maxZoom: 19 }
+      'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+      { attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors', maxZoom: 19 }
     ).addTo(map);
 
     L.control.attribution({ position:'bottomright' })
-      .addTo(map)
-      .addAttribution('Esri, DigitalGlobe, GeoEye, Earthstar Geographics');
+      .addTo(map);
 
     markersLayer = L.layerGroup().addTo(map);
   }
@@ -371,14 +370,39 @@
   function locateUser(){ // MODIFIED (force fresh single fix)
     if (!navigator.geolocation) return;
     btnLocate.disabled = true;
+    
+    // Check for HTTPS on Android (required for geolocation)
+    if (location.protocol !== 'https:' && location.hostname !== 'localhost') {
+      const isAndroid = /Android/.test(navigator.userAgent);
+      if (isAndroid) {
+        console.warn('Geolocation requires HTTPS on Android');
+      }
+    }
+    
     navigator.geolocation.getCurrentPosition(pos=>{
       btnLocate.disabled = false;
       handlePosition(pos);
-    }, ()=>{
+    }, (err)=>{
       btnLocate.disabled = false;
+      let msg = 'Location error: ';
+      switch(err.code) {
+        case err.PERMISSION_DENIED:
+          msg += 'Permission denied. Please enable location in your device settings.';
+          break;
+        case err.POSITION_UNAVAILABLE:
+          msg += 'Position unavailable. Please ensure GPS is enabled.';
+          break;
+        case err.TIMEOUT:
+          msg += 'Request timed out. Please try again.';
+          break;
+        default:
+          msg += err.message;
+      }
+      console.error(msg);
+      alert(msg);
     }, {
       enableHighAccuracy:true,
-      timeout:10000,
+      timeout:30000,        // Increased to 30 seconds for Android compatibility
       maximumAge:0    // force no cached position
     });
   }

@@ -124,7 +124,7 @@
   }
 
   function candidatePaths(memorial) {
-    const base = `../img/zone${memorial.zone}/${encodeURIComponent(memorial.name)}`;
+    const base = `../img/zone${memorial.zone}/${memorial.name}`;
     return [
       base + '.jpeg',
       base + '.JPEG',

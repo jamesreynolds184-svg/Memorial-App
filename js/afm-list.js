@@ -277,12 +277,27 @@
       populateYearFilter();
       populatePanelFilter();
       
+      // Check for URL parameters (e.g., from Conflicts by Year page)
+      const urlParams = new URLSearchParams(window.location.search);
+      const urlPanel = urlParams.get('panel');
+      const urlYear = urlParams.get('year');
+      
+      if (urlPanel) {
+        filters.panel = urlPanel;
+        panelFilterEl.value = urlPanel;
+      }
+      
+      if (urlYear) {
+        filters.year = urlYear;
+        yearFilterEl.value = urlYear;
+      }
+      
       // Initialize pagination to first panel
       currentPanelIndex = 0;
       checkIfFiltering();
       updatePaginationControls();
       
-      // Apply initial filters (will show first panel)
+      // Apply initial filters (will show first panel or filtered results)
       applyFilters();
     })
     .catch(err => {

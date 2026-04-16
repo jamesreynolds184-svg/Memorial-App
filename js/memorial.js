@@ -1,9 +1,19 @@
 (function () {
+  const SAVED_KEY = 'savedMemorials';
   const params = new URLSearchParams(location.search);
   const name = params.get('name');
   const from = params.get('from');
   const root = document.getElementById('memorial-detail');
-
+  // Helper functions for saved memorials
+  function loadSaved() {
+    try {
+      const arr = JSON.parse(localStorage.getItem(SAVED_KEY));
+      return Array.isArray(arr) ? arr : [];
+    } catch { return []; }
+  }
+  function saveSaved(savedSet) {
+    localStorage.setItem(SAVED_KEY, JSON.stringify([...savedSet]));
+  }
   // Set up back button navigation
   const backBtn = document.getElementById('back-btn');
   if (backBtn) {
@@ -67,7 +77,7 @@
       if (!imgPath && item.zone && item.name) {
         // Try .JPEG, .jpeg, .jpg in order
         const basePath = `../img/zone${item.zone}/`;
-        const baseName = encodeURIComponent(item.name);
+        const baseName = item.name;
         triedExtensions = [
           basePath + baseName + '.JPEG',
           basePath + baseName + '.jpeg',
@@ -126,6 +136,37 @@
           seeBtn.style.display = 'none';
         }
       }
+
+      // Save memorial button
+      const saveBtn = document.getElementById('save-memorial-btn');
+      if (saveBtn && item.name) {
+        const saved = new Set(loadSaved());
+        const isSaved = saved.has(item.name);
+        
+        // Set initial state
+        saveBtn.textContent = isSaved ? '★ Save' : '☆ Save';
+        saveBtn.setAttribute('aria-label', isSaved ? 'Unsave memorial' : 'Save memorial');
+        saveBtn.title = isSaved ? 'Remove from saved' : 'Save memorial';
+        
+        // Toggle save on click
+        saveBtn.addEventListener('click', () => {
+          const currentSaved = new Set(loadSaved());
+          const isCurrentlySaved = currentSaved.has(item.name);
+          
+          if (isCurrentlySaved) {
+            currentSaved.delete(item.name);
+          } else {
+            currentSaved.add(item.name);
+          }
+          
+          saveSaved(currentSaved);
+          
+          const nowSaved = currentSaved.has(item.name);
+          saveBtn.textContent = nowSaved ? '★ Save' : '☆ Save';
+          saveBtn.setAttribute('aria-label', nowSaved ? 'Unsave memorial' : 'Save memorial');
+          saveBtn.title = nowSaved ? 'Remove from saved' : 'Save memorial';
+        });
+      }
     })
     .catch(err => {
       console.error('Failed to load data', err);
@@ -153,16 +194,16 @@ function initLeafletMemorialMap(coords) {
   });
 
   L.tileLayer(
-    'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+    'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
     {
       maxZoom: 19,
-      attribution: 'Esri, DigitalGlobe, GeoEye, Earthstar Geographics'
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
     }
   ).addTo(map);
 
   L.control.attribution({ position: 'bottomright' })
     .addTo(map)
-    .addAttribution('Esri, DigitalGlobe, GeoEye, Earthstar Geographics');
+    .addAttribution('&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors');
 
   // --- Custom marker icon logic ---
   const memorial = window.currentMemorial;

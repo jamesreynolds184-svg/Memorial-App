@@ -28,10 +28,10 @@ def is_date_marker(text):
     if not text or not isinstance(text, str):
         return False
     text = text.strip()
-    # Check if it's a 4-digit year between 1940-1960
+    # Check if it's a 4-digit year between 1940-2030
     if re.match(r'^\d{4}$', text):
         year = int(text)
-        if 1940 <= year <= 1960:
+        if 1940 <= year <= 2030:
             return True
     return False
 
@@ -43,7 +43,7 @@ def is_panel_number(text):
     # Panel numbers are 1-77 or higher
     if re.match(r'^\d{1,3}$', text):
         num = int(text)
-        if 1 <= num <= 200:  # Allow up to 200 panels
+        if 1 <= num <= 300:  # Allow up to 300 panels
             return True
     return False
 
@@ -234,11 +234,24 @@ def main():
     print(f"Output file: {output_file}")
     print()
     
+    # Load existing data from JSON file if it exists
+    existing_entries = []
+    if output_file.exists():
+        print(f"Loading existing data from {output_file}...")
+        with open(output_file, 'r', encoding='utf-8') as f:
+            existing_entries = json.load(f)
+        print(f"Found {len(existing_entries)} existing entries")
+        print()
+    
     # Process all CSV files
-    all_entries = process_all_csv_files(data_dir)
+    new_entries = process_all_csv_files(data_dir)
     
     print()
-    print(f"Total entries found: {len(all_entries)}")
+    print(f"New entries found: {len(new_entries)}")
+    
+    # Combine existing and new entries
+    all_entries = existing_entries + new_entries
+    print(f"Total entries after merge: {len(all_entries)}")
     
     # Write to JSON file
     print(f"\nWriting to {output_file}...")

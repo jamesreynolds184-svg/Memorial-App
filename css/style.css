@@ -1434,8 +1434,8 @@ body.memorial-bg-set::before {
   margin-bottom: 1rem;
 }
 
-/* iOS Bottom Menu Bar */
-.ios-bottom-menu {
+/* Mobile Bottom Menu Bar */
+.mobile-bottom-menu {
   display: none;
   position: fixed;
   bottom: 0;
@@ -1448,13 +1448,13 @@ body.memorial-bg-set::before {
   box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
 }
 
-.ios-bottom-menu.show {
+.mobile-bottom-menu.show {
   display: flex;
   justify-content: space-around;
   align-items: center;
 }
 
-.ios-bottom-menu button {
+.mobile-bottom-menu button {
   flex: 1;
   background: none;
   border: none;
@@ -1469,26 +1469,26 @@ body.memorial-bg-set::before {
   -webkit-tap-highlight-color: transparent;
 }
 
-.ios-bottom-menu button:active {
+.mobile-bottom-menu button:active {
   background: rgba(0,0,0,0.05);
 }
 
-.ios-bottom-menu button .icon {
+.mobile-bottom-menu button .icon {
   font-size: 24px;
 }
 
-.ios-bottom-menu button .label {
+.mobile-bottom-menu button .label {
   font-size: 12px;
 }
 
-/* Hide top buttons on iOS when bottom menu is active */
-body.ios-mode #burger-menu,
-body.ios-mode #global-search-btn {
+/* Hide top buttons on mobile when bottom menu is active */
+body.mobile-mode #burger-menu,
+body.mobile-mode #global-search-btn {
   display: none !important;
 }
 
-/* Add padding to body when iOS menu is visible */
-body.ios-mode {
+/* Add padding to body when mobile menu is visible */
+body.mobile-mode {
   padding-bottom: 100px;
   /* Add extra space for iOS devices with home indicator */
   padding-bottom: calc(100px + env(safe-area-inset-bottom));
@@ -1496,51 +1496,51 @@ body.ios-mode {
 }
 
 /* Ensure containers have proper bottom spacing */
-body.ios-mode .container {
+body.mobile-mode .container {
   padding-bottom: 120px;
   padding-bottom: calc(120px + env(safe-area-inset-bottom));
 }
 
 /* Ensure main content doesn't get hidden behind bottom menu */
-body.ios-mode main,
-body.ios-mode .content {
+body.mobile-mode main,
+body.mobile-mode .content {
   margin-bottom: 0;
   padding-bottom: 120px;
   padding-bottom: calc(120px + env(safe-area-inset-bottom));
 }
 
 /* Add padding to lists and scrollable containers */
-body.ios-mode #memorial-list,
-body.ios-mode .zone-list,
-body.ios-mode .content-wrapper {
+body.mobile-mode #memorial-list,
+body.mobile-mode .zone-list,
+body.mobile-mode .content-wrapper {
   padding-bottom: 120px;
   padding-bottom: calc(120px + env(safe-area-inset-bottom));
 }
 
 /* Ensure memorial detail page content isn't hidden */
-body.ios-mode #memorial-detail {
+body.mobile-mode #memorial-detail {
   margin-bottom: 0;
   padding-bottom: 120px;
   padding-bottom: calc(120px + env(safe-area-inset-bottom));
-  /* Adjust height to account for iOS bottom menu */
+  /* Adjust height to account for mobile bottom menu */
   height: calc(100vh - 80px);
   height: calc(100vh - 80px - env(safe-area-inset-bottom));
 }
 
 /* Ensure map and photos are fully visible */
-body.ios-mode #mem-gmap,
-body.ios-mode .mem-photo,
-body.ios-mode #mem-photo-wrapper {
+body.mobile-mode #mem-gmap,
+body.mobile-mode .mem-photo,
+body.mobile-mode #mem-photo-wrapper {
   margin-bottom: 40px;
 }
 
 /* Ensure map panel page has proper spacing */
-body.ios-mode .map-panel {
+body.mobile-mode .map-panel {
   margin-bottom: 120px;
   margin-bottom: calc(120px + env(safe-area-inset-bottom));
 }
 
-body.ios-mode .map-wrap {
+body.mobile-mode .map-wrap {
   margin-bottom: 20px;
 }
 

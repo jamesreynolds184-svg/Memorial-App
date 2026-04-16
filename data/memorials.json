@@ -343,7 +343,7 @@
   },
   {
     "name": "Argyll and Sutherland Highlanders Memorial ; Royal Scottish Regiment",
-    "zone": "",
+    "zone": "12",
     "description": "Princess Louise’s Argyll and Sutherland Highlanders \nPrincess Louise’s Argyll and Sutherland Highlanders were formed in 1881 from the amalgamation of the 91st Regiment of Foot (Argyll Highlanders) and the 93rd Regiment of Foot (Sutherland Highlanders). In 2006, they were absorbed into the Royal Regiment of Scotland. \nDuring the First World War 27 Battalions were raised. Nine thousand Argyll and Sutherland Highlanders gave their lives in the First and Second World Wars. \nSixteen members of the Regiment, including seven in the Sutherland Highlanders, were awarded the Victoria Cross.",
     "map": "",
     "location": {
@@ -442,16 +442,6 @@
     }
   },
   {
-    "name": "Army Wood",
-    "zone": "",
-    "description": "Army Wood \nThis wood is divided into Army Wood -Central, Army Wood -East and Army Wood – West \nThe Army Wood comprises mixed native trees individually sponsored and dedicated to those who have served in the British Armed Forces. Within the wood are the Irish, Tank, Logistics, Army Air Corps and Fusilier memorials.",
-    "map": "",
-    "location": {
-      "lat": "",
-      "lng": ""
-    }
-  },
-  {
     "name": "Association of Jewish Ex-Servicemen and Women (AJEX) Memorial",
     "zone": "12",
     "description": "ASSOCIATION OF JEWISH EX-SERVICEMEN (AJEX) \nMade from Chinese granite, The Star of David is designed to give you a different perspective when viewed from different angles. \nThe small stones on the memorial are there as it is traditional for a Jewish person who visits any memorial to place a stone onto it to mark their visit. \nThe Hebrew characters at the top right say ‘Remember’. \nThe bench in the left corner has been dedicated by family members to a Polish couple who were killed in the Warsaw uprising against German occupation towards the end of World War 2.",
@@ -486,7 +476,7 @@
     }
   },
   {
-    "name": "Auxiliary Territorial Service / Ack Ack Memorial",
+    "name": "Auxiliary Territorial Service Ack Ack Memorial",
     "zone": "9",
     "description": "Auxiliary Territorial Service / ACK ACK (ATS / ACK ACK) \nA memorial rock remembering the women who staffed the anti-aircraft guns in the Second World War, the Auxiliary Territorial Service / ACK ACK (ATS / ACK ACK), who were attached to the Royal Artillery.",
     "map": "",
@@ -496,16 +486,6 @@
     },
     "lat": 52.72921111111111,
     "lng": -1.7322833333333334
-  },
-  {
-    "name": "Auxiliary Territorial Service Statue",
-    "zone": "",
-    "description": "No information available",
-    "map": "",
-    "location": {
-      "lat": "",
-      "lng": ""
-    }
   },
   {
     "name": "Baluch Regiment Memorial",
@@ -707,7 +687,7 @@
   },
   {
     "name": "British German Friendship Garden",
-    "zone": "",
+    "zone": "14",
     "description": "",
     "map": "",
     "location": {
@@ -1779,8 +1759,8 @@
     "description": "HMS Cossack Memorial \nThere have been six ships bearing the name HMS Cossack. The fifth ship, HMS Cossack – LO3, was arguably the most famous of the 16 Tribal Class destroyers that served with the Royal Navy during the Second World War. \nAs a large, heavily armed destroyer, HMS Cossack saw much action and was involved in the pursuit and sinking of the German battleship Bismarck in May 1941. On 23 October 1941, while escorting a convoy from Gibraltar to the United Kingdom, HMS Cossack was struck by a torpedo causing immense damage: 159 of her 219 crew were killed. She eventually sank on 27 October and survivors were picked up by HMS Legion, HMS Carnation and the Free French Ship Commandant. \nThe memorial bench is dedicated to Shipmate George Toomey, the founder of the HMS Cossack Association, and to the memory of all those who served in the Cossacks. \nTo the right of the memorial bench is the Cossack oak tree planted by the HMS Cossack Association in memory of the 159 officers and men who died in HMS Cossack 23 October 1941. The plaque commemorates all those who served in HM Ships Cossack 1938-1941 and 1945-1960.",
     "map": "",
     "location": {
-      "lat": "",
-      "lng": ""
+      "lat": "52.728550",
+      "lng": "-1.728853"
     }
   },
   {
@@ -2496,9 +2476,9 @@
     "lng": -1.7302416666666667
   },
   {
-    "name": "Mousey Memorial",
+    "name": "Moussey Memorial",
     "zone": "1",
-    "description": "Mousey Memorial",
+    "description": "Moussey Memorial",
     "map": "",
     "location": {
       "lat": 52.73159722222223,
@@ -2506,16 +2486,6 @@
     },
     "lat": 52.73159722222223,
     "lng": -1.722302777777778
-  },
-  {
-    "name": "Moussey Memorial Cross",
-    "zone": "",
-    "description": "",
-    "map": "",
-    "location": {
-      "lat": "",
-      "lng": ""
-    }
   },
   {
     "name": "NAAFI ; Navy, Army and Air Force Institutes",
@@ -2841,8 +2811,8 @@
     "description": "MEMORIAL TO THE VENERABLE ORDER OF THE HOSPITAL OF St JOHN OF JERUSALEM \nThe memorial dedicated to the Order of St John was designed and installed to commemorate the thousands of volunteers who have helped the charity over the years in its mission to provide first aid in many different situations. Prince Richard, Duke of Gloucester, who is the Grand Prior of the Order of St John, officially opened the memorial in 2009; however, it took some fourteen years to completion and was not finally completed until 2022. \nThe design of the memorial takes the form of the St John (Amalfi) Cross. The entrance is through one of the arms of the cross which is flanked by two granite panels depicting the badge of St John and the Priory of England and the Islands. At the centre of the cross is a black granite stone with the inscription: “In honour of all those who have faithfully served the Venerable Order of the Hospital of St John of Jerusalem and its foundations.” \nThe other various priory emblems are fixed to the arms of the memorial in order of precedence (It should be noted that because the cross was designed to give a particular perspective when viewed from the front, the tops of the walls which form the arms of the cross are slanted and therefore are not necessarily horizontal. In order to ensure that all the plaques are in line with each other when the monument is viewed as a whole, individual plaques will not always be parallel to the tops of the respective wall to which they are attached.) \nThe Venerable Order of the Hospital of St John of Jerusalem shares its origins with the religious Knights Hospitaller, who served in a hospice in Jerusalem which looked after pilgrims in the twelfth century. The English branch was dissolved by King Henry VIII in 1540 and briefly reinstated by Queen Mary in 1557. An early 19th century move to revive the Order in England eventually resulted in the creation of a British Royal Order of Chivalry. Her Majesty Queen Victoria granted the Order of St John a Royal Charter and became its Sovereign Head in 1888. The Order, as an Order of Chivalry, is unique in its corporate work for the benefit of society. It has two key foundations: the St John of Jerusalem Eye Hospital and St John Ambulance. \nThe Order conducts its affairs around the world through the St John Eye Hospital Group, 11 Priories, 5 Commanderies and 32 Associations. The Priory of England and the Islands manages the day-to-day affairs of Order business in England, Northern Ireland, the Channel Islands and the Isle of Man. The Priory’s main role is delivered by its subsidiary charity StJohn Ambulance which delivers first aid and first aid training in the community. It also carries out Ambulance work in support of the NHS, and has a thriving Youth movement. \nThe Order is also involved in welfare services alongside the British Red Cross Society of the International Red Cross through a residential home for ex servicemen and women, ex-nurses and ex-members of St John and the Red Cross. The welfare of patients in Service Hospitals is looked after by the Order of St John and British Red Cross Defence Medical Welfare Service. Furthermore, in association with the British Association of the Sovereign Military Order of Malta, through the Orders of St John Care Trust the Priory promotes the Trust’s work with residential care homes and alms houses. The Order’s Museum is located at St John’s Gate in Clerkenwell, London. There is also a flourishing St John Fellowship with branches throughout England and the Islands, as well operating in many of the overseas priories and associations.",
     "map": "",
     "location": {
-      "lat": "",
-      "lng": ""
+      "lat": "52.729855738920776",
+      "lng": "-1.730616940259523"
     }
   },
   {
@@ -4060,9 +4030,9 @@
     "lng": -1.729225
   },
   {
-    "name": "Royal Scots, The",
-    "zone": "",
-    "description": "",
+    "name": "Royal Regiment of Scotland",
+    "zone": "12",
+    "description": "Royal Regiment of Scotland The Royal Regiment of Scotland was formed in 2006 through the amalgamation of Scotland's historic infantry regiments to form a single fighting force. The memorial is a low-level plinth made of Scottish granite which is located by a grove of Scots pines. The memorial commemorates all those who have served since 1945 and especially those killed or who have died in the operational theatres in The Royal Regiment of Scotland and its Antecedent Regiments. The Regiment’s cap badge is inscribe above the dedication and the motto, Nemo Me Impune Lacessit No one harasses me with impunity, is inscribed in large letters on the memorial’s base. The badges of all the regiments listed in the dedication are depicted on individual paviours around the memorial’s base.",
     "map": "",
     "location": {
       "lat": 52.72728333333333,
@@ -4155,7 +4125,7 @@
   },
   {
     "name": "Shackleton Association Memorial",
-    "zone": "",
+    "zone": "13",
     "description": "SHACKLETON ASSOCIATION \nThe Shackleton Association was conceived and founded in 1987 by John Botwood, who quickly assembled a dedicated group of mainly ex RAF members who had been associated with the Avro Shackleton during their service career and who were determined that the memory of this great aircraft should never be forgotten.",
     "map": "",
     "location": {

@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Conflicts by Year</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <style>
+    /* Override the memorials-panel restrictions to allow full page scrolling */
+    .memorials-panel {
+      max-height: none !important;
+      overflow: visible !important;
+    }
+
+    .conflicts-container {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .year-selector {
+      margin: 20px 0;
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .year-selector label {
+      font-weight: bold;
+      font-size: 1.1em;
+    }
+
+    .year-selector select {
+      padding: 10px 15px;
+      font-size: 1em;
+      border: 2px solid #333;
+      border-radius: 5px;
+      background: white;
+      cursor: pointer;
+      min-width: 150px;
+    }
+
+    .conflicts-section, .panels-section {
+      margin: 30px 0;
+      padding: 20px;
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .conflicts-section h2, .panels-section h2 {
+      margin-top: 0;
+      color: #333;
+      border-bottom: 2px solid #333;
+      padding-bottom: 10px;
+    }
+
+    .conflict-list {
+      list-style: none;
+      padding: 0;
+      max-height: none;
+      overflow-y: visible;
+      overflow-x: hidden;
+    }
+
+    .conflict-list li {
+      padding: 12px 15px;
+      margin: 8px 0;
+      background: #f5f5f5;
+      border-left: 4px solid #8B0000;
+      border-radius: 4px;
+      font-size: 1.05em;
+    }
+
+    .no-conflicts {
+      padding: 15px;
+      color: #666;
+      font-style: italic;
+    }
+
+    .panels-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+      gap: 10px;
+      margin-top: 15px;
+      max-height: none;
+      overflow-y: visible;
+      overflow-x: hidden;
+      padding-right: 5px;
+    }
+
+    .panel-item {
+      padding: 12px;
+      background: #f0f0f0;
+      border: 2px solid #333;
+      border-radius: 5px;
+      text-align: center;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .panel-item:hover {
+      background: #8B0000;
+      color: white;
+      transform: scale(1.05);
+    }
+
+    .panel-item .panel-number {
+      font-size: 1.2em;
+      display: block;
+    }
+
+    .panel-item .panel-count {
+      font-size: 0.85em;
+      font-weight: normal;
+      display: block;
+      margin-top: 4px;
+    }
+
+    .no-panels {
+      padding: 15px;
+      color: #666;
+      font-style: italic;
+    }
+
+    .stats {
+      margin-top: 10px;
+      padding: 10px;
+      background: #e8f4f8;
+      border-radius: 4px;
+      font-size: 0.95em;
+    }
+
+    .stats strong {
+      color: #333;
+    }
+
+    .loading {
+      text-align: center;
+      padding: 20px;
+      color: #666;
+    }
+  </style>
+</head>
+<body class="memorials-bg">
+  <button id="burger-menu" class="burger-button" aria-label="Open menu">☰</button>
+
+  <nav id="menu-items" aria-label="Main">
+    <a href="../home.html">Home</a>
+    <a href="map.html">Map</a>
+    <a href="memorials.html">Find a Memorial</a>
+    <a href="afm-list.html">Armed Forces Memorial</a>
+    <a href="search-by-zone.html">Search by Zone</a>
+    <a href="conflicts-by-year.html">Conflicts by Year</a>
+    <a href="nearby-memorials.html">Nearby Memorials</a>
+    <a href="saved.html">Saved</a>
+  </nav>
+
+  <div id="menu-overlay"></div>
+
+  <!-- Global search button -->
+  <button id="global-search-btn" class="search-toggle" aria-label="Search memorials">🔍</button>
+
+  <!-- Global search overlay -->
+  <div id="global-search-panel" aria-hidden="true">
+    <div class="gsp-inner">
+      <button id="gsp-close" class="gsp-close" aria-label="Close search">✕</button>
+      <input id="global-search-input"
+             type="text"
+             placeholder="Search memorial titles..."
+             autocomplete="off"
+             aria-autocomplete="list"
+             aria-expanded="false">
+      <label class="gsp-desc-label">
+        <input type="checkbox" id="global-search-desc-checkbox">
+        Search description
+      </label>
+      <ul id="global-search-results" role="listbox"></ul>
+    </div>
+  </div>
+
+  <main class="hero">
+    <div class="welcome memorials-panel">
+      <div class="conflicts-container">
+        <h1>Conflicts by Year</h1>
+        <p>Select a year to view UK conflicts and Armed Forces Memorial panels from that period.</p>
+
+        <div class="year-selector">
+          <label for="year-select">Select Year:</label>
+          <select id="year-select" aria-label="Select a year">
+            <option value="">-- Choose a year --</option>
+          </select>
+        </div>
+
+        <div id="loading" class="loading" style="display: none;">Loading data...</div>
+
+        <div id="conflicts-section" class="conflicts-section" style="display: none;">
+          <h2>UK Conflicts in <span id="selected-year"></span></h2>
+          <ul id="conflict-list" class="conflict-list"></ul>
+        </div>
+
+        <div id="panels-section" class="panels-section" style="display: none;">
+          <h2>Armed Forces Memorial Panels</h2>
+          <div class="stats">
+            <strong>Total memorials from <span id="panel-year"></span>:</strong> 
+            <span id="memorial-count">0</span> names across 
+            <span id="panel-count">0</span> panels
+          </div>
+          <div class="panel-range" id="panel-range" style="text-align: center; margin: 15px 0; font-size: 1.1em; color: #333;">
+          </div>
+          <div id="panels-grid" class="panels-grid"></div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script src="../js/app.js"></script>
+  <script src="../js/conflicts-by-year.js"></script>
+  <script src="../js/gestures.js"></script>
+  <script src="../js/global-search.js"></script>
+  <script src="../js/ios-menu.js"></script>
+</body>
+</html>

@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Panel</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <style>
+    .admin-container {
+      padding: 20px;
+      padding-top: max(60px, calc(20px + env(safe-area-inset-top)));
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .admin-header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    .admin-section {
+      background: #f5f5f5;
+      padding: 20px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+    }
+    .admin-button {
+      background: #2c5f2d;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 16px;
+      margin-right: 10px;
+      margin-bottom: 10px;
+    }
+    .admin-button:hover {
+      background: #1f4521;
+    }
+    .admin-button:disabled {
+      background: #999;
+      cursor: not-allowed;
+    }
+    #results-container {
+      margin-top: 20px;
+      background: white;
+      padding: 15px;
+      border-radius: 4px;
+      border: 1px solid #ddd;
+      max-height: 500px;
+      overflow-y: auto;
+    }
+    .result-section {
+      margin-bottom: 15px;
+    }
+    .result-title {
+      font-weight: bold;
+      font-size: 18px;
+      margin-bottom: 10px;
+      padding-bottom: 5px;
+      border-bottom: 2px solid #2c5f2d;
+    }
+    .error-item {
+      color: #d32f2f;
+      padding: 5px 0;
+      border-bottom: 1px solid #eee;
+    }
+    .success-message {
+      color: #2e7d32;
+      font-weight: bold;
+      font-size: 18px;
+    }
+    .warning-message {
+      color: #f57c00;
+      font-weight: bold;
+    }
+    .progress {
+      margin-top: 10px;
+      color: #666;
+      font-style: italic;
+    }
+    .stat-box {
+      display: inline-block;
+      background: #fff;
+      padding: 10px 15px;
+      border-radius: 4px;
+      margin-right: 10px;
+      border: 1px solid #ddd;
+    }
+    .stat-label {
+      font-size: 12px;
+      color: #666;
+    }
+    .stat-value {
+      font-size: 24px;
+      font-weight: bold;
+      color: #2c5f2d;
+    }
+    .stat-value.error {
+      color: #d32f2f;
+    }
+  </style>
+</head>
+<body>
+  <button id="burger-menu" class="burger-button" aria-label="Open menu">☰</button>
+  <button id="global-search-btn" class="search-toggle" aria-label="Search memorials">🔍</button>
+
+  <nav id="menu-items" aria-label="Main">
+    <a href="../home.html">Home</a>
+    <a href="map.html">Map</a>
+    <a href="memorials.html">Find a Memorial</a>
+    <a href="afm-list.html">Armed Forces Memorial</a>
+    <a href="search-by-zone.html">Search by Zone</a>
+    <a href="conflicts-by-year.html">Conflicts by Year</a>
+    <a href="nearby-memorials.html">Nearby Memorials</a>
+    <a href="saved.html">Saved</a>
+  </nav>
+  <div id="menu-overlay"></div>
+
+  <div id="global-search-panel" aria-hidden="true">
+    <div class="gsp-inner">
+      <button id="gsp-close" class="gsp-close" aria-label="Close search">✕</button>
+      <input id="global-search-input"
+             type="text"
+             placeholder="Search memorial titles..."
+             autocomplete="off"
+             aria-autocomplete="list"
+             aria-expanded="false">
+      <label class="gsp-desc-label">
+        <input type="checkbox" id="global-search-desc-checkbox">
+        Search description
+      </label>
+      <ul id="global-search-results"></ul>
+    </div>
+  </div>
+
+  <div class="admin-container">
+    <div class="admin-header">
+      <h1>🔒 Admin Panel</h1>
+      <p>System maintenance and verification tools</p>
+    </div>
+
+    <div class="admin-section">
+      <h2>Image Verification</h2>
+      <p>Check that all memorials have corresponding images in their zone folders.</p>
+      <button id="check-images-btn" class="admin-button">Check Memorial Images</button>
+      <div id="results-container" style="display: none;"></div>
+    </div>
+
+    <div class="admin-section">
+      <h2>Coordinate Verification</h2>
+      <p>Check that all memorials have valid latitude and longitude coordinates.</p>
+      <button id="check-coords-btn" class="admin-button">Check Memorial Coordinates</button>
+      <div id="coords-results-container" style="display: none;"></div>
+    </div>
+  </div>
+
+  <script src="../js/menu.js"></script>
+  <script src="../js/global-search.js"></script>
+  <script src="../js/admin.js"></script>
+</body>
+</html>

@@ -1,0 +1,1352 @@
+iOS Image Loading Issue - URL Encoding Problem
+================================================================================
+
+Total memorials affected: 445
+
+PROBLEM:
+The JavaScript code uses encodeURIComponent() to build image paths,
+but the actual image files have unencoded names. This works on Windows
+because the file system is forgiving, but fails on iOS.
+
+SOLUTION:
+Remove encodeURIComponent() from image path construction in:
+  - js/memorial.js
+  - js/identify-memorial.js
+
+================================================================================
+
+Zone 12: 10th Royal Hussars Memorial
+  Encoded as: 10th%20Royal%20Hussars%20Memorial
+
+Zone 12: 11th (Prince Albert's Own) Hussars (The Cherry Pickers) Memorial
+  Encoded as: 11th%20%28Prince%20Albert%27s%20Own%29%20Hussars%20%28The%20Cherry%20Pickers%29%20Memorial
+
+Zone 7: 17th Dogra Regiment Memorial
+  Encoded as: 17th%20Dogra%20Regiment%20Memorial
+
+Zone 10: 1940 Dunkirk Veterans' Association Memorial
+  Encoded as: 1940%20Dunkirk%20Veterans%27%20Association%20Memorial
+
+Zone 7: 1st Airborne Reconnaissance Squadron Memorial ; Freddie Gough Squadron
+  Encoded as: 1st%20Airborne%20Reconnaissance%20Squadron%20Memorial%20%3B%20Freddie%20Gough%20Squadron
+
+Zone 11: 1st Army Memorial
+  Encoded as: 1st%20Army%20Memorial
+
+Zone 15: 1st Queens Dragoon Guards Memorial
+  Encoded as: 1st%20Queens%20Dragoon%20Guards%20Memorial
+
+Zone 13: 216 Squadron RAF
+  Encoded as: 216%20Squadron%20RAF
+
+Zone 13: 3 (F) Squadron Association
+  Encoded as: 3%20%28F%29%20Squadron%20Association
+
+Zone 1: 36th Ulster Division
+  Encoded as: 36th%20Ulster%20Division
+
+Zone 6: 41 Club Memorial
+  Encoded as: 41%20Club%20Memorial
+
+Zone 7: 45 Commando, 'Baker' Troop
+  Encoded as: 45%20Commando%2C%20%27Baker%27%20Troop
+
+Zone 11: 4th Royal Tank Regiment 1916 - 1993 Memorial Altar
+  Encoded as: 4th%20Royal%20Tank%20Regiment%201916%20-%201993%20Memorial%20Altar
+
+Zone 1: 624 (Special Duties) Squadron RAF Memorial
+  Encoded as: 624%20%28Special%20Duties%29%20Squadron%20RAF%20Memorial
+
+Zone 11: 8th Army Memorial
+  Encoded as: 8th%20Army%20Memorial
+
+Zone 13: 90 Signals Unit RAF TCW Memorial
+  Encoded as: 90%20Signals%20Unit%20RAF%20TCW%20Memorial
+
+Zone 12: 9th 12th Royal Lancers Memorial
+  Encoded as: 9th%2012th%20Royal%20Lancers%20Memorial
+
+Zone 12: Adjutant General's Corps Commemorative Garden
+  Encoded as: Adjutant%20General%27s%20Corps%20Commemorative%20Garden
+
+Zone 5: Aguila Memorial (WRNS) (Wrens)
+  Encoded as: Aguila%20Memorial%20%28WRNS%29%20%28Wrens%29
+
+Zone 14: Air Formation and Air Support Signals Memorial
+  Encoded as: Air%20Formation%20and%20Air%20Support%20Signals%20Memorial
+
+Zone 13: Aircrew Association Memorial
+  Encoded as: Aircrew%20Association%20Memorial
+
+Zone 1: Allied Special Forces Association Grove
+  Encoded as: Allied%20Special%20Forces%20Association%20Grove
+
+Zone 1: Allied Special Forces Association Sun Room
+  Encoded as: Allied%20Special%20Forces%20Association%20Sun%20Room
+
+Zone 2: Amalanchier Walk
+  Encoded as: Amalanchier%20Walk
+
+Zone 16: Ambulance Services
+  Encoded as: Ambulance%20Services
+
+Zone 13: Ancient Burial Mound
+  Encoded as: Ancient%20Burial%20Mound
+
+Zone 14: Anglo-Japanese Peace Garden
+  Encoded as: Anglo-Japanese%20Peace%20Garden
+
+Zone 4: Arctic Convoys Memorial;Russian Convoys
+  Encoded as: Arctic%20Convoys%20Memorial%3BRussian%20Convoys
+
+Zone 5: Arethusa Old Boys Association
+  Encoded as: Arethusa%20Old%20Boys%20Association
+
+Zone 12: Argyll and Sutherland Highlanders Memorial ; Royal Scottish Regiment
+  Encoded as: Argyll%20and%20Sutherland%20Highlanders%20Memorial%20%3B%20Royal%20Scottish%20Regiment
+
+Zone 12: Armed Forces Memorial
+  Encoded as: Armed%20Forces%20Memorial
+
+Zone 3: Armed Services Wood
+  Encoded as: Armed%20Services%20Wood
+
+Zone 11: Army Air Corps Memorial
+  Encoded as: Army%20Air%20Corps%20Memorial
+
+Zone 15: Army Apprentice National Memorial
+  Encoded as: Army%20Apprentice%20National%20Memorial
+
+Zone 9: Army Benevolent Fund - The Soldiers' Charity ; ABF
+  Encoded as: Army%20Benevolent%20Fund%20-%20The%20Soldiers%27%20Charity%20%3B%20ABF
+
+Zone 7: Army Commandos Memorial
+  Encoded as: Army%20Commandos%20Memorial
+
+Zone 12: Army Dog Unit (Northern Ireland) Association Red Paw Memorial
+  Encoded as: Army%20Dog%20Unit%20%28Northern%20Ireland%29%20Association%20Red%20Paw%20Memorial
+
+Zone 12: Army Parade
+  Encoded as: Army%20Parade
+
+Zone 12: Association of Jewish Ex-Servicemen and Women (AJEX) Memorial
+  Encoded as: Association%20of%20Jewish%20Ex-Servicemen%20and%20Women%20%28AJEX%29%20Memorial
+
+Zone 5: Association of WRENS Centenary Stone
+  Encoded as: Association%20of%20WRENS%20Centenary%20Stone
+
+Zone 4: Athel Shipping Line Memorial
+  Encoded as: Athel%20Shipping%20Line%20Memorial
+
+Zone 9: Auxiliary Territorial Service Ack Ack Memorial
+  Encoded as: Auxiliary%20Territorial%20Service%20Ack%20Ack%20Memorial
+
+Zone 8: Baluch Regiment Memorial
+  Encoded as: Baluch%20Regiment%20Memorial
+
+Zone 14: Basra Memorial Wall
+  Encoded as: Basra%20Memorial%20Wall
+
+Zone 14: Bastion Memorial
+  Encoded as: Bastion%20Memorial
+
+Zone 1: Battle of Mirbat Memorial
+  Encoded as: Battle%20of%20Mirbat%20Memorial
+
+Zone 5: Battle of the River Plate Memorial
+  Encoded as: Battle%20of%20the%20River%20Plate%20Memorial
+
+Zone 9: Bevin Boys Memorial
+  Encoded as: Bevin%20Boys%20Memorial
+
+Zone 7: Bidadari Cemetery Memorial
+  Encoded as: Bidadari%20Cemetery%20Memorial
+
+Zone 15: Birmingham Children's Hospital
+  Encoded as: Birmingham%20Children%27s%20Hospital
+
+Zone 7: BLESMA -  The Limbless Veteran's Orchard.
+  Encoded as: BLESMA%20-%20%20The%20Limbless%20Veteran%27s%20Orchard.
+
+Zone 10: Blind Veterans UK (St Dunstan's) Pathway
+  Encoded as: Blind%20Veterans%20UK%20%28St%20Dunstan%27s%29%20Pathway
+
+Zone 10: Blown Away
+  Encoded as: Blown%20Away
+
+Zone 15: Blues and Royals
+  Encoded as: Blues%20and%20Royals
+
+Zone 11: Bomb Disposal Memorial ; Explosive Ordnance Disposal
+  Encoded as: Bomb%20Disposal%20Memorial%20%3B%20Explosive%20Ordnance%20Disposal
+
+Zone 10: Boyes Garden
+  Encoded as: Boyes%20Garden
+
+Zone 10: Boys' Brigade
+  Encoded as: Boys%27%20Brigade
+
+Zone 8: Brigade of Gurkhas Memorial
+  Encoded as: Brigade%20of%20Gurkhas%20Memorial
+
+Zone 10: British Berlin Airlift Memorial
+  Encoded as: British%20Berlin%20Airlift%20Memorial
+
+Zone 14: British German Friendship Garden
+  Encoded as: British%20German%20Friendship%20Garden
+
+Zone 8: British Korean Veterans Association (BKVA)
+  Encoded as: British%20Korean%20Veterans%20Association%20%28BKVA%29
+
+Zone 9: British Limbless Ex-Service Men's Association  (BLESMA). The Limbless Veteran's Garden.
+  Encoded as: British%20Limbless%20Ex-Service%20Men%27s%20Association%20%20%28BLESMA%29.%20The%20Limbless%20Veteran%27s%20Garden.
+
+Zone 7: British Nuclear Test Veterans Memorial (BNTV)
+  Encoded as: British%20Nuclear%20Test%20Veterans%20Memorial%20%28BNTV%29
+
+Zone 7: British South Africa Police Memorial
+  Encoded as: British%20South%20Africa%20Police%20Memorial
+
+Zone 1: BRIXMIS Memorial
+  Encoded as: BRIXMIS%20Memorial
+
+Zone 12: Brotherhood of Greek Veterans Chapel
+  Encoded as: Brotherhood%20of%20Greek%20Veterans%20Chapel
+
+Zone 8: Burma Railway Memorial
+  Encoded as: Burma%20Railway%20Memorial
+
+Zone 8: Burma Star Memorial
+  Encoded as: Burma%20Star%20Memorial
+
+Zone 10: Cadet Forces' Memorial
+  Encoded as: Cadet%20Forces%27%20Memorial
+
+Zone 5: Captain Class Frigates Memorial
+  Encoded as: Captain%20Class%20Frigates%20Memorial
+
+Zone 8: Captain Sir Tom Moore Way
+  Encoded as: Captain%20Sir%20Tom%20Moore%20Way
+
+Zone 6: Cardiac Risk in the Young, Dawn, Dusk
+  Encoded as: Cardiac%20Risk%20in%20the%20Young%2C%20Dawn%2C%20Dusk
+
+Zone 11: Care of Police Survivors (also known as COPS)
+  Encoded as: Care%20of%20Police%20Survivors%20%28also%20known%20as%20COPS%29
+
+Zone 5: Castle Class Corvettes Memorial
+  Encoded as: Castle%20Class%20Corvettes%20Memorial
+
+Zone 12: Cavalry Grove (Crescent)
+  Encoded as: Cavalry%20Grove%20%28Crescent%29
+
+Zone 14: Celebration of Life Grove (Co-op)
+  Encoded as: Celebration%20of%20Life%20Grove%20%28Co-op%29
+
+Zone 8: Changi Lych Gate
+  Encoded as: Changi%20Lych%20Gate
+
+Zone 8: Changi Prison Map
+  Encoded as: Changi%20Prison%20Map
+
+Zone 2: Cheltenham College Memorial
+  Encoded as: Cheltenham%20College%20Memorial
+
+Zone 12: Cheshire Regiment Association
+  Encoded as: Cheshire%20Regiment%20Association
+
+Zone 13: Cheshire Regiment Memorial Bench
+  Encoded as: Cheshire%20Regiment%20Memorial%20Bench
+
+Zone 7: Cheshire Yeomanry
+  Encoded as: Cheshire%20Yeomanry
+
+Zone 6: Children's Woodland
+  Encoded as: Children%27s%20Woodland
+
+Zone 8: Chindit Memorial
+  Encoded as: Chindit%20Memorial
+
+Zone 1: Christmas Truce Memorial and Shelter ; Football Remembers
+  Encoded as: Christmas%20Truce%20Memorial%20and%20Shelter%20%3B%20Football%20Remembers
+
+Zone 10: Church Lads' and Church Girls' Brigade
+  Encoded as: Church%20Lads%27%20and%20Church%20Girls%27%20Brigade
+
+Zone 9: Civil Defence
+  Encoded as: Civil%20Defence
+
+Zone 9: Civil Defence George Cross Awards
+  Encoded as: Civil%20Defence%20George%20Cross%20Awards
+
+Zone 4: Clan, Houston, Scottish Shire, Bullard and King Line Steamers Memorial
+  Encoded as: Clan%2C%20Houston%2C%20Scottish%20Shire%2C%20Bullard%20and%20King%20Line%20Steamers%20Memorial
+
+Zone 13: Coastal Command Grove
+  Encoded as: Coastal%20Command%20Grove
+
+Zone 1: Cockleshell Heroes Memorial
+  Encoded as: Cockleshell%20Heroes%20Memorial
+
+Zone 9: Cold War 1949-1968 Memorial
+  Encoded as: Cold%20War%201949-1968%20Memorial
+
+Zone 1: Combined Operations Memorial
+  Encoded as: Combined%20Operations%20Memorial
+
+Zone 11: Cyprus Emergency (1955-1959) Memorial
+  Encoded as: Cyprus%20Emergency%20%281955-1959%29%20Memorial
+
+Zone 4: Defensively Equipped Merchant Ships (DEMS) Memorial
+  Encoded as: Defensively%20Equipped%20Merchant%20Ships%20%28DEMS%29%20Memorial
+
+Zone 3: Desert Rats Association
+  Encoded as: Desert%20Rats%20Association
+
+Zone 16: Devonshire and Dorset Regiment
+  Encoded as: Devonshire%20and%20Dorset%20Regiment
+
+Zone 7: Diamond Grove
+  Encoded as: Diamond%20Grove
+
+Zone 1: Dieppe Raid Memorial
+  Encoded as: Dieppe%20Raid%20Memorial
+
+Zone 3: Douglas Skene Grove
+  Encoded as: Douglas%20Skene%20Grove
+
+Zone 12: Duke of Lancaster's Regiment Memorial
+  Encoded as: Duke%20of%20Lancaster%27s%20Regiment%20Memorial
+
+Zone 2: Duke of York's Military School
+  Encoded as: Duke%20of%20York%27s%20Military%20School
+
+Zone 15: Durham Light Infantry Memorial
+  Encoded as: Durham%20Light%20Infantry%20Memorial
+
+Zone 6: Edward's Trust Garden
+  Encoded as: Edward%27s%20Trust%20Garden
+
+Zone 1: Escape Lines Memorial ; Home Run
+  Encoded as: Escape%20Lines%20Memorial%20%3B%20Home%20Run
+
+Zone 15: Essex Regiment Memorial
+  Encoded as: Essex%20Regiment%20Memorial
+
+Zone 9: Ex-National Servicemen's Memorial
+  Encoded as: Ex-National%20Servicemen%27s%20Memorial
+
+Zone 1: Falkland Island Resistance
+  Encoded as: Falkland%20Island%20Resistance
+
+Zone 7: Far East Air Force Memorial
+  Encoded as: Far%20East%20Air%20Force%20Memorial
+
+Zone 8: Far East Prisoners of War Grove
+  Encoded as: Far%20East%20Prisoners%20of%20War%20Grove
+
+Zone 8: Far East Prisoners of War Memorial Building
+  Encoded as: Far%20East%20Prisoners%20of%20War%20Memorial%20Building
+
+Zone 9: Fauld Explosion Memorial
+  Encoded as: Fauld%20Explosion%20Memorial
+
+Zone 2: Fellowship of the Services Memorial
+  Encoded as: Fellowship%20of%20the%20Services%20Memorial
+
+Zone 9: Fire and Rescue Services Memorial
+  Encoded as: Fire%20and%20Rescue%20Services%20Memorial
+
+Zone 10: Fire Bell Memorial to Betty Wills
+  Encoded as: Fire%20Bell%20Memorial%20to%20Betty%20Wills
+
+Zone 7: Fleet Air Arm British Pacific and East Indies Fleets Aircrew Memorial
+  Encoded as: Fleet%20Air%20Arm%20British%20Pacific%20and%20East%20Indies%20Fleets%20Aircrew%20Memorial
+
+Zone 5: Fleet Air Arm Memorial (FLY Navy Federation)
+  Encoded as: Fleet%20Air%20Arm%20Memorial%20%28FLY%20Navy%20Federation%29
+
+Zone 13: Flight Lieutenant J W Lucas DFC
+  Encoded as: Flight%20Lieutenant%20J%20W%20Lucas%20DFC
+
+Zone 1: Foresters Friendly Society Memorial
+  Encoded as: Foresters%20Friendly%20Society%20Memorial
+
+Zone 15: Free Czechoslovak Veterans
+  Encoded as: Free%20Czechoslovak%20Veterans
+
+Zone 1: Free Spirit Horse Memorial
+  Encoded as: Free%20Spirit%20Horse%20Memorial
+
+Zone 12: Gallipoli Memorial
+  Encoded as: Gallipoli%20Memorial
+
+Zone 11: Garden of the Innocents
+  Encoded as: Garden%20of%20the%20Innocents
+
+Zone 15: GCHQ Memorial
+  Encoded as: GCHQ%20Memorial
+
+Zone 9: General Post Office Memorial Garden (GPO)
+  Encoded as: General%20Post%20Office%20Memorial%20Garden%20%28GPO%29
+
+Zone 11: George Cross Island Association (Malta) Memorial
+  Encoded as: George%20Cross%20Island%20Association%20%28Malta%29%20Memorial
+
+Zone 11: Gibraltar Memorial
+  Encoded as: Gibraltar%20Memorial
+
+Zone 6: Gift of Life Memorial ; Donor Family Network
+  Encoded as: Gift%20of%20Life%20Memorial%20%3B%20Donor%20Family%20Network
+
+Zone 13: Girls Venture Corps Memorial
+  Encoded as: Girls%20Venture%20Corps%20Memorial
+
+Zone 1: Glider Pilot Regiment Memorial
+  Encoded as: Glider%20Pilot%20Regiment%20Memorial
+
+Zone 16: Gloucestershire Regiment
+  Encoded as: Gloucestershire%20Regiment
+
+Zone 16: Golden Grove
+  Encoded as: Golden%20Grove
+
+Zone 12: Gordon Highlanders
+  Encoded as: Gordon%20Highlanders
+
+Zone 12: Green Howards
+  Encoded as: Green%20Howards
+
+Zone 15: Guardsmen of the Sky Memorial;Guards Parachute Association
+  Encoded as: Guardsmen%20of%20the%20Sky%20Memorial%3BGuards%20Parachute%20Association
+
+Zone 13: Guinea Pig Club Memorial
+  Encoded as: Guinea%20Pig%20Club%20Memorial
+
+Zone 3: Gulf War 1990-1991 Memorial
+  Encoded as: Gulf%20War%201990-1991%20Memorial
+
+Zone 10: Heroes' Square
+  Encoded as: Heroes%27%20Square
+
+Zone 11: Hertfordshire Police 'Rayner, Mandy, PC'
+  Encoded as: Hertfordshire%20Police%20%27Rayner%2C%20Mandy%2C%20PC%27
+
+Zone 14: Hiroshima Stone
+  Encoded as: Hiroshima%20Stone
+
+Zone 5: HM Ships Glorious, Acasta and Ardent Memorial
+  Encoded as: HM%20Ships%20Glorious%2C%20Acasta%20and%20Ardent%20Memorial
+
+Zone 5: HMS Nairana & 835 Royal Naval Air Squadron Memorial Grove
+  Encoded as: HMS%20Nairana%20%26%20835%20Royal%20Naval%20Air%20Squadron%20Memorial%20Grove
+
+Zone 5: HMS Antelope Garden
+  Encoded as: HMS%20Antelope%20Garden
+
+Zone 5: HMS Ardent Memorial
+  Encoded as: HMS%20Ardent%20Memorial
+
+Zone 5: HMS Argonaut Memorial
+  Encoded as: HMS%20Argonaut%20Memorial
+
+Zone 5: HMS Barham Memorial
+  Encoded as: HMS%20Barham%20Memorial
+
+Zone 4: HMS Bruce Memorial
+  Encoded as: HMS%20Bruce%20Memorial
+
+Zone 5: HMS Bulwark, Albion and Centaur Memorial
+  Encoded as: HMS%20Bulwark%2C%20Albion%20and%20Centaur%20Memorial
+
+Zone 5: HMS Caledonia Memorial
+  Encoded as: HMS%20Caledonia%20Memorial
+
+Zone 5: HMS Cavalier Memorial
+  Encoded as: HMS%20Cavalier%20Memorial
+
+Zone 5: HMS Charybdis & HMS Limbourne
+  Encoded as: HMS%20Charybdis%20%26%20HMS%20Limbourne
+
+Zone 5: HMS Cossack Memorial
+  Encoded as: HMS%20Cossack%20Memorial
+
+Zone 5: HMS Dunedin Memorial
+  Encoded as: HMS%20Dunedin%20Memorial
+
+Zone 5: HMS Formidable Memorial
+  Encoded as: HMS%20Formidable%20Memorial
+
+Zone 5: HMS Gambia Memorial
+  Encoded as: HMS%20Gambia%20Memorial
+
+Zone 4: HMS Ganges Memorial
+  Encoded as: HMS%20Ganges%20Memorial
+
+Zone 5: HMS Glory Memorial
+  Encoded as: HMS%20Glory%20Memorial
+
+Zone 5: HMS Hood Memorial
+  Encoded as: HMS%20Hood%20Memorial
+
+Zone 5: HMS Kenya Memorial
+  Encoded as: HMS%20Kenya%20Memorial
+
+Zone 5: HMS Neptune and Kandahar Memorial
+  Encoded as: HMS%20Neptune%20and%20Kandahar%20Memorial
+
+Zone 5: HMS Prince of Wales and HMS Repulse Memorial
+  Encoded as: HMS%20Prince%20of%20Wales%20and%20HMS%20Repulse%20Memorial
+
+Zone 5: HMS Royal Arthur Memorial
+  Encoded as: HMS%20Royal%20Arthur%20Memorial
+
+Zone 5: HMS Sheffield
+  Encoded as: HMS%20Sheffield
+
+Zone 4: HMT Lancastria Memorial
+  Encoded as: HMT%20Lancastria%20Memorial
+
+Zone 6: Home Front Memorial
+  Encoded as: Home%20Front%20Memorial
+
+Zone 12: Home Service Force Memorial
+  Encoded as: Home%20Service%20Force%20Memorial
+
+Zone 8: Hong Kong Volunteer Defence Corps Memorial
+  Encoded as: Hong%20Kong%20Volunteer%20Defence%20Corps%20Memorial
+
+Zone 14: Household Division Memorial
+  Encoded as: Household%20Division%20Memorial
+
+Zone 5: Hunt Class Destroyers Memorial
+  Encoded as: Hunt%20Class%20Destroyers%20Memorial
+
+Zone 9: Inner Wheel Grove
+  Encoded as: Inner%20Wheel%20Grove
+
+Zone 9: Institute of Quarrying Garden
+  Encoded as: Institute%20of%20Quarrying%20Garden
+
+Zone 15: Intelligence Corps Memorial
+  Encoded as: Intelligence%20Corps%20Memorial
+
+Zone 10: International Military Music Society
+  Encoded as: International%20Military%20Music%20Society
+
+Zone 14: Iraq & Afghanistan Willows
+  Encoded as: Iraq%20%26%20Afghanistan%20Willows
+
+Zone 11: Irish Infantry Grove
+  Encoded as: Irish%20Infantry%20Grove
+
+Zone 11: Italy Star Association 1943 - 1945
+  Encoded as: Italy%20Star%20Association%201943%20-%201945
+
+Zone 8: Japanese Hell Ships Memorial
+  Encoded as: Japanese%20Hell%20Ships%20Memorial
+
+Zone 7: Kenya Police Memorial
+  Encoded as: Kenya%20Police%20Memorial
+
+Zone 10: King's African Rifles Memorial
+  Encoded as: King%27s%20African%20Rifles%20Memorial
+
+Zone 12: King's Royal Hussars Memorial
+  Encoded as: King%27s%20Royal%20Hussars%20Memorial
+
+Zone 15: King's Shropshire Light Infantry Memorial (KLSI)
+  Encoded as: King%27s%20Shropshire%20Light%20Infantry%20Memorial%20%28KLSI%29
+
+Zone 15: Kingfisher Wood
+  Encoded as: Kingfisher%20Wood
+
+Zone 8: Kohima Tennis Court
+  Encoded as: Kohima%20Tennis%20Court
+
+Zone 15: LCpl Kevin 'Dinger' Bell Memorial
+  Encoded as: LCpl%20Kevin%20%27Dinger%27%20Bell%20Memorial
+
+Zone 5: Ladysmith Memorial
+  Encoded as: Ladysmith%20Memorial
+
+Zone 9: Leonard Cheshire Amphitheatre
+  Encoded as: Leonard%20Cheshire%20Amphitheatre
+
+Zone 1: Leyton Orient Somme
+  Encoded as: Leyton%20Orient%20Somme
+
+Zone 9: Lichfield and District Garden
+  Encoded as: Lichfield%20and%20District%20Garden
+
+Zone 15: Lichfield Wood
+  Encoded as: Lichfield%20Wood
+
+Zone 15: Life Guards Memorial
+  Encoded as: Life%20Guards%20Memorial
+
+Zone 12: Light Dragoons Memorial
+  Encoded as: Light%20Dragoons%20Memorial
+
+Zone 15: Light Infantry (The Rifles) Memorial
+  Encoded as: Light%20Infantry%20%28The%20Rifles%29%20Memorial
+
+Zone 3: Lions Club International Shelter
+  Encoded as: Lions%20Club%20International%20Shelter
+
+Zone 8: Lisbon Maru
+  Encoded as: Lisbon%20Maru
+
+Zone 12: Liverpool Scottish
+  Encoded as: Liverpool%20Scottish
+
+Zone 5: Loch Class Frigates Memorial
+  Encoded as: Loch%20Class%20Frigates%20Memorial
+
+Zone 5: LST and Landing Craft Memorial
+  Encoded as: LST%20and%20Landing%20Craft%20Memorial
+
+Zone 8: Malaya and Borneo Veterans Memorial
+  Encoded as: Malaya%20and%20Borneo%20Veterans%20Memorial
+
+Zone 8: Malayan Volunteer Force Memorial
+  Encoded as: Malayan%20Volunteer%20Force%20Memorial
+
+Zone 10: Masonic Masons (Freemasons) Memorial
+  Encoded as: Masonic%20Masons%20%28Freemasons%29%20Memorial
+
+Zone 4: Master Mariners Sundial
+  Encoded as: Master%20Mariners%20Sundial
+
+Zone 11: Mediterranean Campaigns of World War 2
+  Encoded as: Mediterranean%20Campaigns%20of%20World%20War%202
+
+Zone 9: Memorial Rose Garden
+  Encoded as: Memorial%20Rose%20Garden
+
+Zone 4: Merchant Navy Association Memorial
+  Encoded as: Merchant%20Navy%20Association%20Memorial
+
+Zone 4: Merchant Navy Convoy Wood
+  Encoded as: Merchant%20Navy%20Convoy%20Wood
+
+Zone 12: Mercian Volunteers Memorial
+  Encoded as: Mercian%20Volunteers%20Memorial
+
+Zone 15: Mercian Wood
+  Encoded as: Mercian%20Wood
+
+Zone 2: Mesothelioma UK
+  Encoded as: Mesothelioma%20UK
+
+Zone 6: Military Medallists' Memorial
+  Encoded as: Military%20Medallists%27%20Memorial
+
+Zone 3: Millenium Shelter
+  Encoded as: Millenium%20Shelter
+
+Zone 10: Millennium Chapel of Peace and Forgiveness
+  Encoded as: Millennium%20Chapel%20of%20Peace%20and%20Forgiveness
+
+Zone 2: Millennium Wood
+  Encoded as: Millennium%20Wood
+
+Zone 11: Monte Cassino Association Memorial
+  Encoded as: Monte%20Cassino%20Association%20Memorial
+
+Zone 1: Moussey Memorial
+  Encoded as: Moussey%20Memorial
+
+Zone 1: NAAFI ; Navy, Army and Air Force Institutes
+  Encoded as: NAAFI%20%3B%20Navy%2C%20Army%20and%20Air%20Force%20Institutes
+
+Zone 7: National Association of Memorial Masons (NAMM)
+  Encoded as: National%20Association%20of%20Memorial%20Masons%20%28NAMM%29
+
+Zone 6: National Ex-Prisoner of War Memorial
+  Encoded as: National%20Ex-Prisoner%20of%20War%20Memorial
+
+Zone 9: National Miners' Memorial
+  Encoded as: National%20Miners%27%20Memorial
+
+Zone 9: National Voluntary Civil Aid
+  Encoded as: National%20Voluntary%20Civil%20Aid
+
+Zone 5: Naval Service Memorial
+  Encoded as: Naval%20Service%20Memorial
+
+Zone 5: Navy Wood
+  Encoded as: Navy%20Wood
+
+Zone 4: Neutral Irish Registered Vessels Memorial
+  Encoded as: Neutral%20Irish%20Registered%20Vessels%20Memorial
+
+Zone 7: Nigeria Police
+  Encoded as: Nigeria%20Police
+
+Zone 13: No 101 Squadron RAF
+  Encoded as: No%20101%20Squadron%20RAF
+
+Zone 13: No 2 Squadron RAF Memorial ; No II (AC) Squadron RAF, Shiny Two
+  Encoded as: No%202%20Squadron%20RAF%20Memorial%20%3B%20No%20II%20%28AC%29%20Squadron%20RAF%2C%20Shiny%20Two
+
+Zone 1: No 47 Squadron RAF Memorial
+  Encoded as: No%2047%20Squadron%20RAF%20Memorial
+
+Zone 13: No 49 Squadron Memorial
+  Encoded as: No%2049%20Squadron%20Memorial
+
+Zone 13: No IX Squadron RAF
+  Encoded as: No%20IX%20Squadron%20RAF
+
+Zone 13: No. 30 Squadron Association Memorial
+  Encoded as: No.%2030%20Squadron%20Association%20Memorial
+
+Zone 13: No. 8 Group Path Finder Force
+  Encoded as: No.%208%20Group%20Path%20Finder%20Force
+
+Zone 10: Normandy Veterans Memorial
+  Encoded as: Normandy%20Veterans%20Memorial
+
+Zone 6: Northern Ireland Prison Service Memorial
+  Encoded as: Northern%20Ireland%20Prison%20Service%20Memorial
+
+Zone 7: Northern Rhodesia Police Memorial
+  Encoded as: Northern%20Rhodesia%20Police%20Memorial
+
+Zone 15: Not Forgotten Association Memorial
+  Encoded as: Not%20Forgotten%20Association%20Memorial
+
+Zone 16: Nursing Memorial,The
+  Encoded as: Nursing%20Memorial%2CThe
+
+Zone 7: Nyasaland Police Memorial
+  Encoded as: Nyasaland%20Police%20Memorial
+
+Zone 4: Ocean Fairway Blue Funnel Line Memorial
+  Encoded as: Ocean%20Fairway%20Blue%20Funnel%20Line%20Memorial
+
+Zone 4: Ocean Fairway Elder Dempster Line Memorial
+  Encoded as: Ocean%20Fairway%20Elder%20Dempster%20Line%20Memorial
+
+Zone 7: Operation Market Garden Market Garden Veterans' Association Memorial
+  Encoded as: Operation%20Market%20Garden%20Market%20Garden%20Veterans%27%20Association%20Memorial
+
+Zone 2: Orange Institution Memorial
+  Encoded as: Orange%20Institution%20Memorial
+
+Zone 7: Order of St John Volunteers Memorial
+  Encoded as: Order%20of%20St%20John%20Volunteers%20Memorial
+
+Zone 11: Palestine Police Old Comrades' Association Memorial
+  Encoded as: Palestine%20Police%20Old%20Comrades%27%20Association%20Memorial
+
+Zone 11: Palestine Veterans' Association Memorial
+  Encoded as: Palestine%20Veterans%27%20Association%20Memorial
+
+Zone 15: Parachute Regiment and Airborne Forces Memorial
+  Encoded as: Parachute%20Regiment%20and%20Airborne%20Forces%20Memorial
+
+Zone 15: Parachute Squadron Royal Armoured Corps Memorial
+  Encoded as: Parachute%20Squadron%20Royal%20Armoured%20Corps%20Memorial
+
+Zone 1: Pegasus Bridge Memorial
+  Encoded as: Pegasus%20Bridge%20Memorial
+
+Zone 12: Phantom Memorial
+  Encoded as: Phantom%20Memorial
+
+Zone 2: Pity of War
+  Encoded as: Pity%20of%20War
+
+Zone 12: Polar Bear Memorial ; 49 West Riding Division
+  Encoded as: Polar%20Bear%20Memorial%20%3B%2049%20West%20Riding%20Division
+
+Zone 6: Police Service Northern Ireland (PSNI) Memorial
+  Encoded as: Police%20Service%20Northern%20Ireland%20%28PSNI%29%20Memorial
+
+Zone 16: Polish Forces War Memorial
+  Encoded as: Polish%20Forces%20War%20Memorial
+
+Zone 6: Poppy Memorial ; 'RBL Never Forget Tribute Garden'
+  Encoded as: Poppy%20Memorial%20%3B%20%27RBL%20Never%20Forget%20Tribute%20Garden%27
+
+Zone 1: Popski's Private Army
+  Encoded as: Popski%27s%20Private%20Army
+
+Zone 6: Posted - Service Children's Education Memorial
+  Encoded as: Posted%20-%20Service%20Children%27s%20Education%20Memorial
+
+Zone 12: Prince of Wales's Own Regiment of Yorkshire
+  Encoded as: Prince%20of%20Wales%27s%20Own%20Regiment%20of%20Yorkshire
+
+Zone 13: Princess Mary's RAF Nursing Service (PMRAFNS) Memorial
+  Encoded as: Princess%20Mary%27s%20RAF%20Nursing%20Service%20%28PMRAFNS%29%20Memorial
+
+Zone 2: Prison Officers Association (POA)
+  Encoded as: Prison%20Officers%20Association%20%28POA%29
+
+Zone 2: Quaker Services Memorial
+  Encoded as: Quaker%20Services%20Memorial
+
+Zone 11: Queen Alexandra's Royal Army Nursing Corps Memorial
+  Encoded as: Queen%20Alexandra%27s%20Royal%20Army%20Nursing%20Corps%20Memorial
+
+Zone 5: Queen Alexandra's Royal Navy Nursing Service and the Voluntary Aid Detachment Memorial (QARNNS)
+  Encoded as: Queen%20Alexandra%27s%20Royal%20Navy%20Nursing%20Service%20and%20the%20Voluntary%20Aid%20Detachment%20Memorial%20%28QARNNS%29
+
+Zone 12: Queen's Lancashire Regiment 1970-2006
+  Encoded as: Queen%27s%20Lancashire%20Regiment%201970-2006
+
+Zone 12: Queen's Own Highlanders Memorial
+  Encoded as: Queen%27s%20Own%20Highlanders%20Memorial
+
+Zone 11: Queen's Regiment Memorial
+  Encoded as: Queen%27s%20Regiment%20Memorial
+
+Zone 12: Queen's Royal Hussars Memorial
+  Encoded as: Queen%27s%20Royal%20Hussars%20Memorial
+
+Zone 12: Queen's Royal Lancers Memorial
+  Encoded as: Queen%27s%20Royal%20Lancers%20Memorial
+
+Zone 12: Queens Own Buffs - The Royal Kent Regiment
+  Encoded as: Queens%20Own%20Buffs%20-%20The%20Royal%20Kent%20Regiment
+
+Zone 2: RAC Future Forests
+  Encoded as: RAC%20Future%20Forests
+
+Zone 13: RAF 214 Squadron Memorial
+  Encoded as: RAF%20214%20Squadron%20Memorial
+
+Zone 13: RAF Administrative Apprentices Memorial
+  Encoded as: RAF%20Administrative%20Apprentices%20Memorial
+
+Zone 13: RAF Air Loadmasters' Association Memorial
+  Encoded as: RAF%20Air%20Loadmasters%27%20Association%20Memorial
+
+Zone 13: RAF Armourers
+  Encoded as: RAF%20Armourers
+
+Zone 13: RAF Barrage Balloons Memorial
+  Encoded as: RAF%20Barrage%20Balloons%20Memorial
+
+Zone 6: RAF Benevolent Fund Memorial
+  Encoded as: RAF%20Benevolent%20Fund%20Memorial
+
+Zone 13: RAF Bomb Disposal
+  Encoded as: RAF%20Bomb%20Disposal
+
+Zone 13: RAF Fire and Rescue Service
+  Encoded as: RAF%20Fire%20and%20Rescue%20Service
+
+Zone 13: RAF Flight and Air Engineers Memorial
+  Encoded as: RAF%20Flight%20and%20Air%20Engineers%20Memorial
+
+Zone 13: RAF Locking Memorial
+  Encoded as: RAF%20Locking%20Memorial
+
+Zone 13: RAF Medical Services Memorial
+  Encoded as: RAF%20Medical%20Services%20Memorial
+
+Zone 13: RAF Mountain Rescue Service (MRS), The
+  Encoded as: RAF%20Mountain%20Rescue%20Service%20%28MRS%29%2C%20The
+
+Zone 13: RAF No. 31 Squadron Memorial
+  Encoded as: RAF%20No.%2031%20Squadron%20Memorial
+
+Zone 13: RAF Physical Training Instructors
+  Encoded as: RAF%20Physical%20Training%20Instructors
+
+Zone 13: RAF Search and Rescue Memorial
+  Encoded as: RAF%20Search%20and%20Rescue%20Memorial
+
+Zone 2: Rail Industry Memorial
+  Encoded as: Rail%20Industry%20Memorial
+
+Zone 14: Reconciliation Stone
+  Encoded as: Reconciliation%20Stone
+
+Zone 2: Remembrance Glade
+  Encoded as: Remembrance%20Glade
+
+Zone 7: Rhodesian African Rifles and Rhodesia Native Regiment Memorial
+  Encoded as: Rhodesian%20African%20Rifles%20and%20Rhodesia%20Native%20Regiment%20Memorial
+
+Zone 7: Rhodesian Air Force Memorial
+  Encoded as: Rhodesian%20Air%20Force%20Memorial
+
+Zone 1: Roadpeace Wood
+  Encoded as: Roadpeace%20Wood
+
+Zone 3: Robert Flockhart Memorial
+  Encoded as: Robert%20Flockhart%20Memorial
+
+Zone 8: Rotary International and Rotary  Ridge
+  Encoded as: Rotary%20International%20and%20Rotary%20%20Ridge
+
+Zone 13: Royal Air Force Boy Entrants Memorial
+  Encoded as: Royal%20Air%20Force%20Boy%20Entrants%20Memorial
+
+Zone 13: Royal Air Force Cranwell Apprentices Memorial
+  Encoded as: Royal%20Air%20Force%20Cranwell%20Apprentices%20Memorial
+
+Zone 13: Royal Air Force Dental Branch
+  Encoded as: Royal%20Air%20Force%20Dental%20Branch
+
+Zone 9: Royal Air Force Halton Apprentices Memorial Garden
+  Encoded as: Royal%20Air%20Force%20Halton%20Apprentices%20Memorial%20Garden
+
+Zone 13: Royal Air Force Police Memorial
+  Encoded as: Royal%20Air%20Force%20Police%20Memorial
+
+Zone 9: Royal Air Force Regiment Memorial
+  Encoded as: Royal%20Air%20Force%20Regiment%20Memorial
+
+Zone 13: Royal Air Force Servicing Commando and Tactical Supply Wing Association Memorial
+  Encoded as: Royal%20Air%20Force%20Servicing%20Commando%20and%20Tactical%20Supply%20Wing%20Association%20Memorial
+
+Zone 14: Royal Air Force Wing
+  Encoded as: Royal%20Air%20Force%20Wing
+
+Zone 14: Royal Air Force Wood
+  Encoded as: Royal%20Air%20Force%20Wood
+
+Zone 13: Royal Air Forces Association Remembrance Garden (RAFA)
+  Encoded as: Royal%20Air%20Forces%20Association%20Remembrance%20Garden%20%28RAFA%29
+
+Zone 1: Royal and Sun Alliance Memorials
+  Encoded as: Royal%20and%20Sun%20Alliance%20Memorials
+
+Zone 1: Royal Army Chaplains Memorial
+  Encoded as: Royal%20Army%20Chaplains%20Memorial
+
+Zone 16: Royal Army Dental Corps (RADC) Memorial
+  Encoded as: Royal%20Army%20Dental%20Corps%20%28RADC%29%20Memorial
+
+Zone 16: Royal Army Medical Corps (RAMC) Memorial
+  Encoded as: Royal%20Army%20Medical%20Corps%20%28RAMC%29%20Memorial
+
+Zone 12: Royal Army Pay Corps
+  Encoded as: Royal%20Army%20Pay%20Corps
+
+Zone 12: Royal Army Physical Training Corps (RAPTC) Memorial
+  Encoded as: Royal%20Army%20Physical%20Training%20Corps%20%28RAPTC%29%20Memorial
+
+Zone 16: Royal Army Veterinary Corps (RAVC) Memorial
+  Encoded as: Royal%20Army%20Veterinary%20Corps%20%28RAVC%29%20Memorial
+
+Zone 9: Royal Artillery Garden
+  Encoded as: Royal%20Artillery%20Garden
+
+Zone 13: Royal Australian Air Force Memorial
+  Encoded as: Royal%20Australian%20Air%20Force%20Memorial
+
+Zone 13: Royal Auxiliary Air Force Memorial
+  Encoded as: Royal%20Auxiliary%20Air%20Force%20Memorial
+
+Zone 2: Royal British Legion Poppy Field
+  Encoded as: Royal%20British%20Legion%20Poppy%20Field
+
+Zone 13: Royal Canadian Air Force Memorial
+  Encoded as: Royal%20Canadian%20Air%20Force%20Memorial
+
+Zone 15: Royal Corps of Signals Memorial
+  Encoded as: Royal%20Corps%20of%20Signals%20Memorial
+
+Zone 12: Royal Dragoon Guards Memorial
+  Encoded as: Royal%20Dragoon%20Guards%20Memorial
+
+Zone 15: Royal Electrical and Mechanical Engineers (REME) Memorial
+  Encoded as: Royal%20Electrical%20and%20Mechanical%20Engineers%20%28REME%29%20Memorial
+
+Zone 11: Royal Engineers (RE) Memorial
+  Encoded as: Royal%20Engineers%20%28RE%29%20Memorial
+
+Zone 5: Royal Fleet Auxiliary Memorial
+  Encoded as: Royal%20Fleet%20Auxiliary%20Memorial
+
+Zone 4: Royal Fleet Auxiliary Ship 'Sir Percivale' Anchor
+  Encoded as: Royal%20Fleet%20Auxiliary%20Ship%20%27Sir%20Percivale%27%20Anchor
+
+Zone 12: Royal Gloucestershire, Berkshire and Wiltshire Regiment Memorial
+  Encoded as: Royal%20Gloucestershire%2C%20Berkshire%20and%20Wiltshire%20Regiment%20Memorial
+
+Zone 12: Royal Green Jackets Memorial
+  Encoded as: Royal%20Green%20Jackets%20Memorial
+
+Zone 11: Royal Hampshire Regiment Memorial
+  Encoded as: Royal%20Hampshire%20Regiment%20Memorial
+
+Zone 7: Royal Hong Kong Police Memorial
+  Encoded as: Royal%20Hong%20Kong%20Police%20Memorial
+
+Zone 7: Royal Indian Navy and Indian Army Memorial
+  Encoded as: Royal%20Indian%20Navy%20and%20Indian%20Army%20Memorial
+
+Zone 12: Royal Leicestershire Regiment Memorial ; Leicestershire Tigers
+  Encoded as: Royal%20Leicestershire%20Regiment%20Memorial%20%3B%20Leicestershire%20Tigers
+
+Zone 11: Royal Logistics Corps Memorial
+  Encoded as: Royal%20Logistics%20Corps%20Memorial
+
+Zone 4: Royal Mail Association Memorial
+  Encoded as: Royal%20Mail%20Association%20Memorial
+
+Zone 8: Royal Malaysia Police Memorial
+  Encoded as: Royal%20Malaysia%20Police%20Memorial
+
+Zone 7: Royal Marines Association
+  Encoded as: Royal%20Marines%20Association
+
+Zone 11: Royal Military Police Association Memorial
+  Encoded as: Royal%20Military%20Police%20Association%20Memorial
+
+Zone 6: Royal National Lifeboat Institution (RNLI)
+  Encoded as: Royal%20National%20Lifeboat%20Institution%20%28RNLI%29
+
+Zone 4: Royal Naval Association Uttoxeter Memorial
+  Encoded as: Royal%20Naval%20Association%20Uttoxeter%20Memorial
+
+Zone 5: Royal Naval Medical Services Memorial
+  Encoded as: Royal%20Naval%20Medical%20Services%20Memorial
+
+Zone 6: Royal Naval Patrol Service Memorial ; 'HMS Europa, (RNPS)'
+  Encoded as: Royal%20Naval%20Patrol%20Service%20Memorial%20%3B%20%27HMS%20Europa%2C%20%28RNPS%29%27
+
+Zone 7: Royal Navy Artificers Memorial
+  Encoded as: Royal%20Navy%20Artificers%20Memorial
+
+Zone 5: Royal Navy Coastal Forces Memorial
+  Encoded as: Royal%20Navy%20Coastal%20Forces%20Memorial
+
+Zone 5: Royal Navy Engineers Benevolent Society Memorial
+  Encoded as: Royal%20Navy%20Engineers%20Benevolent%20Society%20Memorial
+
+Zone 8: Royal Norfolk Regiment, Suffolk Regiment and Cambridgeshire Regiment Memorial ; Anglian Regiment
+  Encoded as: Royal%20Norfolk%20Regiment%2C%20Suffolk%20Regiment%20and%20Cambridgeshire%20Regiment%20Memorial%20%3B%20Anglian%20Regiment
+
+Zone 7: Royal Norwegian Navy
+  Encoded as: Royal%20Norwegian%20Navy
+
+Zone 13: Royal Observer Corps
+  Encoded as: Royal%20Observer%20Corps
+
+Zone 13: Royal Observer Corps Seaborne Wing
+  Encoded as: Royal%20Observer%20Corps%20Seaborne%20Wing
+
+Zone 11: Royal Regiment of Fusiliers Memorial
+  Encoded as: Royal%20Regiment%20of%20Fusiliers%20Memorial
+
+Zone 12: Royal Regiment of Scotland
+  Encoded as: Royal%20Regiment%20of%20Scotland
+
+Zone 12: Royal Scots Dragoon Guards
+  Encoded as: Royal%20Scots%20Dragoon%20Guards
+
+Zone 12: Royal Regiment of Scotland
+  Encoded as: Royal%20Regiment%20of%20Scotland
+
+Zone 11: Royal Tank Regiment
+  Encoded as: Royal%20Tank%20Regiment
+
+Zone 3: Royal Ulster Constabulary George Cross Way (RUC GC Way)
+  Encoded as: Royal%20Ulster%20Constabulary%20George%20Cross%20Way%20%28RUC%20GC%20Way%29
+
+Zone 15: Royal Welsh Regiment Memorial
+  Encoded as: Royal%20Welsh%20Regiment%20Memorial
+
+Zone 1: Salvation Army Memorial
+  Encoded as: Salvation%20Army%20Memorial
+
+Zone 16: Sapper Support
+  Encoded as: Sapper%20Support
+
+Zone 2: Scouting Memorial
+  Encoded as: Scouting%20Memorial
+
+Zone 13: Second Tactical Air Force Memorial
+  Encoded as: Second%20Tactical%20Air%20Force%20Memorial
+
+Zone 13: Shackleton Association Memorial
+  Encoded as: Shackleton%20Association%20Memorial
+
+Zone 4: Shaw, Saville and Albion Ltd Memorial
+  Encoded as: Shaw%2C%20Saville%20and%20Albion%20Ltd%20Memorial
+
+Zone 7: Sherwood Rangers Yeomanry Memorial
+  Encoded as: Sherwood%20Rangers%20Yeomanry%20Memorial
+
+Zone 16: Shot at Dawn Memorial
+  Encoded as: Shot%20at%20Dawn%20Memorial
+
+Zone 16: Showmen's Guild of Great Britain
+  Encoded as: Showmen%27s%20Guild%20of%20Great%20Britain
+
+Zone 5: Shrievalty Avenue
+  Encoded as: Shrievalty%20Avenue
+
+Zone 7: Shropshire Yeomanry Memorial Plinth
+  Encoded as: Shropshire%20Yeomanry%20Memorial%20Plinth
+
+Zone 9: Sikh Memorial
+  Encoded as: Sikh%20Memorial
+
+Zone 11: Small Arms School Corps Memorial
+  Encoded as: Small%20Arms%20School%20Corps%20Memorial
+
+Zone 2: Soldiers, Sailors, Airmen and Families Association (SSAFA) Memorial
+  Encoded as: Soldiers%2C%20Sailors%2C%20Airmen%20and%20Families%20Association%20%28SSAFA%29%20Memorial
+
+Zone 14: Soroptimist International
+  Encoded as: Soroptimist%20International
+
+Zone 5: South Atlantic Medal Association memorial and the Antelope Garden ; 'Falkland Islands Campaign Memorial'
+  Encoded as: South%20Atlantic%20Medal%20Association%20memorial%20and%20the%20Antelope%20Garden%20%3B%20%27Falkland%20Islands%20Campaign%20Memorial%27
+
+Zone 2: Special Constabulary Memorial
+  Encoded as: Special%20Constabulary%20Memorial
+
+Zone 2: Spiritualists' National Union Memorial
+  Encoded as: Spiritualists%27%20National%20Union%20Memorial
+
+Zone 1: Staff Sergeant Phil Currass Memorial
+  Encoded as: Staff%20Sergeant%20Phil%20Currass%20Memorial
+
+Zone 12: Staffordshire Regiment Memorial
+  Encoded as: Staffordshire%20Regiment%20Memorial
+
+Zone 7: Staffordshire Yeomanry Memorial
+  Encoded as: Staffordshire%20Yeomanry%20Memorial
+
+Zone 9: Stillbirth and Neonatal Death Charity Memorial (SANDS)
+  Encoded as: Stillbirth%20and%20Neonatal%20Death%20Charity%20Memorial%20%28SANDS%29
+
+Zone 1: Stirling X9-Y, 299 Squadron Memorial
+  Encoded as: Stirling%20X9-Y%2C%20299%20Squadron%20Memorial
+
+Zone 5: Submariners Memorial
+  Encoded as: Submariners%20Memorial
+
+Zone 8: Suez Maru Memorial
+  Encoded as: Suez%20Maru%20Memorial
+
+Zone 9: Suez Veterans Association
+  Encoded as: Suez%20Veterans%20Association
+
+Zone 7: Sultan of Oman's Armed Forces Memorial
+  Encoded as: Sultan%20of%20Oman%27s%20Armed%20Forces%20Memorial
+
+Zone 8: Sumatra Railway Memorial
+  Encoded as: Sumatra%20Railway%20Memorial
+
+Zone 11: The Beat (Police Memorial Avenue)
+  Encoded as: The%20Beat%20%28Police%20Memorial%20Avenue%29
+
+Zone 2: The Catenian Association
+  Encoded as: The%20Catenian%20Association
+
+Zone 5: The Fisgard Association Memorial
+  Encoded as: The%20Fisgard%20Association%20Memorial
+
+Zone 12: The London Scottish Regiment Memorial
+  Encoded as: The%20London%20Scottish%20Regiment%20Memorial
+
+Zone 6: The National Memorial To The Evacuation (The British Evacuees Association)
+  Encoded as: The%20National%20Memorial%20To%20The%20Evacuation%20%28The%20British%20Evacuees%20Association%29
+
+Zone 2: The Royal Antediluvian Order of Buffaloes Memorial
+  Encoded as: The%20Royal%20Antediluvian%20Order%20of%20Buffaloes%20Memorial
+
+Zone 1: The Western Front Grove
+  Encoded as: The%20Western%20Front%20Grove
+
+Zone 11: Tobruk Memorial
+  Encoded as: Tobruk%20Memorial
+
+Zone 12: TOC H Memorial
+  Encoded as: TOC%20H%20Memorial
+
+Zone 5: Ton Class Minesweepers Memorial
+  Encoded as: Ton%20Class%20Minesweepers%20Memorial
+
+Zone 1: Townswomen's Guild
+  Encoded as: Townswomen%27s%20Guild
+
+Zone 2: Tree of Cherished Memories, The
+  Encoded as: Tree%20of%20Cherished%20Memories%2C%20The
+
+Zone 2: Trees of Life Glade
+  Encoded as: Trees%20of%20Life%20Glade
+
+Zone 1: Trefoil Guild Memorial
+  Encoded as: Trefoil%20Guild%20Memorial
+
+Zone 9: Trenchard's Legacy
+  Encoded as: Trenchard%27s%20Legacy
+
+Zone 4: TS Exmouth Memorial
+  Encoded as: TS%20Exmouth%20Memorial
+
+Zone 4: TS Indefatigable Memorial
+  Encoded as: TS%20Indefatigable%20Memorial
+
+Zone 4: TS Mercury, HMS Worcester, Conway, SATS General Botha, Nautical College Pangbourne Memorial
+  Encoded as: TS%20Mercury%2C%20HMS%20Worcester%2C%20Conway%2C%20SATS%20General%20Botha%2C%20Nautical%20College%20Pangbourne%20Memorial
+
+Zone 4: TS Vindicatrix Memorial
+  Encoded as: TS%20Vindicatrix%20Memorial
+
+Zone 7: Twin Towers Memorial
+  Encoded as: Twin%20Towers%20Memorial
+
+Zone 5: Type 21 Frigates Memorial
+  Encoded as: Type%2021%20Frigates%20Memorial
+
+Zone 2: UK Police Memorial
+  Encoded as: UK%20Police%20Memorial
+
+Zone 3: Ulster Ash Grove
+  Encoded as: Ulster%20Ash%20Grove
+
+Zone 3: Ulster Ash Grove Memorial
+  Encoded as: Ulster%20Ash%20Grove%20Memorial
+
+Zone 3: Ulster Defence Regiment CGC Memorial
+  Encoded as: Ulster%20Defence%20Regiment%20CGC%20Memorial
+
+Zone 3: Ulster Defence Regiment CGC Memorial Seat
+  Encoded as: Ulster%20Defence%20Regiment%20CGC%20Memorial%20Seat
+
+Zone 6: Ulster Special Constabulary Memorial
+  Encoded as: Ulster%20Special%20Constabulary%20Memorial
+
+Zone 4: Union Castle Line Memorial
+  Encoded as: Union%20Castle%20Line%20Memorial
+
+Zone 1: United Nations Avenue ; UN
+  Encoded as: United%20Nations%20Avenue%20%3B%20UN
+
+Zone 1: Vera Atkins - SOE Memorial
+  Encoded as: Vera%20Atkins%20-%20SOE%20Memorial
+
+Zone 2: Victims of Overseas Terrorism
+  Encoded as: Victims%20of%20Overseas%20Terrorism
+
+Zone 12: Victoria Cross Commemorative Paving Stones ; WW1 VC Paviours
+  Encoded as: Victoria%20Cross%20Commemorative%20Paving%20Stones%20%3B%20WW1%20VC%20Paviours
+
+Zone 11: War Widows' Memorial
+  Encoded as: War%20Widows%27%20Memorial
+
+Zone 11: War Widows' Rose Garden
+  Encoded as: War%20Widows%27%20Rose%20Garden
+
+Zone 11: War Widows' Wood
+  Encoded as: War%20Widows%27%20Wood
+
+Zone 1: Western Front Association Memorial
+  Encoded as: Western%20Front%20Association%20Memorial
+
+Zone 16: Women's Auxiliary Air Force (WAAF) Memorial
+  Encoded as: Women%27s%20Auxiliary%20Air%20Force%20%28WAAF%29%20Memorial
+
+Zone 8: Women's Auxiliary Service - The Chinthe Women Memorial
+  Encoded as: Women%27s%20Auxiliary%20Service%20-%20The%20Chinthe%20Women%20Memorial
+
+Zone 1: Women's Institute Memorial Seat ; WI Wall
+  Encoded as: Women%27s%20Institute%20Memorial%20Seat%20%3B%20WI%20Wall
+
+Zone 9: Women's Land Army and Timber Corps Memorial
+  Encoded as: Women%27s%20Land%20Army%20and%20Timber%20Corps%20Memorial
+
+Zone 13: Women's Royal Air Force ; WRAF
+  Encoded as: Women%27s%20Royal%20Air%20Force%20%3B%20WRAF
+
+Zone 9: Women's Royal Army Corps Memorial ; WRAC
+  Encoded as: Women%27s%20Royal%20Army%20Corps%20Memorial%20%3B%20WRAC
+
+Zone 5: Women's Royal Naval Service (WRNS) (Wrens)
+  Encoded as: Women%27s%20Royal%20Naval%20Service%20%28WRNS%29%20%28Wrens%29
+
+Zone 6: Women's Section Memorial, The Royal British Legion
+  Encoded as: Women%27s%20Section%20Memorial%2C%20The%20Royal%20British%20Legion
+
+Zone 5: Wooden Minesweepers Memorial
+  Encoded as: Wooden%20Minesweepers%20Memorial
+
+Zone 7: Operation Chariot
+  Encoded as: Operation%20Chariot
+
+Zone 9: Y Services Organisation
+  Encoded as: Y%20Services%20Organisation
+
+Zone 7: Yangtze Incident Memorial
+  Encoded as: Yangtze%20Incident%20Memorial
+
+Zone 7: Yeomanry Avenue
+  Encoded as: Yeomanry%20Avenue
+
+Zone 1: YMCA Memorial
+  Encoded as: YMCA%20Memorial
+
+Zone 12: Yorkshire Regiment Memorial
+  Encoded as: Yorkshire%20Regiment%20Memorial
+
+Zone 12: 14th-20th Kings Hussars Hawks
+  Encoded as: 14th-20th%20Kings%20Hussars%20Hawks
+
+Zone 11: 1st Army 6th Armoured Division
+  Encoded as: 1st%20Army%206th%20Armoured%20Division
+
+Zone 10: Air Training Corps
+  Encoded as: Air%20Training%20Corps
+
+Zone 14: Anglo-German Garden
+  Encoded as: Anglo-German%20Garden
+
+Zone 11: Anne Frank's Tree
+  Encoded as: Anne%20Frank%27s%20Tree
+
+Zone 10: Army Cadet Force
+  Encoded as: Army%20Cadet%20Force
+
+Zone 10: Combined Cadet Force
+  Encoded as: Combined%20Cadet%20Force
+
+Zone 10: Corps of Army Music
+  Encoded as: Corps%20of%20Army%20Music
+
+Zone 10: David Childs' tree Founders Tree
+  Encoded as: David%20Childs%27%20tree%20Founders%20Tree
+
+Zone 15: Le Paradis Massacre Memorial
+  Encoded as: Le%20Paradis%20Massacre%20Memorial
+
+Zone 13: LGBT+ armed forces community
+  Encoded as: LGBT%2B%20armed%20forces%20community
+
+Zone 5: Millennium Avenue
+  Encoded as: Millennium%20Avenue
+
+Zone 10: Royal Air Force Music Services
+  Encoded as: Royal%20Air%20Force%20Music%20Services
+
+Zone 10: Royal Navy School of Music
+  Encoded as: Royal%20Navy%20School%20of%20Music
+
+Zone 10: Sea Cadets
+  Encoded as: Sea%20Cadets
+
+Zone 16: Shot at Dawn Shelter
+  Encoded as: Shot%20at%20Dawn%20Shelter
+
+Zone 12: SS Slamat HMS Diamond HMS Wryneck
+  Encoded as: SS%20Slamat%20HMS%20Diamond%20HMS%20Wryneck
+
+Zone 14: The Mall
+  Encoded as: The%20Mall
+
+Zone 14: RAF Trade Group 11
+  Encoded as: RAF%20Trade%20Group%2011
+

@@ -32,55 +32,64 @@ class ARFootpathView {
     console.log('AR View: Setting up manual controls...');
     this.setupManualControls();
     
+    console.log('AR View: Starting initialization...');
+    
+    // Load footpaths data
     try {
-      console.log('AR View: Starting initialization...');
-      
-      // Load footpaths data
       console.log('AR View: Loading footpaths...');
       await this.loadFootpaths();
       console.log('AR View: Footpaths loaded successfully');
-      
-      // Setup camera
+    } catch (error) {
+      this.showError('Failed to load footpaths: ' + error.message);
+      console.error('Footpaths loading error:', error);
+      return;
+    }
+    
+    // Setup canvas (always needed)
+    console.log('AR View: Setting up canvas...');
+    this.setupCanvas();
+    
+    // Setup camera (optional - continue if fails)
+    try {
       console.log('AR View: Requesting camera access...');
       await this.setupCamera();
       console.log('AR View: Camera setup complete');
-      
-      // Setup canvas
-      console.log('AR View: Setting up canvas...');
-      this.setupCanvas();
-      
-      // Get user location
-      console.log('AR View: Starting location tracking...');
-      this.startLocationTracking();
-      
-      // Setup device orientation
-      console.log('AR View: Setting up orientation...');
-      this.setupOrientation();
-      
-      // Start rendering
-      console.log('AR View: Starting render loop...');
-      this.startRendering();
-      
-      document.getElementById('loading').style.display = 'none';
-      console.log('AR View: Initialization complete!');
-      
-      // Hide calibration notice after 5 seconds
-      setTimeout(() => {
-        const notice = document.getElementById('calibration-notice');
-        if (notice) {
-          notice.style.opacity = '0';
-          notice.style.transition = 'opacity 1s';
-          setTimeout(() => notice.remove(), 1000);
-        }
-      }, 5000);
-      
     } catch (error) {
-      this.showError('Failed to initialize AR view: ' + error.message);
-      console.error('AR initialization error:', error);
-      
-      // Even if camera fails, set up basic rendering with manual mode
-      this.setupBasicFallback();
+      console.warn('AR View: Camera setup failed (continuing without camera):', error.message);
+      // Hide video element if camera fails
+      const video = document.getElementById('camera-view');
+      if (video) video.style.display = 'none';
     }
+    
+    // Get user location (optional - continue if fails)
+    console.log('AR View: Starting location tracking...');
+    this.startLocationTracking();
+    
+    // Setup device orientation (optional - continue if fails)
+    console.log('AR View: Setting up orientation...');
+    this.setupOrientation();
+    
+    // Start rendering
+    console.log('AR View: Starting render loop...');
+    this.startRendering();
+    
+    document.getElementById('loading').style.display = 'none';
+    console.log('AR View: Initialization complete!');
+    
+    // Show message if camera not available
+    if (!this.video || !this.video.srcObject) {
+      alert('Camera not available. Please use Manual Location mode for testing.');
+    }
+    
+    // Hide calibration notice after 5 seconds
+    setTimeout(() => {
+      const notice = document.getElementById('calibration-notice');
+      if (notice) {
+        notice.style.opacity = '0';
+        notice.style.transition = 'opacity 1s';
+        setTimeout(() => notice.remove(), 1000);
+      }
+    }, 5000);
   }
   
   setupBasicFallback() {
@@ -192,7 +201,7 @@ class ARFootpathView {
 
   startLocationTracking() {
     if (!navigator.geolocation) {
-      this.showError('Geolocation not supported on this device');
+      console.warn('Geolocation not supported on this device');
       return;
     }
 
@@ -202,6 +211,7 @@ class ARFootpathView {
       timeout: 5000
     };
 
+    console.log('Requesting geolocation access...');
     this.watchId = navigator.geolocation.watchPosition(
       (position) => this.onLocationUpdate(position),
       (error) => this.onLocationError(error),
@@ -239,7 +249,8 @@ class ARFootpathView {
         break;
       default:
         message += 'Unknown error';
-    }
+    console.warn(message, '- Use Manual Location mode');
+    // Don't show error, just log it - user can use manual mode
     this.showError(message);
   }
 
@@ -248,17 +259,34 @@ class ARFootpathView {
     if (typeof DeviceOrientationEvent !== 'undefined' && 
         typeof DeviceOrientationEvent.requestPermission === 'function') {
       
-      DeviceOrientationEvent.requestPermission()
-        .then(response => {
-          if (response === 'granted') {
-            this.startOrientationTracking();
-          } else {
-            this.showError('Device orientation permission denied');
-          }
-        })
-        .catch(console.error);
+      console.log('iOS device detected - orientation permission required');
+      console.log('User must interact with page first (e.g., click a button)');
+      
+      // Create a button to request permission on iOS
+      const requestBtn = document.createElement('button');
+      requestBtn.textContent = 'Enable Device Orientation';
+      requestBtn.style.cssText = 'position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 9999; padding: 20px 40px; font-size: 18px; background: #0096ff; color: white; border: none; border-radius: 10px; cursor: pointer;';
+      requestBtn.onclick = () => {
+        DeviceOrientationEvent.requestPermission()
+          .then(response => {
+            console.log('Orientation permission response:', response);
+            if (response === 'granted') {
+              this.startOrientationTracking();
+              requestBtn.remove();
+            } else {
+              console.warn('Orientation permission denied');
+              requestBtn.textContent = 'Permission Denied - Use Manual Heading';
+            }
+          })
+          .catch(err => {
+            console.error('Orientation permission error:', err);
+            requestBtn.remove();
+          });
+      };
+      document.body.appendChild(requestBtn);
     } else {
       // Non-iOS or older iOS
+      console.log('Direct orientation access (no permission needed)');
       this.startOrientationTracking();
     }
   }
