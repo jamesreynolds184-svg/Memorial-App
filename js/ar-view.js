@@ -759,7 +759,13 @@ class ARFootpathView {
           this.userHeading = parseFloat(e.target.value) || 0;
           document.getElementById('user-heading').textContent = 
             Math.round(this.userHeading) + ' (Manual)';
-   
+          console.log('Manual heading set:', this.userHeading);
+        }
+      });
+    }
+    
+    console.log('Manual controls setup complete');
+  }
   
   movePathsToMyLocation() {
     if (!this.userLat || !this.userLon) {
@@ -796,11 +802,11 @@ class ARFootpathView {
   
   resetPathLocations() {
     this.pathOffset = { lat: 0, lon: 0 };
-  window.arView = new ARFootpathView();
-  
-  // Cleanup on page unload
-  window.addEventListener('beforeunload', () => {
-    window.const btn = document.getElementById('test-mode-btn');
+    this.testingMode = false;
+    
+    console.log('Testing mode disabled - paths at real locations');
+    
+    const btn = document.getElementById('test-mode-btn');
     if (btn) {
       btn.textContent = 'Move Paths to My Location (Testing)';
       btn.style.background = '#0096ff';
@@ -813,12 +819,6 @@ class ARFootpathView {
     } else {
       this.movePathsToMyLocation();
     }
-  }       console.log('Manual heading set:', this.userHeading);
-        }
-      });
-    }
-    
-    console.log('Manual controls setup complete');
   }
 
   showError(message) {
@@ -850,10 +850,10 @@ class ARFootpathView {
 
 // Initialize when page loads
 document.addEventListener('DOMContentLoaded', () => {
-  const arView = new ARFootpathView();
+  window.arView = new ARFootpathView();
   
   // Cleanup on page unload
   window.addEventListener('beforeunload', () => {
-    arView.cleanup();
+    window.arView.cleanup();
   });
 });
