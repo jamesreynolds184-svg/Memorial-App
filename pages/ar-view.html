@@ -143,7 +143,17 @@
     <p>Initializing AR View...</p>
   </div>
 
-  <div id="error-message"></div>
+  <div id="error-message">
+    <div id="error-text"></div>
+    <button onclick="window.location.reload()" 
+            style="margin-top: 15px; padding: 10px 20px; background: white; color: #cc0000; border: none; border-radius: 5px; cursor: pointer;">
+      Retry
+    </button>
+    <button onclick="enableManualMode()" 
+            style="margin-top: 15px; padding: 10px 20px; background: #0096ff; color: white; border: none; border-radius: 5px; cursor: pointer; margin-left: 10px;">
+      Use Manual Mode
+    </button>
+  </div>
 
   <div id="ar-overlay">
     <div id="ar-info">
@@ -188,6 +198,15 @@
     <canvas id="ar-canvas"></canvas>
   </div>
 
+  <script>
+    function enableManualMode() {
+      document.getElementById('error-message').style.display = 'none';
+      document.getElementById('loading').style.display = 'none';
+      document.getElementById('manual-location-toggle').checked = true;
+      document.getElementById('manual-location-inputs').style.display = 'block';
+      document.getElementById('manual-location-toggle').dispatchEvent(new Event('change'));
+    }
+  </script>
   <script src="../js/ar-view.js"></script>
 </body>
 </html>

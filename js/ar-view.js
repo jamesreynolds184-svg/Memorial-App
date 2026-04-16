@@ -28,28 +28,40 @@ class ARFootpathView {
 
   async init() {
     try {
+      console.log('AR View: Starting initialization...');
+      
       // Load footpaths data
+      console.log('AR View: Loading footpaths...');
       await this.loadFootpaths();
+      console.log('AR View: Footpaths loaded successfully');
       
       // Setup camera
+      console.log('AR View: Requesting camera access...');
       await this.setupCamera();
+      console.log('AR View: Camera setup complete');
       
       // Setup canvas
+      console.log('AR View: Setting up canvas...');
       this.setupCanvas();
       
       // Get user location
+      console.log('AR View: Starting location tracking...');
       this.startLocationTracking();
       
       // Setup device orientation
+      console.log('AR View: Setting up orientation...');
       this.setupOrientation();
       
       // Setup manual controls
+      console.log('AR View: Setting up manual controls...');
       this.setupManualControls();
       
       // Start rendering
+      console.log('AR View: Starting render loop...');
       this.startRendering();
       
       document.getElementById('loading').style.display = 'none';
+      console.log('AR View: Initialization complete!');
       
       // Hide calibration notice after 5 seconds
       setTimeout(() => {
@@ -69,18 +81,35 @@ class ARFootpathView {
 
   async loadFootpaths() {
     try {
+      console.log('Fetching footpaths from: ../data/footpathsTEMP.geojson');
       const response = await fetch('../data/footpathsTEMP.geojson');
+      
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+      
       const data = await response.json();
+      
+      if (!data.features || !Array.isArray(data.features)) {
+        throw new Error('Invalid GeoJSON format');
+      }
+      
       this.footpaths = data.features;
       console.log(`Loaded ${this.footpaths.length} footpaths`);
     } catch (error) {
-      throw new Error('Could not load footpaths data');
+      console.error('Footpaths loading error:', error);
+      throw new Error('Could not load footpaths data: ' + error.message);
     }
   }
 
   async setupCamera() {
     try {
       this.video = document.getElementById('camera-view');
+      
+      // Check if getUserMedia is supported
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        throw new Error('Camera API not supported on this browser/device');
+      }
       
       // Request camera with environment-facing (rear) camera
       const constraints = {
@@ -91,17 +120,30 @@ class ARFootpathView {
         }
       };
       
+      console.log('AR View: Requesting camera with constraints:', constraints);
       const stream = await navigator.mediaDevices.getUserMedia(constraints);
+      console.log('AR View: Camera stream obtained');
+      
       this.video.srcObject = stream;
       
       return new Promise((resolve) => {
         this.video.onloadedmetadata = () => {
+          console.log('AR View: Video metadata loaded, starting playback');
           this.video.play();
           resolve();
         };
       });
     } catch (error) {
-      throw new Error('Camera access denied or not available');
+      console.error('Camera setup error:', error);
+      if (error.name === 'NotAllowedError') {
+        throw new Error('Camera permission denied. Please allow camera access in browser settings.');
+      } else if (error.name === 'NotFoundError') {
+        throw new Error('No camera found on this device.');
+      } else if (error.name === 'NotReadableError') {
+        throw new Error('Camera is already in use by another application.');
+      } else {
+        throw new Error('Camera access failed: ' + error.message);
+      }
     }
   }
 
@@ -457,9 +499,15 @@ class ARFootpathView {
 
   showError(message) {
     const errorDiv = document.getElementById('error-message');
-    errorDiv.textContent = message;
+    const errorText = document.getElementById('error-text');
+    if (errorText) {
+      errorText.textContent = message;
+    } else {
+      errorDiv.textContent = message;
+    }
     errorDiv.style.display = 'block';
     document.getElementById('loading').style.display = 'none';
+    console.error('AR Error displayed:', message);
   }
 
   cleanup() {
