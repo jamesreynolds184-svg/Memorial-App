@@ -308,4 +308,39 @@
   // Add event listeners
   checkImagesBtn.addEventListener('click', checkMemorialImages);
   checkCoordsBtn.addEventListener('click', checkMemorialCoordinates);
+
+  // AR Test Mode Toggle
+  const arTestToggle = document.getElementById('ar-test-mode-toggle');
+  const arTestStatus = document.getElementById('ar-test-status');
+  
+  if (arTestToggle && arTestStatus) {
+    // Load current setting
+    const currentSetting = localStorage.getItem('arTestMode') === 'true';
+    arTestToggle.checked = currentSetting;
+    updateTestModeStatus(currentSetting);
+    
+    // Toggle handler
+    arTestToggle.addEventListener('change', (e) => {
+      const enabled = e.target.checked;
+      localStorage.setItem('arTestMode', enabled ? 'true' : 'false');
+      updateTestModeStatus(enabled);
+      console.log('AR Test Mode:', enabled ? 'ENABLED' : 'DISABLED');
+    });
+    
+    function updateTestModeStatus(enabled) {
+      if (enabled) {
+        arTestStatus.style.display = 'block';
+        arTestStatus.style.background = '#fff3cd';
+        arTestStatus.style.border = '1px solid #ffc107';
+        arTestStatus.style.color = '#856404';
+        arTestStatus.innerHTML = '✓ Test mode is <strong>ENABLED</strong>. AR view will use fixed test location.';
+      } else {
+        arTestStatus.style.display = 'block';
+        arTestStatus.style.background = '#d4edda';
+        arTestStatus.style.border = '1px solid #28a745';
+        arTestStatus.style.color = '#155724';
+        arTestStatus.innerHTML = '✓ Test mode is <strong>DISABLED</strong>. AR view will use device GPS location.';
+      }
+    }
+  }
 })();

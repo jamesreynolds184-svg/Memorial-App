@@ -152,6 +152,24 @@
       <button id="check-coords-btn" class="admin-button">Check Memorial Coordinates</button>
       <div id="coords-results-container" style="display: none;"></div>
     </div>
+
+    <div class="admin-section">
+      <h2>AR View Settings</h2>
+      <p>Configure AR Memorial View testing options.</p>
+      <label style="display: flex; align-items: center; gap: 10px; margin: 15px 0;">
+        <input type="checkbox" id="ar-test-mode-toggle" style="width: 20px; height: 20px;">
+        <span style="font-size: 16px;">
+          <strong>Enable Test Location Mode</strong>
+          <br>
+          <small style="color: #666;">
+            When enabled, AR view uses fixed test location (52°43'41.72"N 1°43'44.98"W) instead of device GPS.
+            <br>
+            Useful for testing AR functionality from any location.
+          </small>
+        </span>
+      </label>
+      <div id="ar-test-status" style="margin-top: 10px; padding: 10px; border-radius: 4px; display: none;"></div>
+    </div>
   </div>
 
   <script src="../js/menu.js"></script>

@@ -6,8 +6,8 @@
 
 class ARMemorialView {
   constructor() {
-    // TESTING MODE - Force location for development
-    this.forcedTestLocation = true;
+    // TESTING MODE - Check localStorage for test mode setting (controlled from admin panel)
+    this.forcedTestLocation = localStorage.getItem('arTestMode') === 'true';
     this.testLat = 52.728256; // 52°43'41.72"N
     this.testLon = -1.729161; // 1°43'44.98"W
     
