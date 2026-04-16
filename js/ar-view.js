@@ -25,38 +25,54 @@ class ARFootpathView {
     this.fov = 60; // degrees
     this.maxDistance = 100; // meters - max distance to show paths
     
-    // Check if this is iOS/mobile - require user interaction first
+    // Check if this is iOS/mobile
     this.isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
     
-    if (this.isMobile) {
-      this.setupStartButton();
-    } else {
-      this.init();
-    }
+    // Always require user interaction for better cross-browser compatibility
+    console.log('Waiting for user to click Start button...');
+    this.setupStartButton();
   }
 
   setupStartButton() {
-    console.log('Mobile device detected - showing Start button for permissions');
+    console.log('Setting up Start button...');
+    
+    // Wait for DOM to be ready
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', () => this.setupStartButtonElements());
+    } else {
+      this.setupStartButtonElements();
+    }
+  }
+  
+  setupStartButtonElements() {
     const startScreen = document.getElementById('start-button-screen');
     const startButton = document.getElementById('start-ar-button');
     const loading = document.getElementById('loading');
     
+    if (!startScreen || !startButton || !loading) {
+      console.error('Start button elements not found!', { startScreen, startButton, loading });
+      return;
+    }
+    
+    console.log('Start button elements found, showing screen');
     loading.style.display = 'none';
     startScreen.style.display = 'flex';
     
-    startButton.onclick = () => {
-      console.log('User clicked Start AR - initiating with user interaction');
+    startButton.addEventListener('click', () => {
+      console.log('START BUTTON CLICKED!');
       this.userInteracted = true;
       startScreen.style.display = 'none';
-      loading.style.display = 'block';
+      loading.style.display = 'flex';
       this.init();
-    };
+    });
+    
+    console.log('Start button click handler attached');
   }
 
   async init() {
     // Setup manual controls first so they work even if camera fails
     console.log('========================================');
-    console.log('AR View v2.3 - Build 2026-04-16 16:00 (iOS Fix)');
+    console.log('AR View v2.4 - Build 2026-04-16 16:15 (Button Fix)');
     console.log('Mobile device:', this.isMobile);
     console.log('User interacted:', this.userInteracted);
     console.log('========================================');
