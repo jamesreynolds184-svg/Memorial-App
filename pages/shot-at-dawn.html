@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shot at Dawn Memorial</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/shot-at-dawn.css">
+</head>
+<body>
+    <button id="burger-menu" class="burger-button" aria-label="Open menu">☰</button>
+
+    <nav id="menu-items" aria-label="Main">
+        <a href="../home.html">Home</a>
+        <a href="map.html">Map</a>
+        <a href="ar-view.html">AR View</a>
+        <a href="memorials.html">Find a Memorial</a>
+        <a href="afm-list.html">Armed Forces Memorial</a>
+        <a href="shot-at-dawn.html">Shot at Dawn Memorial</a>
+        <a href="search-by-zone.html">Search by Zone</a>
+        <a href="conflicts-by-year.html">Conflicts by Year</a>
+        <a href="nearby-memorials.html">Nearby Memorials</a>
+        <a href="saved.html">Saved</a>
+    </nav>
+
+    <div id="menu-overlay"></div>
+
+    <button id="global-search-btn" class="search-toggle" aria-label="Search memorials">🔍</button>
+
+    <div id="global-search-panel" aria-hidden="true">
+        <div class="gsp-inner">
+            <button id="gsp-close" class="gsp-close" aria-label="Close search">✕</button>
+            <input id="global-search-input"
+                   type="text"
+                   placeholder="Search memorial titles..."
+                   autocomplete="off"
+                   aria-autocomplete="list"
+                   aria-expanded="false">
+            <label class="gsp-desc-label">
+                <input type="checkbox" id="global-search-desc-checkbox">
+                Search description
+            </label>
+            <ul id="global-search-results" role="listbox"></ul>
+        </div>
+    </div>
+
+    <main class="hero">
+        <div class="memorial-panel">
+            <header class="memorial-header">
+                <h1>Shot at Dawn Memorial</h1>
+                <p class="subtitle">In Memory of the 309 Commonwealth Servicemen Executed by Courts-Martial</p>
+            </header>
+
+            <div class="info info-top">
+                <p>309 memorial posts representing each serviceman executed during World War I</p>
+                <p class="legend">
+                    <span class="legend-item"><span class="dot default"></span> Memorial Post</span>
+                    <span class="legend-item"><span class="dot selected"></span> Selected Post</span>
+                </p>
+            </div>
+
+            <div class="memorial-container">
+                <svg id="memorial" viewBox="150 100 900 500" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <filter id="shadow">
+                            <feDropShadow dx="0" dy="2" stdDeviation="2" flood-opacity="0.3"/>
+                        </filter>
+                    </defs>
+                    <!-- Posts will be generated here by JavaScript -->
+                </svg>
+            </div>
+
+            <div id="selectedInfo" class="selected-info" style="display: none;">
+                <span id="selectedText"></span>
+                <div class="navigation-buttons">
+                    <button id="prevBtn" aria-label="Previous post">← Previous</button>
+                    <button id="nextBtn" aria-label="Next post">Next →</button>
+                </div>
+            </div>
+
+            <div class="controls">
+                <div class="search-container">
+                    <label for="nameSearch">Search by Name:</label>
+                    <input 
+                        type="text" 
+                        id="nameSearch" 
+                        placeholder="Type to filter names..."
+                        aria-label="Search by name"
+                    >
+                </div>
+            </div>
+
+            <div class="names-list-container">
+                <h3>All Servicemen (Click to View)</h3>
+                <div id="namesList" class="names-list">
+                    <!-- Names will be populated by JavaScript -->
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Tooltip -->
+    <div id="tooltip" class="tooltip" role="tooltip"></div>
+
+    <script src="../js/app.js"></script>
+    <script src="../js/global-search.js"></script>
+    <script src="../js/ios-menu.js"></script>
+    <script src="../js/shot-at-dawn.js"></script>
+</body>
+</html>
