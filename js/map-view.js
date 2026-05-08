@@ -11,14 +11,9 @@
 
   const mapPanel = document.getElementById('map-panel');
   const mapEl = document.getElementById('map-wrap');
-  const searchEl = document.getElementById('map-search');
   const zoneEl = document.getElementById('map-zone');
-  const listEl = document.getElementById('map-list');
-  const countEl = document.getElementById('map-count');
-  const btnLocate = document.getElementById('map-locate');
-  const btnReset  = document.getElementById('map-reset');
-  const btnExpand = document.getElementById('map-expand');
-  const routeInfoEl = document.getElementById('route-info'); // ADDED
+  const closeBtn = document.getElementById('map-close-btn');
+  // Removed: searchEl, listEl, countEl, btnLocate, btnReset, btnExpand, routeInfoEl
 
   let map, markersLayer;
   let all = [];
@@ -117,6 +112,20 @@
       .addTo(map);
 
     markersLayer = L.layerGroup().addTo(map);
+    
+    // Add click handler to deselect focused marker
+    map.on('click', function(e) {
+      if (selectedMarker) {
+        // Close any open popup
+        map.closePopup();
+        
+        // Restore all markers and zoom out
+        showAllMarkers();
+        if (lastBounds) {
+          map.fitBounds(lastBounds, { animate: true });
+        }
+      }
+    });
   }
 
   function load(){
@@ -192,20 +201,15 @@
   }
 
   function updateCount(n) {
-    const countEl = document.getElementById('map-count');
-    if (countEl) countEl.textContent = String(n);
+    // Count display removed - no longer needed
   }
 
   function applyFilters() {
-    const q = searchEl.value.trim().toLowerCase();
     const z = zoneEl.value;            // FIX: was zoneSel
     const filtered = memorials.filter(m => {
       if (!hasCoords(m)) return false;
       if (z && m.zone !== z) return false;
-      if (q) {
-        return (m.name || '').toLowerCase().includes(q) ||
-               (m.description || '').toLowerCase().includes(q);
-      }
+      // Search removed - show all in selected zone
       return true;
     });
     return filtered; // FIX: return result
@@ -214,13 +218,7 @@
   function render(){
     const filtered = applyFilters(); // now returns array
     updateCount(filtered.length);    // unified count display
-    listEl.innerHTML = '';
-    filtered.forEach(m=>{
-      const li=document.createElement('li');
-      li.innerHTML = `<span>${m.name}</span>${m.zone?`<span class="zone">Z${m.zone}</span>`:''}`;
-      li.onclick = ()=> focusMarker(m);
-      listEl.appendChild(li);
-    });
+    // List display removed - markers only
 
     markersLayer.clearLayers();
     leafletMarkers.clear();
@@ -257,12 +255,27 @@
         `<button class="route-btn" data-name="${escapeHtml(m.name)}">Route</button>`,
         { autoPan:false, closeButton:true }
       );
+      
+      // Prevent interaction with hidden markers
+      mk.on('click', function(e) {
+        // If a marker is selected and this isn't it, treat as map click
+        if (selectedMarker && m.name !== selectedMarker) {
+          L.DomEvent.stopPropagation(e);
+          map.closePopup();
+          showAllMarkers();
+          if (lastBounds) {
+            map.fitBounds(lastBounds, { animate: true });
+          }
+          return false;
+        }
+      });
+      
       leafletMarkers.set(m.name, mk);
     });
 
     if (filtered.length){
       const group = L.featureGroup([...leafletMarkers.values()]);
-      const b = group.getBounds().pad(0.18);
+      const b = group.getBounds().pad(0.05);
       map.fitBounds(b);
       lastBounds = b;
 
@@ -280,16 +293,11 @@
     const target = points.find(p => p.name.toLowerCase() === focusName.toLowerCase());
     if (!target) return;
     focusMarker(target);
-    highlightList(target.name);
+    // List highlighting removed
   }
 
   function highlightList(n){
-    [...listEl.children].forEach(li=>{
-      if (li.textContent.toLowerCase().includes(n.toLowerCase())){
-        li.classList.add('pulse-focus');
-        setTimeout(()=>li.classList.remove('pulse-focus'), 2600);
-      }
-    });
+    // List highlighting removed - no longer needed
   }
 
   function applyGeoFence(){
@@ -349,6 +357,14 @@
     map.setView(latlng, 18, { animate:true });
     setTimeout(()=>{
       mk.openPopup();
+      
+      // Add event listener for when popup closes - restore full view
+      mk.once('popupclose', () => {
+        showAllMarkers();
+        if (lastBounds) {
+          map.fitBounds(lastBounds, { animate: true });
+        }
+      });
     }, 350);
   }
 
@@ -456,16 +472,19 @@
   }
 
   // (Event listeners) add null guards to avoid TypeErrors
-  searchEl.addEventListener('input', debounce(render, 160));
-  zoneEl.addEventListener('change', render);
-  if (btnExpand) btnExpand.addEventListener('click', expandToggle);
-  if (btnLocate) btnLocate.addEventListener('click', locateUser);
+  if (zoneEl) zoneEl.addEventListener('change', render);
+  if (closeBtn) closeBtn.addEventListener('click', () => {
+    window.location.href = '../home.html';
+  });
 
+// Removed: searchEl, btnExpand, btnLocate event listeners
 // Optionally auto-start tracking on page load for faster first fix (uncomment to enable):
 // startTracking();
 
   document.addEventListener('keydown', e=>{
-    if (e.key==='Escape' && mapPanel.classList.contains('fullscreen')) expandToggle();
+    if (e.key==='Escape') {
+      window.location.href = '../home.html';
+    }
   });
 
   function debounce(fn, ms){
@@ -1028,7 +1047,7 @@
   // Call load() to start everything (already present above)
   load();
   setTimeout(attachRouteButtonHandler, 500);
-  if (btnReset) btnReset.addEventListener('click', resetView);
+  // Removed: btnReset event listener
 
   // Remove the duplicated debug helpers that were here.
   // Complete ensureConnectedHeuristic (was previously truncated)
@@ -1168,5 +1187,13 @@
     
     return ratio <= threshold;
   }
+
+  // Expose function to global scope for search integration
+  window.focusMemorialOnMap = function(memorialName) {
+    const memorial = memorials.find(m => m.name === memorialName);
+    if (memorial) {
+      focusMarker(memorial);
+    }
+  };
 
 })(); // close IIFE

@@ -3,12 +3,14 @@ body {
   margin: 0;
   padding: 0;
   background: #f4f4f4;
+  color: var(--text);
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .container {
   max-width: 700px;
   margin: auto;
-  background: white;
+  background: var(--panel-bg);
   padding: 1em;
   border-radius: 8px;
 }
@@ -48,7 +50,7 @@ input[type="text"] {
 
 .memorial-zone {
   font-style: italic;
-  color: #555;
+  color: var(--text-secondary);
 }
 
 /* Theme */
@@ -56,9 +58,44 @@ input[type="text"] {
   --primary: #005969;
   --accent:  #f16e34;
   --text:    #123;
+  --text-secondary: #555;
   --panel-bg: rgba(255,255,255,0.60);
+  --menu-bg: rgba(255,255,255,0.92);
+  --overlay-bg: rgba(0,0,0,0.4);
+  --input-bg: rgba(255,255,255,0.55);
+  --border-color: #ddd;
   --shadow:  0 10px 25px rgba(0,0,0,0.15);
   --radius:  12px;
+}
+
+/* Dark mode variables */
+:root[data-theme="dark"] {
+  --primary: #00a8c6;
+  --accent:  #ff8854;
+  --text:    #e8e8e8;
+  --text-secondary: #aaa;
+  --panel-bg: rgba(30,30,35,0.85);
+  --menu-bg: rgba(25,25,30,0.95);
+  --overlay-bg: rgba(0,0,0,0.7);
+  --input-bg: rgba(40,40,45,0.75);
+  --border-color: #444;
+  --shadow:  0 10px 25px rgba(0,0,0,0.5);
+}
+
+/* Auto dark mode based on system preference */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --primary: #00a8c6;
+    --accent:  #ff8854;
+    --text:    #e8e8e8;
+    --text-secondary: #aaa;
+    --panel-bg: rgba(30,30,35,0.85);
+    --menu-bg: rgba(25,25,30,0.95);
+    --overlay-bg: rgba(0,0,0,0.7);
+    --input-bg: rgba(40,40,45,0.75);
+    --border-color: #444;
+    --shadow:  0 10px 25px rgba(0,0,0,0.5);
+  }
 }
 
 /* Homepage background (will crop left/right on tall screens) */
@@ -115,9 +152,10 @@ body {
   flex-direction: column;
   gap: 10px;
   transform: translateX(-270px);
-  transition: transform .3s;
+  transition: transform .3s, background-color 0.3s ease;
   z-index: 5600 !important; /* ensure menu sits above overlay */
   box-sizing: border-box;
+  background: var(--menu-bg);
 }
 
 /* Optional: slightly smaller offset on very small screens */
@@ -132,9 +170,10 @@ body {
 #menu-items a {
   text-decoration: none;
   font: 15px/1.3 system-ui,sans-serif;
-  color: #123;
+  color: var(--text);
   padding: 6px 8px;
   border-radius: 8px;
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 #menu-items a.active,
 #menu-items a:hover {
@@ -196,8 +235,9 @@ body.nav-open { overflow: hidden; }
   max-width: 600px;
   margin: 8px auto;
   padding: 12px 14px;
-  background: rgba(255,255,255,0.55);
+  background: var(--input-bg);
   backdrop-filter: blur(3px);
+  color: var(--text);
 }
 
 /* Make the toolbar a single-column grid so the input spans full width */
@@ -290,7 +330,7 @@ body.memorials-bg {
   right: 16px;
   z-index: 1001;
   display: inline-block;
-  background: rgba(255,255,255,0.9);
+  background: var(--panel-bg);
   padding: 6px 8px;
   border-radius: 10px;
   box-shadow: 0 6px 16px rgba(0,0,0,0.12);
@@ -363,7 +403,7 @@ body.home {
 
 /* Text box under the logo */
 .text-box {
-  background: rgba(255,255,255,0.60);
+  background: var(--panel-bg);
   color: var(--text);
   padding: 16px 18px;
   border-radius: 12px;
@@ -392,7 +432,7 @@ body.home {
 .tab-button {
   border: 1px solid var(--primary);
   color: var(--primary);
-  background: rgba(255,255,255,0.9);
+  background: var(--panel-bg);
   padding: 8px 12px;
   border-radius: 999px;
   cursor: pointer;
@@ -414,8 +454,9 @@ body.home {
   border: 1px solid rgba(0,0,0,0.12);
   border-radius: 10px;
   font-size: 1rem;
-  background: rgba(255,255,255,0.60);
+  background: var(--input-bg);
   backdrop-filter: blur(3px);
+  color: var(--text);
 }
 .form-row textarea { resize: vertical; }
 .button-row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin: 10px 0; }
@@ -428,8 +469,8 @@ body.home {
   cursor: pointer;
 }
 .button-row button:hover { opacity: 0.95; }
-.info { font-size: 0.95rem; color: #333; margin-bottom: 8px; }
-.muted { color: #666; font-size: 0.92rem; }
+.info { font-size: 0.95rem; color: var(--text); margin-bottom: 8px; }
+.muted { color: var(--text-secondary); font-size: 0.92rem; }
 .status { margin-top: 8px; padding: 8px; border-radius: 8px; }
 .status.ok { background: #e8f5ee; color: #145c2e; }
 .status.warn { background: #fff6e5; color: #8a5a00; }
@@ -467,7 +508,7 @@ body.home {
 
 /* Translucent memorial detail box */
 #memorial-detail {
-  background: rgba(255,255,255,0.45);
+  background: var(--panel-bg);
   backdrop-filter: blur(4px);
   -webkit-backdrop-filter: blur(4px);
   border-radius: 12px;
@@ -488,10 +529,10 @@ body.home {
 
 /* Back button on memorial detail */
 .back-btn {
-  background: rgba(255,255,255,0.55);
+  background: var(--input-bg);
   backdrop-filter: blur(3px);
   border: 1px solid rgba(0,0,0,0.15);
-  color: #123;
+  color: var(--text);
   padding: 6px 14px;
   border-radius: 30px;
   font-size: 0.9rem;
@@ -499,7 +540,7 @@ body.home {
   margin: 0 0 12px 0;
   box-shadow: 0 2px 6px rgba(0,0,0,0.12);
 }
-.back-btn:hover { background: rgba(255,255,255,0.7); }
+.back-btn:hover { opacity: 0.8; }
 .back-btn:active { transform: translateY(1px); }
 
 /* --- Overrides / fixes for memorials list panel --- */
@@ -512,7 +553,7 @@ body.home {
 }
 
 .memorials-panel {
-  background: rgba(255,255,255,0.55);
+  background: var(--panel-bg);
   backdrop-filter: blur(6px);
   -webkit-backdrop-filter: blur(6px);
   box-shadow: 0 10px 26px rgba(0,0,0,0.20);
@@ -535,7 +576,8 @@ body.home {
   width: 100%;
   max-width: none;
   margin: 0;
-  background: rgba(255,255,255,0.65);
+  background: var(--input-bg);
+  color: var(--text);
 }
 
 #memorial-list {
@@ -547,8 +589,8 @@ body.home {
 }
 
 #memorial-list li {
-  background: rgba(255,255,255,0.55);
-  border: 1px solid rgba(0,0,0,0.07);
+  background: var(--input-bg);
+  border: 1px solid var(--border-color);
   margin: 0 0 6px;
   padding: 10px 12px;
   border-radius: 10px;
@@ -569,12 +611,13 @@ body.home {
 }
 
 .save-btn {
-  background: rgba(255,255,255,0.7);
+  background: var(--input-bg);
   border: 1px solid rgba(0,0,0,0.15);
   border-radius: 8px;
   cursor: pointer;
   padding: 4px 10px;
   font-size: .9rem;
+  color: var(--text);
 }
 .save-btn.saved {
   background: var(--accent);
@@ -645,7 +688,7 @@ body.memorial-detail-page {
 }
 
 #memorial-detail {
-  background: rgba(255,255,255,0.50);
+  background: var(--panel-bg);
   backdrop-filter: blur(6px);
   -webkit-backdrop-filter: blur(6px);
   border-radius: 14px;
@@ -701,8 +744,8 @@ body {
   top: calc(constant(safe-area-inset-top) + 500px);
   top: calc(env(safe-area-inset-top) + 500px);
   right: 12px;
-  z-index: 3200;
-  background: rgba(255,255,255,0.65);
+  z-index: 4500;
+  background: var(--input-bg);
   backdrop-filter: blur(4px);
   border: 1px solid rgba(0,0,0,0.15);
   border-radius: 30px;
@@ -711,15 +754,16 @@ body {
   font-size: 1rem;
   line-height: 1;
   box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  color: var(--text);
 }
-.search-toggle:hover { background: rgba(255,255,255,0.8); }
+.search-toggle:hover { opacity: 0.8; }
 
 /* --- Global search panel overlay --- */
 #global-search-panel {
   position: fixed;
   inset: 0;
   display: none;
-  z-index: 4000;
+  z-index: 5000;
   background: rgba(0,0,0,0.45);
   backdrop-filter: blur(4px);
   -webkit-backdrop-filter: blur(4px);
@@ -731,7 +775,7 @@ body {
 #global-search-panel .gsp-inner {
   width: 100%;
   max-width: 640px;
-  background: rgba(255,255,255,0.75);
+  background: var(--panel-bg);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
   border-radius: 18px;
@@ -748,7 +792,7 @@ body {
   position: absolute;
   top: 10px;
   right: 10px;
-  background: rgba(255,255,255,0.6);
+  background: var(--input-bg);
   border: 1px solid rgba(0,0,0,0.15);
   border-radius: 50%;
   width: 34px;
@@ -756,6 +800,7 @@ body {
   cursor: pointer;
   font-size: 16px;
   line-height: 1;
+  color: var(--text);
 }
 
 #global-search-input {
@@ -764,9 +809,10 @@ body {
   padding: 10px 14px;
   border-radius: 10px;
   border: 1px solid rgba(0,0,0,0.2);
-  background: rgba(255,255,255,0.85);
+  background: var(--input-bg);
   margin-bottom: 8px;
   outline: none;
+  color: var(--text);
 }
 
 .gsp-desc-label {
@@ -797,7 +843,7 @@ body {
 }
 #global-search-results li {
   margin: 0 0 6px;
-  background: rgba(255,255,255,0.65);
+  background: var(--input-bg);
   padding: 10px 12px;
   border-radius: 10px;
   display: flex;
@@ -806,10 +852,10 @@ body {
   align-items: center;
   font-size: .95rem;
   cursor: pointer;
-  border: 1px solid rgba(0,0,0,0.08);
+  border: 1px solid var(--border-color);
 }
 #global-search-results li:hover {
-  background: rgba(255,255,255,0.85);
+  opacity: 0.8;
 }
 #global-search-results li a {
   text-decoration: none;
@@ -822,7 +868,7 @@ body {
   padding: 2px 6px;
   border-radius: 20px;
   background: rgba(0,0,0,0.15);
-  color: #000;
+  color: var(--text);
 }
 
 #global-search-results::-webkit-scrollbar { width: 10px; }
@@ -888,7 +934,7 @@ body.memorial-bg-set {
 }
 
 #collapse-toggle {
-  background: rgba(255,255,255,0.6);
+  background: var(--input-bg);
   border: 1px solid rgba(0,0,0,0.2);
   border-radius: 24px;
   padding: 6px 14px;
@@ -896,6 +942,7 @@ body.memorial-bg-set {
   cursor: pointer;
   margin: 0 0 10px;
   float: right;
+  color: var(--text);
 }
 
 #memorial-detail.collapsed {
@@ -1021,7 +1068,7 @@ body.memorial-bg-set::before {
 /* Read Aloud button (newly added) */
 .read-aloud-btn {
   margin: 0 0 12px 12px;
-  background: rgba(255,255,255,0.7);
+  background: var(--input-bg);
   border: 1px solid rgba(0,0,0,0.25);
   border-radius: 24px;
   padding: 6px 14px;
@@ -1033,8 +1080,9 @@ body.memorial-bg-set::before {
   gap: 6px;
   backdrop-filter: blur(4px);
   transition: background .2s;
+  color: var(--text);
 }
-.read-aloud-btn:hover { background: rgba(255,255,255,0.85); }
+.read-aloud-btn:hover { opacity: 0.8; }
 .read-aloud-btn.playing {
   background: #2d6dfa;
   color: #fff;
@@ -1114,8 +1162,9 @@ body.memorial-bg-set::before {
 .map-count {
   font-size:12px;
   padding:4px 8px;
-  background:rgba(255,255,255,0.15);
+  background:rgba(0,0,0,0.15);
   border-radius:20px;
+  color: var(--text);
 }
 .map-actions {
   display:flex;
@@ -1161,7 +1210,7 @@ body.memorial-bg-set::before {
   top:64px;
   width:240px;
   max-height:calc(100vh - 80px);
-  background:rgba(255,255,255,0.92);
+  background:var(--panel-bg);
   border:1px solid rgba(0,0,0,0.15);
   border-radius:12px;
   box-shadow:0 4px 18px -6px rgba(0,0,0,0.4);
@@ -1197,6 +1246,109 @@ body.memorial-bg-set::before {
 .leaflet-popup-content a:hover { text-decoration:underline; }
 
 /* Map View overrides */
+/* Map page - fullscreen by default */
+
+/* Move search button down on map page to avoid close button */
+body.map-page .search-toggle {
+  top: 80px !important;
+  top: calc(constant(safe-area-inset-top) + 80px) !important;
+  top: calc(env(safe-area-inset-top) + 80px) !important;
+}
+
+.map-panel {
+  position: fixed;
+  inset: 0;
+  margin: 0;
+  border-radius: 0;
+  z-index: 4000;
+  background: #fff;
+  border: none;
+  box-shadow: none;
+}
+
+:root[data-theme="dark"] .map-panel {
+  background: #1a1a1e;
+}
+
+.map-wrap {
+  height: 100vh !important;
+  width: 100vw;
+}
+
+/* Close button - top right */
+.map-close-btn {
+  position: fixed;
+  top: 16px;
+  right: 16px;
+  z-index: 4002;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--panel-bg);
+  border: 2px solid var(--border-color);
+  color: var(--text);
+  font-size: 24px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  transition: all 0.2s;
+}
+
+.map-close-btn:hover {
+  background: var(--accent);
+  color: #fff;
+  transform: scale(1.1);
+}
+
+.map-close-btn:active {
+  transform: scale(0.95);
+}
+
+/* Zone filter at bottom center */
+.map-zone-filter {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 4001;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.map-zone-filter select {
+  background: var(--panel-bg);
+  border: 2px solid var(--border-color);
+  border-radius: 12px;
+  padding: 12px 16px;
+  font: 16px/1.2 system-ui, sans-serif;
+  color: var(--text);
+  min-width: 200px;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  transition: all 0.2s;
+}
+
+.map-zone-filter select:hover {
+  border-color: var(--accent);
+}
+
+.map-zone-filter select:focus {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* Hide old elements */
+.map-toolbar,
+.map-list,
+.map-count,
+.route-info {
+  display: none !important;
+}
+
+/* Keep old styles for backwards compatibility */
 .map-toolbar {
   background: var(--primary);
   color:#fff;
@@ -1224,7 +1376,7 @@ body.memorial-bg-set::before {
   color: var(--accent);
 }
 .leaflet-control-attribution {
-  background: rgba(255,255,255,0.6);
+  background: var(--panel-bg);
   font-size: 10px;
   padding: 2px 6px;
   border-radius: 6px;
@@ -1238,13 +1390,13 @@ body.memorial-bg-set::before {
   border:1px solid rgba(0,0,0,0.25);
   border-radius:14px;
   font:16px/1.2 system-ui,sans-serif;
-  background:rgba(255,255,255,0.85);
+  background:var(--input-bg);
   backdrop-filter:blur(4px);
+  color:var(--text);
 }
 .home-search input:focus {
   outline:2px solid var(--accent,#f16e34);
   outline-offset:2px;
-  background:#fff;
 }
 
 /* --- New styles for memorial detail toolbar and buttons --- */
@@ -1297,12 +1449,12 @@ body.memorial-bg-set::before {
   border-radius:28px;
   cursor:pointer;
   border:1px solid transparent;
-  background:#eee;
-  color:#123;
+  background:var(--input-bg);
+  color:var(--text);
   transition:background .25s, color .25s, transform .18s, box-shadow .25s;
   white-space:nowrap;
 }
-.btn:hover { background:#e4e4e4; }
+.btn:hover { opacity: 0.8; }
 .btn:active { transform:scale(.92); }
 .btn:focus-visible {
   outline:2px solid var(--accent,#f16e34);
@@ -1346,7 +1498,7 @@ body.memorial-bg-set::before {
   margin:4px 0;
 }
 .tour-result li span.dist {
-  color:#555;
+  color:var(--text-secondary);
   font-size:12px;
   margin-left:6px;
 }
@@ -1441,8 +1593,8 @@ body.memorial-bg-set::before {
   bottom: 0;
   left: 0;
   right: 0;
-  background: white;
-  border-top: 1px solid #ddd;
+  background: var(--panel-bg);
+  border-top: 1px solid var(--border-color);
   z-index: 9999;
   padding: 8px 0;
   box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
@@ -1460,7 +1612,7 @@ body.memorial-bg-set::before {
   border: none;
   padding: 12px;
   font-size: 14px;
-  color: #333;
+  color: var(--text);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -1569,4 +1721,75 @@ body.mobile-mode .map-wrap {
   color: var(--accent);
   font-weight: 600;
   white-space: nowrap;
+}
+/* Theme Toggle Styles */
+.theme-toggle-container {
+  margin-top: auto; /* Push to bottom of menu */
+  padding-top: 16px;
+  border-top: 1px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.theme-toggle-label {
+  font-size: 13px;
+  color: var(--text);
+  font-weight: 500;
+}
+
+.theme-toggle-switch {
+  position: relative;
+  display: inline-block;
+  width: 50px;
+  height: 26px;
+}
+
+.theme-toggle-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.theme-slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  transition: 0.3s;
+  border-radius: 26px;
+}
+
+.theme-slider:before {
+  position: absolute;
+  content: "";
+  height: 18px;
+  width: 18px;
+  left: 4px;
+  bottom: 4px;
+  background-color: white;
+  transition: 0.3s;
+  border-radius: 50%;
+}
+
+.theme-toggle-switch input:checked + .theme-slider {
+  background-color: var(--accent);
+}
+
+.theme-toggle-switch input:checked + .theme-slider:before {
+  transform: translateX(24px);
+}
+
+.theme-toggle-switch input:focus + .theme-slider {
+  box-shadow: 0 0 1px var(--accent);
+}
+
+/* Theme icons */
+.theme-icon {
+  font-size: 16px;
+  line-height: 1;
 }

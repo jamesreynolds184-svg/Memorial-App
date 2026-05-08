@@ -11,6 +11,7 @@
   const inPagesFolder = window.location.pathname.includes('/pages/');
   const dataPath = inPagesFolder ? '../data/memorials.json' : 'data/memorials.json';
   const memorialPath = inPagesFolder ? 'memorial.html' : 'pages/memorial.html';
+  const isMapPage = window.location.pathname.includes('map.html');
 
   let all = [];
   let loaded = false;
@@ -100,9 +101,26 @@
     for (const m of matches) {
       const li = document.createElement('li');
       const a = document.createElement('a');
-      a.href = `${memorialPath}?name=${encodeURIComponent(m.name)}&from=global-search`;
-      a.textContent = m.name;
-      a.addEventListener('click', () => closePanel());
+      
+      if (isMapPage) {
+        // On map page, focus the marker instead of navigating
+        a.href = '#';
+        a.textContent = m.name;
+        a.addEventListener('click', (e) => {
+          e.preventDefault();
+          closePanel();
+          // Call focusMarker if it exists in the global scope
+          if (typeof window.focusMemorialOnMap === 'function') {
+            window.focusMemorialOnMap(m.name);
+          }
+        });
+      } else {
+        // On other pages, navigate to memorial page
+        a.href = `${memorialPath}?name=${encodeURIComponent(m.name)}&from=global-search`;
+        a.textContent = m.name;
+        a.addEventListener('click', () => closePanel());
+      }
+      
       li.appendChild(a);
       if (m.zone) {
         const z = document.createElement('span');
