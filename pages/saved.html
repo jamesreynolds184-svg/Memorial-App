@@ -16,6 +16,7 @@
     <a href="search-by-zone.html">Search by Zone</a>
     <a href="conflicts-by-year.html">Conflicts by Year</a>
     <a href="nearby-memorials.html">Nearby Memorials</a>
+    <a href="routes.html">Routes</a>
     <a href="saved.html">Saved</a>
     
     <!-- Theme Toggle -->
@@ -56,14 +57,28 @@
     <div class="memorials-panel">
       <div class="toolbar">
         <input id="search" class="search-input" type="text" placeholder="Search saved memorials...">
+        <button id="build-route-btn" class="btn btn-primary" style="margin-left: 10px;">📍 Build Route</button>
       </div>
       <ul id="memorial-list"></ul>
     </div>
   </main>
 
+  <!-- Route Builder Modal -->
+  <div id="route-builder-modal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.7); z-index: 10000; align-items: center; justify-content: center;">
+    <div style="background: var(--panel-bg); padding: 2rem; border-radius: 8px; max-width: 500px; width: 90%; box-shadow: 0 4px 20px rgba(0,0,0,0.3);">
+      <h2>Build Your Route</h2>
+      <p id="route-info"></p>
+      <label for="route-name">Route Name:</label>
+      <input type="text" id="route-name" class="search-input" placeholder="Enter route name..." style="width: 100%; margin: 10px 0;">
+      <div style="display: flex; gap: 10px; margin-top: 20px;">
+        <button id="create-route-btn" class="btn btn-primary">Create Route</button>
+        <button id="cancel-route-btn" class="btn btn-plain">Cancel</button>
+      </div>
+    </div>
+  </div>
+
   <script src="../js/app.js"></script>
   <script src="../js/saved.js"></script>
-  <script src="js/gestures.js"></script>
   <script src="../js/global-search.js"></script>
   <script src="../js/ios-menu.js"></script>
 </body>

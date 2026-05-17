@@ -1629,6 +1629,252 @@ body.map-page .search-toggle {
   font-size: 24px;
 }
 
+/* Routes Page Styling */
+.routes-container {
+  padding-top: max(60px, env(safe-area-inset-top));
+  min-height: 100vh;
+}
+
+.routes-container h1 {
+  text-align: center;
+  color: var(--text);
+  margin-bottom: 0.5rem;
+}
+
+.routes-container > p {
+  text-align: center;
+  color: var(--text-secondary);
+  margin-bottom: 2rem;
+}
+
+.routes-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+.route-card {
+  background: var(--panel-bg);
+  border-radius: var(--radius);
+  padding: 2rem 1rem;
+  text-align: center;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: var(--shadow);
+  min-height: 180px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  border: 3px solid transparent;
+}
+
+.route-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 30px rgba(0,0,0,0.2);
+}
+
+.route-card:active {
+  transform: translateY(-2px);
+}
+
+.route-card h2 {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.5rem;
+  color: var(--text);
+}
+
+.route-card p {
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+
+/* Route color borders */
+.pink-route {
+  border-color: #ff69b4;
+}
+
+.orange-route {
+  border-color: #ff8c00;
+}
+
+.blue-route {
+  border-color: #4169e1;
+}
+
+.purple-route {
+  border-color: #9370db;
+}
+
+/* Custom routes */
+.custom-route {
+  position: relative;
+  border-color: #888;
+  border-style: dashed;
+}
+
+.custom-route h2 {
+  padding-right: 40px; /* Space for delete button */
+}
+
+.delete-route-btn {
+  opacity: 0.7;
+  transition: opacity 0.2s ease, background 0.2s ease;
+}
+
+.delete-route-btn:hover {
+  opacity: 1;
+  background: rgba(255,0,0,0.9) !important;
+}
+
+/* Numbered Pin Markers for Custom Routes */
+.custom-numbered-marker {
+  background: transparent;
+  border: none;
+}
+
+.marker-pin {
+  width: 30px;
+  height: 42px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.marker-pin::before {
+  content: '';
+  position: absolute;
+  width: 30px;
+  height: 30px;
+  background: #ff69b4;
+  border: 3px solid #ffffff;
+  border-radius: 50% 50% 50% 0;
+  transform: rotate(-45deg);
+  box-shadow: 0 3px 6px rgba(0,0,0,0.3);
+  top: 0;
+  left: 0;
+}
+
+.marker-number {
+  position: relative;
+  z-index: 1;
+  color: #ffffff;
+  font-weight: bold;
+  font-size: 14px;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+  transform: translateY(-3px);
+}
+
+/* Mobile responsive - stack on small screens */
+@media (max-width: 640px) {
+  .routes-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  
+  .route-card {
+    min-height: 150px;
+  }
+}
+
+/* Route Detail View */
+.route-detail-view {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+.route-detail-view h1 {
+  color: var(--text);
+  margin-bottom: 0.5rem;
+}
+
+.route-detail-view > p {
+  color: var(--text-secondary);
+  margin-bottom: 1.5rem;
+}
+
+.route-memorial-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.route-memorial-list li {
+  background: var(--panel-bg);
+  border-radius: 8px;
+  margin-bottom: 0.75rem;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.route-memorial-list li:hover {
+  transform: translateX(4px);
+  box-shadow: var(--shadow);
+}
+
+.route-memorial-link {
+  display: block;
+  padding: 1rem;
+  color: var(--text);
+  text-decoration: none;
+  font-size: 1rem;
+  line-height: 1.4;
+}
+
+.route-memorial-link:hover {
+  color: var(--primary);
+}
+
+.btn-plain {
+  background: var(--panel-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 0.5rem 1rem;
+  color: var(--text);
+  cursor: pointer;
+  font-size: 0.95rem;
+  margin-bottom: 1.5rem;
+  transition: background 0.2s ease;
+}
+
+.btn-plain:hover {
+  background: var(--input-bg);
+}
+
+/* Route Map Container */
+.route-map-container {
+  width: 100%;
+  height: 400px;
+  margin: 1.5rem 0;
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: var(--shadow);
+}
+
+.route-map {
+  width: 100%;
+  height: 100%;
+}
+
+.route-detail-view h2 {
+  color: var(--text);
+  font-size: 1.3rem;
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+}
+
+/* Mobile adjustments for route map */
+@media (max-width: 640px) {
+  .route-map-container {
+    height: 300px;
+  }
+}
+
 .mobile-bottom-menu button .label {
   font-size: 12px;
 }

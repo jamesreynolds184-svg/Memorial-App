@@ -1,16 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Map View</title>
-  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Walking Routes</title>
   <link rel="stylesheet" href="../css/style.css">
-  <script src="../js/theme.js"></script>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
+  <script src="../js/theme.js"></script>
 </head>
-<body class="memorials-bg map-page">
+<body class="memorials-bg">
   <button id="burger-menu" class="burger-button" aria-label="Open menu">☰</button>
-  <nav id="menu-items">
+
+  <nav id="menu-items" aria-label="Main">
     <a href="../home.html">Home</a>
     <a href="map.html">Map</a>
     <a href="memorials.html">Find a Memorial</a>
@@ -31,12 +32,13 @@
       <span class="theme-icon">🌙</span>
     </div>
   </nav>
+
   <div id="menu-overlay"></div>
 
-  <!-- Global search button (before or after burger menu) -->
+  <!-- Global search button -->
   <button id="global-search-btn" class="search-toggle" aria-label="Search memorials">🔍</button>
 
-  <!-- Global search overlay (after menu overlay) -->
+  <!-- Global search overlay -->
   <div id="global-search-panel" aria-hidden="true">
     <div class="gsp-inner">
       <button id="gsp-close" class="gsp-close" aria-label="Close search">✕</button>
@@ -54,24 +56,53 @@
     </div>
   </div>
 
-  <!-- Close button -->
-  <button id="map-close-btn" class="map-close-btn" aria-label="Close map" title="Return to home">✕</button>
-
-  <section id="map-panel" class="map-panel">
-    <div id="map-wrap" class="map-wrap" role="region" aria-label="Memorials map"></div>
-    
-    <!-- Zone filter at bottom -->
-    <div class="map-zone-filter">
-      <select id="map-zone" aria-label="Filter by zone">
-        <option value="">All zones</option>
-      </select>
+  <main class="container routes-container">
+    <div id="routes-main-view">
+      <h1>Walking Routes</h1>
+      <p>Explore the arboretum with our guided walking routes or create your own from saved memorials</p>
+      
+      <div id="routes-grid" class="routes-grid">
+        <div class="route-card pink-route" data-route="pink">
+          <h2>Pink Route</h2>
+          <p>Click to view memorials</p>
+        </div>
+        
+        <div class="route-card orange-route" data-route="orange">
+          <h2>Orange Route</h2>
+          <p>Coming soon</p>
+        </div>
+        
+        <div class="route-card blue-route" data-route="blue">
+          <h2>Blue Route</h2>
+          <p>Coming soon</p>
+        </div>
+        
+        <div class="route-card purple-route" data-route="purple">
+          <h2>Purple Route</h2>
+          <p>Coming soon</p>
+        </div>
+      </div>
     </div>
-  </section>
+    
+    <div id="route-detail-view" class="route-detail-view" style="display: none;">
+      <button id="back-to-routes" class="btn btn-plain">← Back to Routes</button>
+      <h1 id="route-title"></h1>
+      <p id="route-description"></p>
+      
+      <!-- Map container -->
+      <div id="route-map-container" class="route-map-container">
+        <div id="route-map" class="route-map"></div>
+      </div>
+      
+      <h2>Memorials on this route:</h2>
+      <ul id="route-memorial-list" class="route-memorial-list"></ul>
+    </div>
+  </main>
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
   <script src="../js/app.js"></script>
-  <script src="../js/map-view.js"></script>
   <script src="../js/global-search.js"></script>
   <script src="../js/ios-menu.js"></script>
+  <script src="../js/routes.js"></script>
 </body>
 </html>

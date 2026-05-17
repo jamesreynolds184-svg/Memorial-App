@@ -14,18 +14,19 @@ class ShotAtDawnMemorial {
         // Memorial data from CSV
         this.memorialData = {};
         
-        // Row configuration (outer to inner)
+        // Row configuration (inner to outer) - Front row (Row 1) to Back row (Row 10)
+        // Posts 308 and 309 are additional posts added to rows 8 and 6 respectively
         this.rows = [
-            { count: 48, radius: 380 },
-            { count: 45, radius: 345 },
-            { count: 41, radius: 310 },
-            { count: 37, radius: 275 },
-            { count: 33, radius: 240 },
-            { count: 29, radius: 205 },
-            { count: 25, radius: 170 },
-            { count: 21, radius: 135 },
-            { count: 17, radius: 100 },
-            { count: 13, radius: 65 }
+            { count: 13, radius: 65, rowNum: 1 },      // Row 1: Posts 1-13
+            { count: 16, radius: 100, rowNum: 2 },     // Row 2: Posts 14-29
+            { count: 21, radius: 135, rowNum: 3 },     // Row 3: Posts 30-50
+            { count: 24, radius: 170, rowNum: 4 },     // Row 4: Posts 51-74
+            { count: 29, radius: 205, rowNum: 5 },     // Row 5: Posts 75-103
+            { count: 33, radius: 240, rowNum: 6 },     // Row 6: Posts 104-135 + 309
+            { count: 37, radius: 275, rowNum: 7 },     // Row 7: Posts 136-172
+            { count: 41, radius: 310, rowNum: 8 },     // Row 8: Posts 173-212 + 308
+            { count: 45, radius: 345, rowNum: 9 },     // Row 9: Posts 213-257
+            { count: 50, radius: 380, rowNum: 10 }     // Row 10: Posts 258-307
         ];
         
         this.posts = [];
@@ -84,9 +85,24 @@ class ShotAtDawnMemorial {
         let postNumber = 1;
         
         this.rows.forEach((row, rowIndex) => {
-            const { count, radius } = row;
+            const { count, radius, rowNum } = row;
             const startAngle = 180; // Start at far left (180 degrees)
             const angleStep = arcAngle / (count - 1);
+            
+            // Determine base post count (excluding special posts 308 and 309)
+            let baseCount = count;
+            let hasExtraPost = false;
+            let extraPostNum = null;
+            
+            if (rowNum === 6) {
+                baseCount = 32; // Row 6 has 32 regular posts + post 309
+                hasExtraPost = true;
+                extraPostNum = 309;
+            } else if (rowNum === 8) {
+                baseCount = 40; // Row 8 has 40 regular posts + post 308
+                hasExtraPost = true;
+                extraPostNum = 308;
+            }
             
             // Go from left (180°) to right (0°)
             for (let i = 0; i < count; i++) {
@@ -96,12 +112,19 @@ class ShotAtDawnMemorial {
                 const x = centerX + radius * Math.cos(radian);
                 const y = centerY - radius * Math.sin(radian); // Subtract to make arc open upward
                 
-                // Calculate row number (innermost = 1, outermost = 10)
-                const rowNumber = 10 - rowIndex;
                 const positionInRow = i + 1;
                 
-                this.createPost(x, y, postNumber, rowNumber, positionInRow);
-                postNumber++;
+                // Determine post number
+                let currentPostNum;
+                if (hasExtraPost && i === count - 1) {
+                    // Last post in this row is the special extra post
+                    currentPostNum = extraPostNum;
+                } else {
+                    currentPostNum = postNumber;
+                    postNumber++;
+                }
+                
+                this.createPost(x, y, currentPostNum, rowNum, positionInRow);
             }
         });
     }
