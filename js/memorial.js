@@ -269,6 +269,10 @@ function initLeafletMemorialMap(coords) {
   let voicesCache = [];
   let currentVoiceIndex = 0;
   const isiOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+  
+  // Audio file playback
+  let audioElement = null;
+  let usingPreRecorded = false;
 
   function loadVoicesAsync() {
     return new Promise(resolve => {
@@ -330,6 +334,11 @@ function initLeafletMemorialMap(coords) {
 
   function cycleVoice() {
     if (!voicesCache.length) return;
+    // Don't cycle voice if using pre-recorded audio
+    if (usingPreRecorded) {
+      flash('Using pre-recorded audio');
+      return;
+    }
     currentVoiceIndex = (currentVoiceIndex + 1) % voicesCache.length;
     const v = currentVoice();
     btn.dataset.voice = v ? v.name : '';
@@ -356,8 +365,18 @@ function initLeafletMemorialMap(coords) {
   }
 
   function stopSpeech() {
+    // Stop TTS
     speechSynthesis.cancel();
+    
+    // Stop audio file if playing
+    if (audioElement) {
+      audioElement.pause();
+      audioElement.currentTime = 0;
+      audioElement = null;
+    }
+    
     speaking = false;
+    usingPreRecorded = false;
     btn.classList.remove('playing');
     btn.setAttribute('aria-pressed','false');
     btn.textContent = '🔈 Read Aloud';
@@ -372,9 +391,56 @@ function initLeafletMemorialMap(coords) {
   function startSpeech() {
     const text = buildText();
     if (!text) return;
+    
+    // Check for pre-recorded audio file
+    const memorial = window.currentMemorial;
+    if (memorial && memorial.id) {
+      // Build audio path (relative to current page)
+      const audioPath = location.pathname.includes('/pages/')
+        ? `../memorial_audio/${memorial.id}.mp3`
+        : `memorial_audio/${memorial.id}.mp3`;
+      
+      // Try to load and play the audio file
+      audioElement = new Audio(audioPath);
+      
+      audioElement.addEventListener('canplaythrough', function() {
+        // Audio file exists and is ready to play
+        usingPreRecorded = true;
+        speaking = true;
+        btn.classList.add('playing');
+        btn.setAttribute('aria-pressed','true');
+        btn.textContent = '⏹ Stop';
+        audioElement.play().catch(err => {
+          console.log('Audio playback failed, falling back to TTS', err);
+          audioElement = null;
+          usingPreRecorded = false;
+          startTTS();
+        });
+      }, { once: true });
+      
+      audioElement.addEventListener('ended', stopSpeech, { once: true });
+      audioElement.addEventListener('error', function() {
+        // Audio file doesn't exist, fall back to TTS
+        console.log('Pre-recorded audio not found, using TTS');
+        audioElement = null;
+        usingPreRecorded = false;
+        startTTS();
+      }, { once: true });
+      
+      // Load the audio (triggers either 'canplaythrough' or 'error')
+      audioElement.load();
+    } else {
+      // No memorial ID, use TTS
+      startTTS();
+    }
+  }
+  
+  function startTTS() {
+    const text = buildText();
+    if (!text) return;
     if (!voicesCache.length) {
       // Defer until voices ready
-      initVoices().then(() => startSpeech());
+      initVoices().then(() => startTTS());
       return;
     }
     currentUtterance = new SpeechSynthesisUtterance(text);
