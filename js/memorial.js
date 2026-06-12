@@ -273,6 +273,9 @@ function initLeafletMemorialMap(coords) {
   // Audio file playback
   let audioElement = null;
   let usingPreRecorded = false;
+  
+  // Expose for debugging
+  window.debugAudioElement = () => audioElement;
 
   function loadVoicesAsync() {
     return new Promise(resolve => {
@@ -372,6 +375,12 @@ function initLeafletMemorialMap(coords) {
     if (audioElement) {
       audioElement.pause();
       audioElement.currentTime = 0;
+      
+      // Clean up blob URL if it was created
+      if (audioElement.src && audioElement.src.startsWith('blob:')) {
+        URL.revokeObjectURL(audioElement.src);
+      }
+      
       audioElement = null;
     }
     
@@ -388,40 +397,138 @@ function initLeafletMemorialMap(coords) {
     return title + (desc ? '. ' + desc : '');
   }
 
-  function startSpeech() {
+  async function startSpeech() {
     const text = buildText();
     if (!text) return;
     
-    // Check for pre-recorded audio file
+    // Check if audio files are available
     const memorial = window.currentMemorial;
+    console.log('Starting speech for memorial:', memorial ? memorial.name : 'unknown');
+    console.log('Memorial ID:', memorial ? memorial.id : 'missing');
+    
     if (memorial && memorial.id) {
+      // Check if audio files have been downloaded
+      const audioAvailable = await checkAudioAvailable();
+      console.log('Audio available:', audioAvailable);
+      
+      if (!audioAvailable) {
+        // Show download prompt
+        const shouldDownload = await showAudioDownloadPrompt();
+        if (shouldDownload) {
+          const success = await downloadAndExtractAudio();
+          if (!success) {
+            // Download failed, fall back to TTS
+            console.log('Download failed, using TTS');
+            startTTS();
+            return;
+          }
+        } else {
+          // User declined, use TTS
+          console.log('User declined download, using TTS');
+          startTTS();
+          return;
+        }
+      }
+      
       // Build audio path (relative to current page)
-      const audioPath = location.pathname.includes('/pages/')
-        ? `../memorial_audio/${memorial.id}.mp3`
-        : `memorial_audio/${memorial.id}.mp3`;
+      let audioPath;
+      if (window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.Filesystem) {
+        // For Capacitor apps, load from data directory
+        const { Filesystem } = window.Capacitor.Plugins;
+        try {
+          const fileUri = await Filesystem.getUri({
+            path: `memorial_audio/${memorial.id}.mp3`,
+            directory: Filesystem.Directory.Data
+          });
+          audioPath = window.Capacitor.convertFileSrc(fileUri.uri);
+          console.log('Capacitor audio path:', audioPath);
+        } catch (err) {
+          console.log('Could not get file URI, falling back to web path');
+          audioPath = location.pathname.includes('/pages/')
+            ? `../memorial_audio/${memorial.id}.mp3`
+            : `memorial_audio/${memorial.id}.mp3`;
+        }
+      } else {
+        // For web browsers, try to load from IndexedDB first
+        console.log('Web browser detected, trying IndexedDB for memorial ID:', memorial.id);
+        try {
+          const audioBlob = await getAudioFromIndexedDB(memorial.id);
+          if (audioBlob) {
+            console.log('✅ Found audio in IndexedDB, size:', audioBlob.size, 'bytes', 'type:', audioBlob.type);
+            // Ensure blob has correct MIME type
+            const mp3Blob = new Blob([audioBlob], { type: 'audio/mpeg' });
+            audioPath = URL.createObjectURL(mp3Blob);
+            console.log('Created blob URL:', audioPath);
+          } else {
+            console.log('❌ Audio not found in IndexedDB for ID:', memorial.id);
+            // Fallback to file system path (if files were manually placed)
+            audioPath = location.pathname.includes('/pages/')
+              ? `../memorial_audio/${memorial.id}.mp3`
+              : `memorial_audio/${memorial.id}.mp3`;
+            console.log('Falling back to file path:', audioPath);
+          }
+        } catch (err) {
+          console.error('IndexedDB error:', err);
+          audioPath = location.pathname.includes('/pages/')
+            ? `../memorial_audio/${memorial.id}.mp3`
+            : `memorial_audio/${memorial.id}.mp3`;
+          console.log('Falling back to file path:', audioPath);
+        }
+      }
+      
+      console.log('Attempting to load audio from:', audioPath);
       
       // Try to load and play the audio file
       audioElement = new Audio(audioPath);
       
       audioElement.addEventListener('canplaythrough', function() {
         // Audio file exists and is ready to play
+        console.log('✅ Audio canplaythrough event - ready to play');
         usingPreRecorded = true;
         speaking = true;
         btn.classList.add('playing');
         btn.setAttribute('aria-pressed','true');
         btn.textContent = '⏹ Stop';
-        audioElement.play().catch(err => {
-          console.log('Audio playback failed, falling back to TTS', err);
+        audioElement.play().then(() => {
+          console.log('✅ Audio playing');
+        }).catch(err => {
+          console.error('❌ Audio playback failed:', err);
+          // Clean up blob URL if it was created
+          if (audioPath && audioPath.startsWith('blob:')) {
+            URL.revokeObjectURL(audioPath);
+          }
           audioElement = null;
           usingPreRecorded = false;
           startTTS();
         });
       }, { once: true });
       
-      audioElement.addEventListener('ended', stopSpeech, { once: true });
-      audioElement.addEventListener('error', function() {
+      audioElement.addEventListener('loadstart', function() {
+        console.log('Audio loadstart - beginning to load');
+      });
+      
+      audioElement.addEventListener('loadedmetadata', function() {
+        console.log('Audio metadata loaded, duration:', audioElement.duration, 'seconds');
+      });
+      
+      audioElement.addEventListener('ended', () => {
+        console.log('Audio ended');
+        // Clean up blob URL if it was created
+        if (audioPath && audioPath.startsWith('blob:')) {
+          URL.revokeObjectURL(audioPath);
+        }
+        stopSpeech();
+      }, { once: true });
+      
+      audioElement.addEventListener('error', function(e) {
         // Audio file doesn't exist, fall back to TTS
-        console.log('Pre-recorded audio not found, using TTS');
+        console.error('❌ Audio error event:', e);
+        console.error('Audio error code:', audioElement.error ? audioElement.error.code : 'unknown');
+        console.error('Audio error message:', audioElement.error ? audioElement.error.message : 'unknown');
+        // Clean up blob URL if it was created
+        if (audioPath && audioPath.startsWith('blob:')) {
+          URL.revokeObjectURL(audioPath);
+        }
         audioElement = null;
         usingPreRecorded = false;
         startTTS();
@@ -497,6 +604,637 @@ function initLeafletMemorialMap(coords) {
     }
   });
 })();
+
+// ========== Audio Download System ==========
+const AUDIO_DOWNLOAD_KEY = 'audioFilesDownloaded';
+const AUDIO_ZIP_URL = 'https://nma-app-dlc.s3.eu-north-1.amazonaws.com/memorial_audio.zip';
+const USE_CORS_PROXY = false; // Set to true if S3 CORS is not configured yet
+const CORS_PROXY = 'https://corsproxy.io/?';
+
+// Helper function to reset download state (for testing/debugging)
+// Call in browser console: window.resetAudioDownload()
+window.resetAudioDownload = function() {
+  localStorage.removeItem(AUDIO_DOWNLOAD_KEY);
+  // Also clear IndexedDB
+  const request = indexedDB.deleteDatabase('MemorialAudioDB');
+  request.onsuccess = () => console.log('IndexedDB cleared');
+  request.onerror = () => console.error('Failed to clear IndexedDB');
+  console.log('Audio download state reset. Refresh the page and try Read Aloud again.');
+};
+
+// Helper function to check what's in IndexedDB
+// Call in browser console: window.checkAudioStorage()
+window.checkAudioStorage = async function() {
+  try {
+    const db = await openAudioDB();
+    const transaction = db.transaction(['audioFiles'], 'readonly');
+    const store = transaction.objectStore('audioFiles');
+    
+    // Get count
+    const countRequest = store.count();
+    const count = await new Promise((resolve, reject) => {
+      countRequest.onsuccess = () => resolve(countRequest.result);
+      countRequest.onerror = () => reject(countRequest.error);
+    });
+    
+    console.log(`📊 Total audio files in IndexedDB: ${count}`);
+    
+    // Get all keys
+    const keysRequest = store.getAllKeys();
+    const keys = await new Promise((resolve, reject) => {
+      keysRequest.onsuccess = () => resolve(keysRequest.result);
+      keysRequest.onerror = () => reject(keysRequest.error);
+    });
+    
+    console.log('📝 Memorial IDs stored:', keys.slice(0, 20).join(', '), keys.length > 20 ? '...' : '');
+    
+    // Get total size
+    const allRequest = store.getAll();
+    const all = await new Promise((resolve, reject) => {
+      allRequest.onsuccess = () => resolve(allRequest.result);
+      allRequest.onerror = () => reject(allRequest.error);
+    });
+    
+    let totalSize = 0;
+    for (const item of all) {
+      if (item.audio) {
+        totalSize += item.audio.size;
+      }
+    }
+    
+    console.log(`💾 Total storage used: ${(totalSize / 1024 / 1024).toFixed(2)} MB`);
+    
+    db.close();
+    return { count, keys, totalSizeMB: (totalSize / 1024 / 1024).toFixed(2) };
+  } catch (err) {
+    console.error('❌ Error checking storage:', err);
+    return null;
+  }
+};
+
+// Helper function to test playing a specific audio by ID
+// Call in browser console: window.testAudio('000')
+window.testAudio = async function(memorialId) {
+  try {
+    console.log('🔍 Testing audio for memorial ID:', memorialId);
+    const audioBlob = await getAudioFromIndexedDB(memorialId);
+    
+    if (!audioBlob) {
+      console.error('❌ No audio found in IndexedDB for ID:', memorialId);
+      return false;
+    }
+    
+    console.log('✅ Found audio - Size:', audioBlob.size, 'Type:', audioBlob.type);
+    
+    // Create and play audio
+    const mp3Blob = new Blob([audioBlob], { type: 'audio/mpeg' });
+    const audioURL = URL.createObjectURL(mp3Blob);
+    const audio = new Audio(audioURL);
+    
+    audio.addEventListener('canplaythrough', () => {
+      console.log('✅ Audio ready to play, duration:', audio.duration, 'seconds');
+      audio.play();
+    });
+    
+    audio.addEventListener('error', (e) => {
+      console.error('❌ Audio error:', e, audio.error);
+    });
+    
+    audio.addEventListener('ended', () => {
+      console.log('✅ Audio finished playing');
+      URL.revokeObjectURL(audioURL);
+    });
+    
+    return true;
+  } catch (err) {
+    console.error('❌ Error testing audio:', err);
+    return false;
+  }
+};
+
+function getAudioURL() {
+  return USE_CORS_PROXY ? CORS_PROXY + encodeURIComponent(AUDIO_ZIP_URL) : AUDIO_ZIP_URL;
+}
+
+// IndexedDB functions for web browser storage
+function openAudioDB() {
+  return new Promise((resolve, reject) => {
+    const request = indexedDB.open('MemorialAudioDB', 1);
+    
+    request.onerror = () => reject(request.error);
+    request.onsuccess = () => resolve(request.result);
+    
+    request.onupgradeneeded = (event) => {
+      const db = event.target.result;
+      if (!db.objectStoreNames.contains('audioFiles')) {
+        db.createObjectStore('audioFiles', { keyPath: 'id' });
+      }
+    };
+  });
+}
+
+function saveAudioToIndexedDB(db, memorialId, blob) {
+  return new Promise((resolve, reject) => {
+    console.log('Saving to IndexedDB - ID:', memorialId, 'Blob size:', blob.size, 'Type:', blob.type);
+    const transaction = db.transaction(['audioFiles'], 'readwrite');
+    const store = transaction.objectStore('audioFiles');
+    const data = { id: memorialId, audio: blob };
+    const request = store.put(data);
+    
+    request.onsuccess = () => {
+      console.log('✅ IndexedDB save success for ID:', memorialId);
+      resolve();
+    };
+    request.onerror = () => {
+      console.error('❌ IndexedDB save error for ID:', memorialId, request.error);
+      reject(request.error);
+    };
+  });
+}
+
+function getAudioFromIndexedDB(memorialId) {
+  return new Promise(async (resolve, reject) => {
+    try {
+      console.log('Opening IndexedDB to retrieve audio for ID:', memorialId);
+      const db = await openAudioDB();
+      const transaction = db.transaction(['audioFiles'], 'readonly');
+      const store = transaction.objectStore('audioFiles');
+      const request = store.get(memorialId);
+      
+      request.onsuccess = () => {
+        db.close();
+        if (request.result && request.result.audio) {
+          console.log('✅ Audio found in IndexedDB for ID:', memorialId, 'Size:', request.result.audio.size);
+          resolve(request.result.audio);
+        } else {
+          console.log('❌ No audio found in IndexedDB for ID:', memorialId);
+          resolve(null);
+        }
+      };
+      request.onerror = () => {
+        console.error('❌ IndexedDB request error:', request.error);
+        db.close();
+        reject(request.error);
+      };
+    } catch (err) {
+      console.error('❌ Failed to open IndexedDB:', err);
+      reject(err);
+    }
+  });
+}
+
+async function checkAudioAvailable() {
+  // Check localStorage flag
+  const downloaded = localStorage.getItem(AUDIO_DOWNLOAD_KEY);
+  if (downloaded === 'true') {
+    return true;
+  }
+  
+  // Check if Capacitor is available (native app)
+  if (window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.Filesystem) {
+    try {
+      const { Filesystem } = window.Capacitor.Plugins;
+      // Check if memorial_audio directory exists
+      const result = await Filesystem.readdir({
+        path: 'memorial_audio',
+        directory: Filesystem.Directory.Data
+      });
+      if (result.files && result.files.length > 0) {
+        localStorage.setItem(AUDIO_DOWNLOAD_KEY, 'true');
+        return true;
+      }
+    } catch (err) {
+      console.log('Audio directory not found in native app');
+      return false;
+    }
+  }
+  
+  // For web, check IndexedDB
+  try {
+    const db = await openAudioDB();
+    const transaction = db.transaction(['audioFiles'], 'readonly');
+    const store = transaction.objectStore('audioFiles');
+    const countRequest = store.count();
+    
+    const count = await new Promise((resolve, reject) => {
+      countRequest.onsuccess = () => resolve(countRequest.result);
+      countRequest.onerror = () => reject(countRequest.error);
+    });
+    
+    db.close();
+    
+    if (count > 0) {
+      console.log(`Found ${count} audio files in IndexedDB`);
+      localStorage.setItem(AUDIO_DOWNLOAD_KEY, 'true');
+      return true;
+    }
+  } catch (err) {
+    console.log('IndexedDB check failed:', err);
+  }
+  
+  // Fallback: try to check if a sample audio file exists in file system
+  try {
+    const testPath = location.pathname.includes('/pages/')
+      ? '../memorial_audio/1.mp3'
+      : 'memorial_audio/1.mp3';
+    const response = await fetch(testPath, { method: 'HEAD' });
+    if (response.ok) {
+      localStorage.setItem(AUDIO_DOWNLOAD_KEY, 'true');
+      return true;
+    }
+  } catch (err) {
+    console.log('Audio files not found in file system');
+  }
+  
+  return false;
+}
+
+function showAudioDownloadPrompt() {
+  return new Promise((resolve) => {
+    // Create overlay
+    const overlay = document.createElement('div');
+    overlay.className = 'audio-download-overlay';
+    overlay.style.cssText = `
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: rgba(0, 0, 0, 0.7);
+      z-index: 10000;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      touch-action: none;
+    `;
+    
+    // Create dialog
+    const dialog = document.createElement('div');
+    dialog.className = 'audio-download-dialog';
+    dialog.style.cssText = `
+      background: white;
+      border-radius: 12px;
+      padding: 24px;
+      max-width: 90%;
+      width: 340px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+      text-align: center;
+    `;
+    
+    // Title
+    const title = document.createElement('h3');
+    title.textContent = 'Download Audio Files';
+    title.style.cssText = 'margin: 0 0 16px 0; font-size: 20px; color: #333;';
+    dialog.appendChild(title);
+    
+    // Message
+    const message = document.createElement('p');
+    message.textContent = 'You need to download the audio files (426MB) to use Read Aloud. Continue?';
+    message.style.cssText = 'margin: 0 0 24px 0; font-size: 16px; color: #666; line-height: 1.5;';
+    dialog.appendChild(message);
+    
+    // Buttons container
+    const buttons = document.createElement('div');
+    buttons.style.cssText = 'display: flex; gap: 12px; justify-content: center;';
+    
+    // Cancel button
+    const cancelBtn = document.createElement('button');
+    cancelBtn.textContent = 'Cancel';
+    cancelBtn.style.cssText = `
+      padding: 12px 24px;
+      border: 1px solid #ccc;
+      background: white;
+      color: #333;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      min-width: 100px;
+    `;
+    cancelBtn.onclick = () => {
+      document.body.removeChild(overlay);
+      resolve(false);
+    };
+    
+    // Download button
+    const downloadBtn = document.createElement('button');
+    downloadBtn.textContent = 'Download';
+    downloadBtn.style.cssText = `
+      padding: 12px 24px;
+      border: none;
+      background: #007AFF;
+      color: white;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      min-width: 100px;
+    `;
+    downloadBtn.onclick = () => {
+      document.body.removeChild(overlay);
+      resolve(true);
+    };
+    
+    buttons.appendChild(cancelBtn);
+    buttons.appendChild(downloadBtn);
+    dialog.appendChild(buttons);
+    
+    overlay.appendChild(dialog);
+    document.body.appendChild(overlay);
+  });
+}
+
+async function downloadAndExtractAudio() {
+  // Create progress overlay
+  const overlay = document.createElement('div');
+  overlay.className = 'audio-progress-overlay';
+  overlay.style.cssText = `
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.7);
+    z-index: 10000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    touch-action: none;
+  `;
+  
+  // Create dialog
+  const dialog = document.createElement('div');
+  dialog.className = 'audio-progress-dialog';
+  dialog.style.cssText = `
+    background: white;
+    border-radius: 12px;
+    padding: 24px;
+    max-width: 90%;
+    width: 340px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    text-align: center;
+  `;
+  
+  // Title
+  const title = document.createElement('h3');
+  title.textContent = 'Downloading Audio Files';
+  title.style.cssText = 'margin: 0 0 16px 0; font-size: 20px; color: #333;';
+  dialog.appendChild(title);
+  
+  // Status text
+  const status = document.createElement('p');
+  status.textContent = 'Preparing download...';
+  status.style.cssText = 'margin: 0 0 16px 0; font-size: 14px; color: #666;';
+  dialog.appendChild(status);
+  
+  // Progress bar container
+  const progressContainer = document.createElement('div');
+  progressContainer.style.cssText = `
+    width: 100%;
+    height: 8px;
+    background: #e0e0e0;
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 8px;
+  `;
+  
+  // Progress bar fill
+  const progressBar = document.createElement('div');
+  progressBar.style.cssText = `
+    width: 0%;
+    height: 100%;
+    background: #007AFF;
+    transition: width 0.3s ease;
+  `;
+  progressContainer.appendChild(progressBar);
+  dialog.appendChild(progressContainer);
+  
+  // Progress percentage
+  const percentage = document.createElement('p');
+  percentage.textContent = '0%';
+  percentage.style.cssText = 'margin: 0 0 16px 0; font-size: 14px; color: #999; font-weight: 600;';
+  dialog.appendChild(percentage);
+  
+  // Close button (initially hidden)
+  const closeBtn = document.createElement('button');
+  closeBtn.textContent = 'Close';
+  closeBtn.style.cssText = `
+    padding: 12px 24px;
+    border: none;
+    background: #007AFF;
+    color: white;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    min-width: 100px;
+    display: none;
+  `;
+  closeBtn.onclick = () => {
+    document.body.removeChild(overlay);
+  };
+  dialog.appendChild(closeBtn);
+  
+  overlay.appendChild(dialog);
+  document.body.appendChild(overlay);
+  
+  try {
+    // Download the ZIP file
+    status.textContent = 'Downloading audio files...';
+    const audioURL = getAudioURL();
+    console.log('Fetching audio ZIP from:', audioURL);
+    
+    const response = await fetch(audioURL);
+    
+    if (!response.ok) {
+      console.error('Download failed with status:', response.status, response.statusText);
+      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+    }
+    
+    console.log('Download started successfully');
+    const contentLength = response.headers.get('Content-Length');
+    const total = parseInt(contentLength, 10);
+    console.log('Total file size:', total, 'bytes (~' + Math.round(total / 1024 / 1024) + 'MB)');
+    
+    let loaded = 0;
+    
+    const reader = response.body.getReader();
+    const chunks = [];
+    
+    while (true) {
+      const { done, value } = await reader.read();
+      
+      if (done) break;
+      
+      chunks.push(value);
+      loaded += value.length;
+      
+      const progress = Math.round((loaded / total) * 50); // Download is 50% of total progress
+      progressBar.style.width = progress + '%';
+      percentage.textContent = progress + '%';
+    }
+    
+    console.log('Download complete. Downloaded:', loaded, 'bytes');
+    
+    // Combine chunks into single Uint8Array
+    const zipData = new Uint8Array(loaded);
+    let position = 0;
+    for (const chunk of chunks) {
+      zipData.set(chunk, position);
+      position += chunk.length;
+    }
+    
+    // Extract ZIP file
+    title.textContent = 'Extracting Audio Files';
+    status.textContent = 'Unzipping files...';
+    progressBar.style.width = '50%';
+    percentage.textContent = '50%';
+    
+    // Load JSZip library if not already loaded
+    if (!window.JSZip) {
+      console.log('Loading JSZip library...');
+      const script = document.createElement('script');
+      script.src = 'https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js';
+      await new Promise((resolve, reject) => {
+        script.onload = () => {
+          console.log('JSZip loaded successfully');
+          resolve();
+        };
+        script.onerror = (e) => {
+          console.error('Failed to load JSZip:', e);
+          reject(new Error('Failed to load JSZip library'));
+        };
+        document.head.appendChild(script);
+      });
+    } else {
+      console.log('JSZip already loaded');
+    }
+    
+    console.log('Starting ZIP extraction...');
+    const zip = await JSZip.loadAsync(zipData);
+    console.log('ZIP loaded successfully');
+    const files = Object.keys(zip.files);
+    const totalFiles = files.length;
+    let processedFiles = 0;
+    
+    // Check if Capacitor is available (native app)
+    if (window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.Filesystem) {
+      const { Filesystem } = window.Capacitor.Plugins;
+      
+      // Create directory
+      try {
+        await Filesystem.mkdir({
+          path: 'memorial_audio',
+          directory: Filesystem.Directory.Data,
+          recursive: true
+        });
+      } catch (err) {
+        console.log('Directory might already exist:', err);
+      }
+      
+      // Extract files
+      for (const filename of files) {
+        const file = zip.files[filename];
+        
+        if (!file.dir && filename.includes('memorial_audio/') && filename.endsWith('.mp3')) {
+          const content = await file.async('base64');
+          const justFilename = filename.split('/').pop();
+          
+          try {
+            await Filesystem.writeFile({
+              path: `memorial_audio/${justFilename}`,
+              data: content,
+              directory: Filesystem.Directory.Data
+            });
+          } catch (writeErr) {
+            console.error('Error writing file:', justFilename, writeErr);
+          }
+        }
+        
+        processedFiles++;
+        const progress = 50 + Math.round((processedFiles / totalFiles) * 50);
+        progressBar.style.width = progress + '%';
+        percentage.textContent = progress + '%';
+      }
+    } else {
+      // For web browsers: Use IndexedDB to store audio files
+      console.log('Web browser detected, using IndexedDB for storage');
+      const db = await openAudioDB();
+      
+      let savedCount = 0;
+      // Extract and store files
+      for (const filename of files) {
+        const file = zip.files[filename];
+        
+        if (!file.dir && filename.includes('memorial_audio/') && filename.endsWith('.mp3')) {
+          const blob = await file.async('blob');
+          // Ensure blob has correct MIME type
+          const mp3Blob = new Blob([blob], { type: 'audio/mpeg' });
+          const justFilename = filename.split('/').pop();
+          const memorialId = justFilename.replace('.mp3', '');
+          
+          console.log('Extracting audio:', filename, '→ ID:', memorialId, 'Size:', mp3Blob.size);
+          
+          try {
+            await saveAudioToIndexedDB(db, memorialId, mp3Blob);
+            savedCount++;
+            console.log('✅ Saved to IndexedDB:', memorialId);
+          } catch (writeErr) {
+            console.error('❌ Error storing audio in IndexedDB:', justFilename, writeErr);
+          }
+        }
+        
+        processedFiles++;
+        const progress = 50 + Math.round((processedFiles / totalFiles) * 50);
+        progressBar.style.width = progress + '%';
+        percentage.textContent = progress + '%';
+      }
+      
+      db.close();
+      console.log(`✅ All audio files stored in IndexedDB. Total saved: ${savedCount}`);
+    }
+    
+    // Success
+    title.textContent = 'Success!';
+    status.textContent = 'Audio files are ready to use.';
+    progressBar.style.width = '100%';
+    percentage.textContent = '100%';
+    closeBtn.style.display = 'block';
+    
+    // Mark as downloaded
+    localStorage.setItem(AUDIO_DOWNLOAD_KEY, 'true');
+    
+    return true;
+    
+  } catch (err) {
+    console.error('Download/extract error:', err);
+    console.error('Error name:', err.name);
+    console.error('Error message:', err.message);
+    console.error('Error stack:', err.stack);
+    
+    // Show error
+    title.textContent = 'Failed';
+    
+    // Provide more specific error message
+    let errorMsg = 'Could not download audio files. ';
+    if (err.message.includes('Failed to fetch') || err.name === 'TypeError') {
+      errorMsg += 'Network error - check your internet connection or CORS settings.';
+    } else if (err.message.includes('HTTP')) {
+      errorMsg += err.message;
+    } else if (err.message.includes('Manual extraction')) {
+      errorMsg += 'Web browser detected. Please manually extract the ZIP file to the memorial_audio folder.';
+    } else {
+      errorMsg += 'Please try again later. Error: ' + err.message;
+    }
+    
+    status.textContent = errorMsg;
+    status.style.fontSize = '13px';
+    status.style.lineHeight = '1.4';
+    progressBar.style.background = '#FF3B30';
+    closeBtn.style.display = 'block';
+    
+    return false;
+  }
+}
 
 // Add near bottom (before file end) helper:
 function extractCoords(raw) {

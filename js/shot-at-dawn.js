@@ -53,29 +53,58 @@ class ShotAtDawnMemorial {
     }
     
     parseCSV(csvText) {
-        const lines = csvText.split('\n');
-        const headers = lines[0].split(',').slice(1); // Skip first column, get post numbers
+        // Parse CSV with proper handling of quoted fields
+        const lines = csvText.split('\n').filter(line => line.trim());
         
-        const rankRow = lines[1].split(',').slice(1);
-        const surnameRow = lines[2].split(',').slice(1);
-        const firstNameRow = lines[3].split(',').slice(1);
-        const unitRow = lines[4].split(',').slice(1);
-        const dateRow = lines[5].split(',').slice(1);
-        const ageRow = lines[6].split(',').slice(1);
-        const notesRow = lines[7].split(',').slice(1);
-        
-        for (let i = 0; i < headers.length; i++) {
-            const postNumber = parseInt(headers[i]);
-            this.memorialData[postNumber] = {
-                rank: rankRow[i] || '',
-                surname: surnameRow[i] || '',
-                firstName: firstNameRow[i] || '',
-                unit: unitRow[i] || '',
-                dateOfExecution: dateRow[i] || '',
-                age: ageRow[i] || '',
-                notes: notesRow[i] || ''
-            };
+        // Skip header row and parse data rows
+        for (let i = 1; i < lines.length; i++) {
+            const row = this.parseCSVLine(lines[i]);
+            
+            if (row.length >= 7) {
+                const postNumber = i; // Post numbers are 1-309, matching row index
+                this.memorialData[postNumber] = {
+                    rank: row[0] || '',
+                    surname: row[1] || '',
+                    firstName: row[2] || '',
+                    unit: row[3] || '',
+                    dateOfExecution: row[4] || '',
+                    age: row[5] || '',
+                    notes: row[6] || ''
+                };
+            }
         }
+    }
+    
+    parseCSVLine(line) {
+        // Parse CSV line handling quoted fields with commas
+        const result = [];
+        let current = '';
+        let inQuotes = false;
+        
+        for (let i = 0; i < line.length; i++) {
+            const char = line[i];
+            const nextChar = line[i + 1];
+            
+            if (char === '"' && inQuotes && nextChar === '"') {
+                // Escaped quote
+                current += '"';
+                i++; // Skip next quote
+            } else if (char === '"') {
+                // Toggle quote state
+                inQuotes = !inQuotes;
+            } else if (char === ',' && !inQuotes) {
+                // Field delimiter
+                result.push(current);
+                current = '';
+            } else {
+                current += char;
+            }
+        }
+        
+        // Push the last field
+        result.push(current);
+        
+        return result;
     }
     
     createPosts() {

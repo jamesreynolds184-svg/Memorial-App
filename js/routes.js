@@ -125,6 +125,12 @@ document.addEventListener('DOMContentLoaded', () => {
       console.log('Route card clicked:', routeName);
       if (routeName === 'pink') {
         loadPinkRoute();
+      } else if (routeName === 'blue') {
+        loadBlueRoute();
+      } else if (routeName === 'orange') {
+        loadOrangeRoute();
+      } else if (routeName === 'purple') {
+        loadPurpleRoute();
       } else {
         console.log(`${routeName} route - coming soon`);
         alert(`${routeName.charAt(0).toUpperCase() + routeName.slice(1)} Route coming soon!`);
@@ -147,14 +153,34 @@ document.addEventListener('DOMContentLoaded', () => {
   
   // Load Pink Route
   function loadPinkRoute() {
-    console.log('Loading Pink Route...');
+    loadRouteWithPath('pink', 'Pink Route', 'Follow this scenic route through the arboretum');
+  }
+  
+  // Load Blue Route
+  function loadBlueRoute() {
+    loadRouteWithPath('blue', 'Blue Route', 'Discover memorials along this peaceful path');
+  }
+  
+  // Load Orange Route
+  function loadOrangeRoute() {
+    loadRouteWithPath('orange', 'Orange Route', 'Explore this historic trail through the arboretum');
+  }
+  
+  // Load Purple Route
+  function loadPurpleRoute() {
+    loadRouteWithPath('purple', 'Purple Route', 'Journey through remembrance on this thoughtful route');
+  }
+  
+  // Generic route loader with path
+  function loadRouteWithPath(routeId, routeTitle, routeDescription) {
+    console.log(`Loading ${routeTitle}...`);
     
     // Check if memorials data is loaded
     if (memorialsData.length === 0) {
       console.warn('Memorials data not loaded yet, waiting...');
       setTimeout(() => {
         if (memorialsData.length > 0) {
-          loadPinkRoute();
+          loadRouteWithPath(routeId, routeTitle, routeDescription);
         } else {
           alert('Memorial data is still loading. Please wait a moment and try again.');
         }
@@ -162,21 +188,40 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
     
-    fetch('../data/Pink_Route.csv')
+    // Capitalize first letter for file names
+    const routeName = routeId.charAt(0).toUpperCase() + routeId.slice(1) + '_Route';
+    
+    // Try to load both CSV and GeoJSON, but allow CSV to be optional
+    const csvPromise = fetch(`../data/routes/${routeName}.csv`)
       .then(res => {
-        console.log('CSV fetch response:', res.status);
-        if (!res.ok) throw new Error('HTTP ' + res.status);
+        if (!res.ok) return null;
         return res.text();
       })
-      .then(csv => {
-        console.log('CSV loaded, length:', csv.length);
-        const lines = csv.split('\n').filter(line => line.trim() && line.trim() !== 'Memorial Name');
-        console.log('Parsed', lines.length, 'memorial names');
-        displayRoute('Pink Route', 'Follow this scenic route through the arboretum', lines, false);
+      .catch(() => null);
+    
+    const geojsonPromise = fetch(`../data/routes/${routeName}.geojson`)
+      .then(res => {
+        if (!res.ok) throw new Error(`GeoJSON not found: ${routeName}.geojson`);
+        return res.json();
+      });
+    
+    Promise.all([csvPromise, geojsonPromise])
+      .then(([csvText, geojsonData]) => {
+        console.log(`${routeTitle} data loaded`);
+        
+        let memorialNames = [];
+        if (csvText) {
+          memorialNames = csvText.split('\n').filter(line => line.trim() && line.trim() !== 'Memorial Name');
+          console.log('Parsed', memorialNames.length, 'memorial names');
+        } else {
+          console.log('No CSV file found - displaying path only');
+        }
+        
+        displayRouteWithPath(routeTitle, routeDescription, memorialNames, geojsonData);
       })
       .catch(err => {
-        console.error('Error loading Pink Route:', err);
-        alert('Unable to load Pink Route data: ' + err.message);
+        console.error(`Error loading ${routeTitle}:`, err);
+        alert(`Unable to load ${routeTitle} data. Make sure ${routeName}.geojson exists in the data/routes folder.\n\nError: ${err.message}`);
       });
   }
   
@@ -311,6 +356,119 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Load footpaths and build route
     loadFootpaths(routeMemorials);
+  }
+  
+  // Display route with custom geojson path and numbered pins
+  function displayRouteWithPath(title, description, memorialNames, geojsonPath) {
+    console.log('Displaying route with path:', title, 'with', memorialNames.length, 'memorials');
+    routeTitle.textContent = title;
+    routeDescription.textContent = description;
+    memorialList.innerHTML = '';
+    
+    // Find coordinates for all memorials
+    const routeMemorials = [];
+    memorialNames.forEach((name, index) => {
+      const cleanName = name.trim();
+      if (!cleanName) return;
+      
+      // Find matching memorial in data
+      const memorial = memorialsData.find(m => 
+        m.name && m.name.trim() === cleanName
+      );
+      
+      if (memorial) {
+        const lat = memorial.lat || (memorial.location && memorial.location.lat);
+        const lng = memorial.lng || (memorial.location && memorial.location.lng);
+        
+        if (lat && lng) {
+          routeMemorials.push({
+            name: cleanName,
+            lat: lat,
+            lng: lng,
+            index: index + 1
+          });
+        }
+      } else {
+        console.warn('Memorial not found:', cleanName);
+      }
+      
+      // Add to list
+      const li = document.createElement('li');
+      const link = document.createElement('a');
+      link.href = `memorial.html?name=${encodeURIComponent(cleanName)}&from=routes`;
+      link.textContent = `${index + 1}. ${cleanName}`;
+      link.className = 'route-memorial-link';
+      
+      // Add location status indicator
+      if (memorial && (memorial.lat || memorial.location)) {
+        link.innerHTML += ' <span style="color: #4CAF50;">📍</span>';
+      } else {
+        link.innerHTML += ' <span style="color: #ff9800;">⚠️</span>';
+      }
+      
+      li.appendChild(link);
+      memorialList.appendChild(li);
+    });
+    
+    // If no memorials, show a message
+    if (memorialNames.length === 0) {
+      const li = document.createElement('li');
+      li.style.color = '#888';
+      li.style.fontStyle = 'italic';
+      li.textContent = 'Memorial list not configured yet. Add memorial names to the CSV file to see them here.';
+      memorialList.appendChild(li);
+    }
+    
+    console.log('Found', routeMemorials.length, 'memorials with coordinates');
+    
+    mainView.style.display = 'none';
+    detailView.style.display = 'block';
+    
+    // Initialize map
+    if (map) {
+      map.remove();
+    }
+    
+    const mapEl = document.getElementById('route-map');
+    if (!mapEl) {
+      console.error('Map element not found!');
+      return;
+    }
+    
+    map = L.map(mapEl, {
+      center: [52.727, -1.731],
+      zoom: 15,
+      scrollWheelZoom: true,
+      dragging: true,
+      touchZoom: true,
+      doubleClickZoom: true
+    });
+    
+    // Add tile layer
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+      maxZoom: 19
+    }).addTo(map);
+    
+    setTimeout(() => {
+      map.invalidateSize();
+    }, 50);
+    
+    // Display the geojson path (no memorial pins)
+    if (geojsonPath) {
+      L.geoJSON(geojsonPath, {
+        style: {
+          color: '#ec4899',  // Pink color
+          weight: 5,
+          opacity: 0.8
+        }
+      }).addTo(map);
+    }
+    
+    if (geojsonPath && geojsonPath.features) {
+      const bounds = L.geoJSON(geojsonPath).getBounds();
+      map.fitBounds(bounds, { padding: [50, 50] });
+    }
   }
   
   // Load and process footpath data

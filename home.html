@@ -25,15 +25,11 @@
       <a href="pages/routes.html">Routes</a>
       <a href="pages/saved.html">Saved</a>
       
-      <!-- Theme Toggle -->
-      <div class="theme-toggle-container">
-        <span class="theme-icon">☀️</span>
-        <label class="theme-toggle-switch">
-          <input type="checkbox" id="theme-toggle" aria-label="Toggle dark mode">
-          <span class="theme-slider"></span>
-        </label>
-        <span class="theme-icon">🌙</span>
-      </div>
+      <!-- Settings Link -->
+      <a href="pages/settings.html" class="settings-link">
+        <span class="settings-icon">⚙️</span>
+        <span>Settings</span>
+      </a>
     </nav>
 
   <div id="menu-overlay"></div>
@@ -75,6 +71,54 @@
     </div>
   </main>
 
+  <!-- What's New Modal -->
+  <div id="whats-new-modal" class="whats-new-modal" style="display: none;">
+    <div class="whats-new-content">
+      <button id="whats-new-close" class="whats-new-close" aria-label="Close">✕</button>
+      <h2>What's New</h2>
+      <p class="whats-new-intro">Welcome to the updated National Memorial Arboretum app! Here's what's new:</p>
+      
+      <div class="whats-new-features">
+        <div class="feature-item">
+          <div class="feature-text">
+            <h3>Shot at Dawn Memorial</h3>
+            <p>Explore the interactive memorial commemorating 309 soldiers executed during WWI</p>
+          </div>
+        </div>
+        
+        <div class="feature-item">
+          <div class="feature-text">
+            <h3>Dark & Light Mode</h3>
+            <p>Choose your preferred theme in Settings for comfortable viewing in any lighting</p>
+          </div>
+        </div>
+        
+        <div class="feature-item">
+          <div class="feature-text">
+            <h3>Text Scaling</h3>
+            <p>Adjust text size in Settings to make content easier to read</p>
+          </div>
+        </div>
+        
+        <div class="feature-item">
+          <div class="feature-text">
+            <h3>Improved Maps</h3>
+            <p>Enhanced navigation with better map controls and memorial locations</p>
+          </div>
+        </div>
+        
+        <div class="feature-item">
+          <div class="feature-text">
+            <h3>Improved Narrations</h3>
+            <p>Listen to enhanced audio descriptions of memorials throughout the arboretum</p>
+          </div>
+        </div>
+      </div>
+      
+      <button id="whats-new-got-it" class="whats-new-button">Got it!</button>
+    </div>
+  </div>
+
   <script src="js/app.js"></script>
   <script src="js/global-search.js"></script>
   <script src="js/ios-menu.js"></script>
@@ -107,6 +151,59 @@
           if (e.key==='Enter') { openOverlay(); e.preventDefault(); }
         });
       }
+    })();
+  </script>
+  <script>
+    // What's New Modal - Show on first visit
+    (function() {
+      const WHATS_NEW_KEY = 'nma-whats-new-seen-v1';
+      const modal = document.getElementById('whats-new-modal');
+      const closeBtn = document.getElementById('whats-new-close');
+      const gotItBtn = document.getElementById('whats-new-got-it');
+      
+      // Check if user has seen the modal
+      const hasSeenModal = localStorage.getItem(WHATS_NEW_KEY);
+      
+      if (!hasSeenModal && modal) {
+        // Show modal after a short delay for better UX
+        setTimeout(() => {
+          modal.style.display = 'flex';
+        }, 500);
+      }
+      
+      function closeModal() {
+        if (modal) {
+          modal.style.display = 'none';
+          // Mark as seen
+          localStorage.setItem(WHATS_NEW_KEY, 'true');
+        }
+      }
+      
+      // Close button handler
+      if (closeBtn) {
+        closeBtn.addEventListener('click', closeModal);
+      }
+      
+      // Got it button handler
+      if (gotItBtn) {
+        gotItBtn.addEventListener('click', closeModal);
+      }
+      
+      // Close on backdrop click
+      if (modal) {
+        modal.addEventListener('click', (e) => {
+          if (e.target === modal) {
+            closeModal();
+          }
+        });
+      }
+      
+      // Close on Escape key
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && modal && modal.style.display === 'flex') {
+          closeModal();
+        }
+      });
     })();
   </script>
   <script src="js/gestures.js"></script>

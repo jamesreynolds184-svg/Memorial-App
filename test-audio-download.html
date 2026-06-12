@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Audio Download Test</title>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      max-width: 800px;
+      margin: 40px auto;
+      padding: 20px;
+      line-height: 1.6;
+    }
+    h1 {
+      color: #333;
+    }
+    .test-section {
+      background: #f5f5f5;
+      padding: 20px;
+      margin: 20px 0;
+      border-radius: 8px;
+    }
+    button {
+      background: #007AFF;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      margin: 5px;
+    }
+    button:hover {
+      background: #0056b3;
+    }
+    .result {
+      background: white;
+      padding: 15px;
+      margin-top: 10px;
+      border-radius: 4px;
+      font-family: monospace;
+      font-size: 13px;
+      white-space: pre-wrap;
+      word-break: break-all;
+    }
+    .error {
+      color: #d32f2f;
+    }
+    .success {
+      color: #2e7d32;
+    }
+    .info {
+      color: #1976d2;
+    }
+  </style>
+</head>
+<body>
+  <h1>Audio Download System - Diagnostic Test</h1>
+  
+  <div class="test-section" style="background: #fff3cd; border: 2px solid #ffc107;">
+    <h2>⚠️ CORS Proxy Toggle</h2>
+    <p>If S3 CORS is not configured, enable this proxy to test downloads:</p>
+    <button id="toggle-proxy" onclick="toggleProxy()">Enable CORS Proxy</button>
+    <p id="proxy-status" style="margin-top: 10px; font-weight: bold;"></p>
+  </div>
+
+  <div class="test-section">
+    <h2>Test 1: S3 URL Accessibility</h2>
+    <p>Tests if the S3 URL is accessible from your network</p>
+    <button onclick="testS3Access()">Test S3 Access</button>
+    <div id="test1-result" class="result"></div>
+  </div>
+
+  <div class="test-section">
+    <h2>Test 2: CORS Check</h2>
+    <p>Tests if CORS headers allow cross-origin requests</p>
+    <button onclick="testCORS()">Test CORS</button>
+    <div id="test2-result" class="result"></div>
+  </div>
+
+  <div class="test-section">
+    <h2>Test 3: JSZip Library</h2>
+    <p>Tests if JSZip can be loaded from CDN</p>
+    <button onclick="testJSZip()">Test JSZip</button>
+    <div id="test3-result" class="result"></div>
+  </div>
+
+  <div class="test-section">
+    <h2>Test 4: Download Speed Test</h2>
+    <p>Downloads first 1MB to test speed (won't save)</p>
+    <button onclick="testDownloadSpeed()">Test Download Speed</button>
+    <div id="test4-result" class="result"></div>
+  </div>
+
+  <div class="test-section">
+    <h2>Test 5: Full Download & Extract</h2>
+    <p><strong>Warning:</strong> This will download the full 426MB file!</p>
+    <button onclick="testFullDownload()">Full Download Test</button>
+    <div id="test5-result" class="result"></div>
+  </div>
+
+  <div class="test-section">
+    <h2>System Info</h2>
+    <div id="system-info" class="result"></div>
+  </div>
+
+  <script>
+    const AUDIO_ZIP_URL = 'https://nma-app-dlc.s3.eu-north-1.amazonaws.com/memorial_audio.zip';
+    let USE_CORS_PROXY = false; // Change to true to test with CORS proxy
+    const CORS_PROXY = 'https://corsproxy.io/?';
+
+    function getAudioURL() {
+      return USE_CORS_PROXY ? CORS_PROXY + encodeURIComponent(AUDIO_ZIP_URL) : AUDIO_ZIP_URL;
+    }
+
+    function toggleProxy() {
+      USE_CORS_PROXY = !USE_CORS_PROXY;
+      updateProxyStatus();
+    }
+
+    function updateProxyStatus() {
+      const btn = document.getElementById('toggle-proxy');
+      const status = document.getElementById('proxy-status');
+      
+      if (USE_CORS_PROXY) {
+        btn.textContent = 'Disable CORS Proxy';
+        btn.style.background = '#28a745';
+        status.textContent = '✅ CORS Proxy ENABLED - Using: ' + CORS_PROXY;
+        status.style.color = '#28a745';
+      } else {
+        btn.textContent = 'Enable CORS Proxy';
+        btn.style.background = '#007AFF';
+        status.textContent = '❌ CORS Proxy DISABLED - Using direct S3 URL';
+        status.style.color = '#dc3545';
+      }
+      
+      // Update system info
+      const info = document.getElementById('system-info');
+      if (info && info.innerHTML) {
+        const lines = info.innerHTML.split('\n');
+        for (let i = 0; i < lines.length; i++) {
+          if (lines[i].includes('CORS Proxy:')) {
+            lines[i] = `<span class="info">CORS Proxy: ${USE_CORS_PROXY ? 'ENABLED' : 'DISABLED'}</span>`;
+            break;
+          }
+        }
+        info.innerHTML = lines.join('\n');
+      }
+    }
+
+    function log(elementId, message, type = 'info') {
+      const el = document.getElementById(elementId);
+      const timestamp = new Date().toLocaleTimeString();
+      const className = type === 'error' ? 'error' : type === 'success' ? 'success' : 'info';
+      el.innerHTML += `<span class="${className}">[${timestamp}] ${message}</span>\n`;
+      el.scrollTop = el.scrollHeight;
+    }
+
+    function clear(elementId) {
+      document.getElementById(elementId).innerHTML = '';
+    }
+
+    async function testS3Access() {
+      clear('test1-result');
+      const audioURL = getAudioURL();
+      log('test1-result', 'Testing S3 URL: ' + audioURL);
+      
+      try {
+        const response = await fetch(audioURL, { method: 'HEAD' });
+        log('test1-result', `Status: ${response.status} ${response.statusText}`, 'success');
+        log('test1-result', `Content-Length: ${response.headers.get('Content-Length')} bytes`);
+        log('test1-result', `Content-Type: ${response.headers.get('Content-Type')}`);
+        log('test1-result', '✅ S3 URL is accessible!', 'success');
+      } catch (err) {
+        log('test1-result', `❌ Error: ${err.message}`, 'error');
+        log('test1-result', `Error type: ${err.name}`, 'error');
+        if (err.name === 'TypeError' && err.message.includes('Failed to fetch')) {
+          log('test1-result', 'This is likely a CORS or network connectivity issue', 'error');
+        }
+      }
+    }
+
+    async function testCORS() {
+      clear('test2-result');
+      const audioURL = getAudioURL();
+      log('test2-result', 'Testing CORS headers...');
+      
+      try {
+        const response = await fetch(audioURL, { method: 'HEAD' });
+        const corsHeader = response.headers.get('Access-Control-Allow-Origin');
+        
+        log('test2-result', `Access-Control-Allow-Origin: ${corsHeader || 'NOT SET'}`);
+        
+        if (corsHeader === '*' || corsHeader === window.location.origin) {
+          log('test2-result', '✅ CORS is properly configured!', 'success');
+        } else if (!corsHeader) {
+          log('test2-result', '❌ CORS header missing! The S3 bucket needs CORS configuration.', 'error');
+          log('test2-result', '\nRequired S3 CORS configuration:', 'info');
+          log('test2-result', JSON.stringify({
+            "CORSRules": [{
+              "AllowedOrigins": ["*"],
+              "AllowedMethods": ["GET", "HEAD"],
+              "AllowedHeaders": ["*"],
+              "ExposeHeaders": ["Content-Length"]
+            }]
+          }, null, 2));
+        } else {
+          log('test2-result', `⚠️ CORS header present but may not match your origin`, 'error');
+          log('test2-result', `Your origin: ${window.location.origin}`);
+        }
+      } catch (err) {
+        log('test2-result', `❌ Error: ${err.message}`, 'error');
+      }
+    }
+
+    async function testJSZip() {
+      clear('test3-result');
+      log('test3-result', 'Loading JSZip from CDN...');
+      
+      try {
+        if (!window.JSZip) {
+          const script = document.createElement('script');
+          script.src = 'https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js';
+          
+          await new Promise((resolve, reject) => {
+            script.onload = () => {
+              log('test3-result', '✅ JSZip loaded successfully!', 'success');
+              resolve();
+            };
+            script.onerror = (e) => {
+              log('test3-result', '❌ Failed to load JSZip', 'error');
+              reject(e);
+            };
+            document.head.appendChild(script);
+          });
+        } else {
+          log('test3-result', '✅ JSZip already loaded!', 'success');
+        }
+        
+        log('test3-result', `JSZip version: ${JSZip.version || 'unknown'}`);
+      } catch (err) {
+        log('test3-result', `❌ Error: ${err.message}`, 'error');
+      }
+    }
+
+    async function testDownloadSpeed() {
+      clear('test4-result');
+      const audioURL = getAudioURL();
+      log('test4-result', 'Testing download speed (first 1MB)...');
+      
+      try {
+        const startTime = Date.now();
+        const response = await fetch(audioURL);
+        
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}`);
+        }
+        
+        const reader = response.body.getReader();
+        let loaded = 0;
+        const limit = 1024 * 1024; // 1MB
+        
+        while (loaded < limit) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          loaded += value.length;
+        }
+        
+        reader.cancel(); // Stop downloading
+        
+        const duration = (Date.now() - startTime) / 1000;
+        const speedMBps = (loaded / 1024 / 1024) / duration;
+        
+        log('test4-result', `Downloaded: ${loaded} bytes in ${duration.toFixed(2)} seconds`);
+        log('test4-result', `Speed: ${speedMBps.toFixed(2)} MB/s`, 'success');
+        log('test4-result', `Estimated time for 426MB: ${(426 / speedMBps / 60).toFixed(1)} minutes`);
+        log('test4-result', '✅ Download test successful!', 'success');
+      } catch (err) {
+        log('test4-result', `❌ Error: ${err.message}`, 'error');
+      }
+    }
+
+    async function testFullDownload() {
+      clear('test5-result');
+      const audioURL = getAudioURL();
+      log('test5-result', 'Starting full download (426MB)...');
+      log('test5-result', 'This may take several minutes depending on your connection.');
+      
+      try {
+        const startTime = Date.now();
+        const response = await fetch(audioURL);
+        
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}`);
+        }
+        
+        const contentLength = response.headers.get('Content-Length');
+        const total = parseInt(contentLength, 10);
+        log('test5-result', `Total size: ${(total / 1024 / 1024).toFixed(2)} MB`);
+        
+        const reader = response.body.getReader();
+        const chunks = [];
+        let loaded = 0;
+        let lastLog = 0;
+        
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          
+          chunks.push(value);
+          loaded += value.length;
+          
+          // Log every 10%
+          const progress = Math.floor((loaded / total) * 100);
+          if (progress >= lastLog + 10) {
+            log('test5-result', `Download progress: ${progress}%`);
+            lastLog = progress;
+          }
+        }
+        
+        const downloadDuration = (Date.now() - startTime) / 1000;
+        log('test5-result', `✅ Download complete! (${downloadDuration.toFixed(1)}s)`, 'success');
+        
+        // Combine chunks
+        const zipData = new Uint8Array(loaded);
+        let position = 0;
+        for (const chunk of chunks) {
+          zipData.set(chunk, position);
+          position += chunk.length;
+        }
+        
+        log('test5-result', 'Loading JSZip...');
+        await testJSZip(); // Ensure JSZip is loaded
+        
+        log('test5-result', 'Extracting ZIP...');
+        const extractStart = Date.now();
+        const zip = await JSZip.loadAsync(zipData);
+        
+        const files = Object.keys(zip.files);
+        log('test5-result', `ZIP contains ${files.length} entries`);
+        
+        // Count audio files
+        const audioFiles = files.filter(f => f.endsWith('.mp3') && !zip.files[f].dir);
+        log('test5-result', `Found ${audioFiles.length} audio files`);
+        
+        const extractDuration = (Date.now() - extractStart) / 1000;
+        log('test5-result', `✅ Extraction complete! (${extractDuration.toFixed(1)}s)`, 'success');
+        
+        const totalDuration = (Date.now() - startTime) / 1000;
+        log('test5-result', `\nTotal time: ${totalDuration.toFixed(1)}s (${(totalDuration / 60).toFixed(1)} min)`, 'success');
+        
+      } catch (err) {
+        log('test5-result', `❌ Error: ${err.message}`, 'error');
+        log('test5-result', `Error name: ${err.name}`, 'error');
+        console.error('Full error:', err);
+      }
+    }
+
+    // Display system info on load
+    window.addEventListener('load', () => {
+      updateProxyStatus(); // Initialize proxy status display
+      
+      const info = document.getElementById('system-info');
+      info.innerHTML = `
+<span class="info">Browser: ${navigator.userAgent}</span>
+<span class="info">Online: ${navigator.onLine ? 'Yes' : 'No'}</span>
+<span class="info">Protocol: ${window.location.protocol}</span>
+<span class="info">Origin: ${window.location.origin}</span>
+<span class="info">CORS Proxy: ${USE_CORS_PROXY ? 'ENABLED' : 'DISABLED'}</span>
+<span class="info">Capacitor: ${window.Capacitor ? 'Yes (Native App)' : 'No (Web)'}</span>
+<span class="info">JSZip: ${window.JSZip ? 'Already loaded' : 'Not loaded'}</span>
+      `.trim();
+    });
+  </script>
+</body>
+</html>

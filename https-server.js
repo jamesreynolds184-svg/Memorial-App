@@ -9,7 +9,7 @@ const path = require('path');
 const url = require('url');
 
 const PORT = 8000;
-const USE_HTTPS = true; // Set to false to use HTTP only
+const USE_HTTPS = false; // Set to false to use HTTP only
 
 // MIME types
 const mimeTypes = {

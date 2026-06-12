@@ -25,3 +25,15 @@
     if (e.key === 'Escape') close();
   });
 })();
+
+// Apply saved text size on all pages
+(function() {
+  const TEXT_SIZE_KEY = 'nma-text-size';
+  const saved = localStorage.getItem(TEXT_SIZE_KEY);
+  if (saved) {
+    const size = parseInt(saved, 10);
+    if (size >= 80 && size <= 150) {
+      document.documentElement.style.fontSize = `${size}%`;
+    }
+  }
+})();

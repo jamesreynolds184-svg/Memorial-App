@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NMA Route Builder</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        #sidebar {
+            width: 320px;
+            background: #2c3e50;
+            color: white;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        #map {
+            flex: 1;
+            height: 100vh;
+        }
+
+        h1 {
+            font-size: 24px;
+            margin-bottom: 10px;
+            color: #ecf0f1;
+        }
+
+        .section {
+            background: #34495e;
+            padding: 15px;
+            border-radius: 8px;
+        }
+
+        .section h2 {
+            font-size: 16px;
+            margin-bottom: 10px;
+            color: #3498db;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            border: none;
+            border-radius: 4px;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        button.primary {
+            background: #3498db;
+            color: white;
+        }
+
+        button.primary:hover {
+            background: #2980b9;
+        }
+
+        button.danger {
+            background: #e74c3c;
+            color: white;
+        }
+
+        button.danger:hover {
+            background: #c0392b;
+        }
+
+        button.success {
+            background: #27ae60;
+            color: white;
+        }
+
+        button.success:hover {
+            background: #229954;
+        }
+
+        button:disabled {
+            background: #7f8c8d;
+            cursor: not-allowed;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+        }
+
+        .button-group button {
+            flex: 1;
+        }
+
+        .stats {
+            font-size: 14px;
+            line-height: 1.8;
+        }
+
+        .stats strong {
+            color: #3498db;
+        }
+
+        #segment-list {
+            max-height: 200px;
+            overflow-y: auto;
+            background: #2c3e50;
+            padding: 10px;
+            border-radius: 4px;
+            font-size: 13px;
+        }
+
+        .segment-item {
+            padding: 8px;
+            background: #34495e;
+            margin-bottom: 5px;
+            border-radius: 4px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .segment-item button {
+            width: auto;
+            padding: 4px 8px;
+            font-size: 12px;
+        }
+
+        .instructions {
+            font-size: 13px;
+            line-height: 1.6;
+            color: #bdc3c7;
+        }
+
+        .legend {
+            font-size: 12px;
+            line-height: 1.8;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .legend-color {
+            width: 30px;
+            height: 4px;
+            border-radius: 2px;
+        }
+
+        .status {
+            padding: 10px;
+            background: #27ae60;
+            border-radius: 4px;
+            text-align: center;
+            font-size: 14px;
+            display: none;
+        }
+
+        .status.show {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div id="sidebar">
+        <h1>🗺️ Route Builder</h1>
+        
+        <div class="section">
+            <h2>Instructions</h2>
+            <div class="instructions">
+                Click on footpath segments to add them to your route. Selected segments will turn red. Build your route step by step.
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Route Name</h2>
+            <input type="text" id="route-name" placeholder="Enter route name..." />
+        </div>
+
+        <div class="section">
+            <h2>Selected Segments</h2>
+            <div class="stats">
+                <div><strong>Total Segments:</strong> <span id="segment-count">0</span></div>
+            </div>
+            <div id="segment-list"></div>
+        </div>
+
+        <div class="section">
+            <h2>Actions</h2>
+            <button class="danger" onclick="clearRoute()">Clear Route</button>
+            <button class="success" onclick="saveRoute()" id="save-btn" disabled>Save Route</button>
+        </div>
+
+        <div class="section">
+            <h2>Legend</h2>
+            <div class="legend">
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #3498db;"></div>
+                    <span>Available Paths</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #e74c3c;"></div>
+                    <span>Selected Path</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="status" id="status"></div>
+    </div>
+
+    <div id="map"></div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+        let map;
+        let footpathsData;
+        let selectedSegments = [];
+        let pathLayers = {};
+
+        // Initialize map
+        function initMap() {
+            map = L.map('map').setView([52.7283, -1.7298], 16);
+            
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap contributors'
+            }).addTo(map);
+
+            loadFootpaths();
+        }
+
+        // Load footpaths from GeoJSON
+        async function loadFootpaths() {
+            try {
+                const response = await fetch('data/footpaths.geojson');
+                footpathsData = await response.json();
+                displayFootpaths();
+            } catch (error) {
+                console.error('Error loading footpaths:', error);
+                showStatus('Error loading footpaths!', false);
+            }
+        }
+
+        // Display footpaths on map
+        function displayFootpaths() {
+            footpathsData.features.forEach(feature => {
+                const segmentId = feature.properties.id;
+                
+                const layer = L.geoJSON(feature, {
+                    style: {
+                        color: '#3498db',
+                        weight: 4,
+                        opacity: 0.7
+                    }
+                }).addTo(map);
+
+                layer.on('click', () => toggleSegment(segmentId, layer));
+                
+                // Add hover effect
+                layer.on('mouseover', function() {
+                    if (!selectedSegments.includes(segmentId)) {
+                        this.setStyle({ weight: 6, opacity: 1 });
+                    }
+                });
+                
+                layer.on('mouseout', function() {
+                    if (!selectedSegments.includes(segmentId)) {
+                        this.setStyle({ weight: 4, opacity: 0.7 });
+                    }
+                });
+
+                pathLayers[segmentId] = { layer, feature };
+            });
+        }
+
+        // Toggle segment selection
+        function toggleSegment(segmentId, layer) {
+            const index = selectedSegments.indexOf(segmentId);
+            
+            if (index > -1) {
+                // Deselect
+                selectedSegments.splice(index, 1);
+                layer.setStyle({ color: '#3498db', weight: 4, opacity: 0.7 });
+            } else {
+                // Select
+                selectedSegments.push(segmentId);
+                layer.setStyle({ color: '#e74c3c', weight: 6, opacity: 1 });
+            }
+            
+            updateUI();
+        }
+
+        // Update UI
+        function updateUI() {
+            document.getElementById('segment-count').textContent = selectedSegments.length;
+            
+            const segmentList = document.getElementById('segment-list');
+            segmentList.innerHTML = '';
+            
+            selectedSegments.forEach((segId, index) => {
+                const item = document.createElement('div');
+                item.className = 'segment-item';
+                item.innerHTML = `
+                    <span>${index + 1}. ${segId}</span>
+                    <button class="danger" onclick="removeSegment('${segId}')">Remove</button>
+                `;
+                segmentList.appendChild(item);
+            });
+
+            const routeName = document.getElementById('route-name').value.trim();
+            const saveBtn = document.getElementById('save-btn');
+            saveBtn.disabled = selectedSegments.length === 0 || !routeName;
+        }
+
+        // Remove segment from route
+        function removeSegment(segmentId) {
+            const layer = pathLayers[segmentId].layer;
+            toggleSegment(segmentId, layer);
+        }
+
+        // Clear route
+        function clearRoute() {
+            selectedSegments.forEach(segId => {
+                const layer = pathLayers[segId].layer;
+                layer.setStyle({ color: '#3498db', weight: 4, opacity: 0.7 });
+            });
+            selectedSegments = [];
+            updateUI();
+            showStatus('Route cleared', true);
+        }
+
+        // Save route as GeoJSON
+        function saveRoute() {
+            const routeName = document.getElementById('route-name').value.trim();
+            
+            if (!routeName || selectedSegments.length === 0) {
+                showStatus('Please enter a route name and select segments', false);
+                return;
+            }
+
+            // Build GeoJSON
+            const features = selectedSegments.map(segId => {
+                return pathLayers[segId].feature;
+            });
+
+            const routeGeoJSON = {
+                type: "FeatureCollection",
+                features: features
+            };
+
+            // Download file
+            const blob = new Blob([JSON.stringify(routeGeoJSON, null, 2)], 
+                { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${routeName}.geojson`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+
+            showStatus(`Route "${routeName}" saved successfully!`, true);
+        }
+
+        // Show status message
+        function showStatus(message, isSuccess) {
+            const status = document.getElementById('status');
+            status.textContent = message;
+            status.style.background = isSuccess ? '#27ae60' : '#e74c3c';
+            status.classList.add('show');
+            
+            setTimeout(() => {
+                status.classList.remove('show');
+            }, 3000);
+        }
+
+        // Update UI when route name changes
+        document.getElementById('route-name').addEventListener('input', updateUI);
+
+        // Initialize
+        initMap();
+    </script>
+</body>
+</html>

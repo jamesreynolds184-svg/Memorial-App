@@ -5,7 +5,7 @@ import re
 from pathlib import Path
 
 # ElevenLabs API configuration
-API_KEY = "sk_bcb6b2c3dbdfe419717be5fae4cb4bc2f029bebd1e5938b9"
+API_KEY = "sk_a7b8e4d45ea71e64fe77eeb4a513f1712e36a1ca48a9f741"
 VOICE_ID = "AeRdCCKzvd23BpJoofzx"
 API_URL = f"https://api.elevenlabs.io/v1/text-to-speech/{VOICE_ID}"
 
@@ -26,6 +26,14 @@ def generate_audio(memorial, index):
     """Generate audio file for a single memorial"""
     name = memorial.get("name", "Unknown")
     description = memorial.get("description", "No description available")
+    
+    # Create filename
+    filename = f"{OUTPUT_DIR}/{index:03d}.mp3"
+    
+    # Check if file already exists
+    if os.path.exists(filename):
+        print(f"⊘ Skipping memorial {index}: {name} (file already exists)")
+        return True
     
     # Remove newline characters from the text
     name = name.replace("\n", " ").replace("  ", " ").strip()
@@ -57,9 +65,6 @@ def generate_audio(memorial, index):
         response = requests.post(API_URL, json=data, headers=headers)
         
         if response.status_code == 200:
-            # Create filename
-            filename = f"{OUTPUT_DIR}/{index:03d}.mp3"
-            
             # Save audio file
             with open(filename, "wb") as f:
                 f.write(response.content)
