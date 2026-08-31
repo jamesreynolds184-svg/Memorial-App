@@ -13,7 +13,8 @@
   const mapEl = document.getElementById('map-wrap');
   const zoneEl = document.getElementById('map-zone');
   const closeBtn = document.getElementById('map-close-btn');
-  // Removed: searchEl, listEl, countEl, btnLocate, btnReset, btnExpand, routeInfoEl
+  const routeInfoEl = document.getElementById('route-info');
+  // Removed: searchEl, listEl, countEl, btnLocate, btnReset, btnExpand
 
   let map, markersLayer;
   let all = [];

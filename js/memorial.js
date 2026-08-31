@@ -3,6 +3,7 @@
   const params = new URLSearchParams(location.search);
   const name = params.get('name');
   const from = params.get('from');
+  const routeId = params.get('routeId');
   const root = document.getElementById('memorial-detail');
   // Helper functions for saved memorials
   function loadSaved() {
@@ -26,9 +27,17 @@
         'map': 'map.html',
         'identify': 'identify-memorial.html',
         'manage': 'manage-memorials.html',
-        'global-search': 'memorials.html' // Default to memorials for global search
+        'global-search': 'memorials.html', // Default to memorials for global search
+        'routes': 'routes.html'
       };
-      location.href = backPages[from] || 'memorials.html';
+      let backUrl = backPages[from] || 'memorials.html';
+      
+      // If coming from routes and we have a routeId, add it to return to the specific route
+      if (from === 'routes' && routeId) {
+        backUrl += `?route=${encodeURIComponent(routeId)}`;
+      }
+      
+      location.href = backUrl;
     });
   }
 

@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Allied Special Forces Map</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <link rel="stylesheet" href="../css/style.css">
+  <script src="../js/theme.js"></script>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
+  <style>
+    #asf-map {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 1;
+    }
+    .map-controls {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 1000;
+      background: var(--panel-bg);
+      backdrop-filter: blur(6px);
+      padding: 12px 20px;
+      border-radius: 12px;
+      box-shadow: var(--shadow);
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: center;
+      max-width: 90%;
+    }
+    .map-controls button {
+      padding: 8px 16px;
+      border: none;
+      background: var(--accent);
+      color: white;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    .map-controls button:hover {
+      opacity: 0.9;
+    }
+  </style>
+</head>
+<body class="map-page">
+  <button id="burger-menu" class="burger-button" aria-label="Open menu">☰</button>
+  
+  <nav id="menu-items">
+    <a href="../home.html">Home</a>
+    <a href="map.html">Map</a>
+    <a href="memorials.html">Find a Memorial</a>
+    <a href="afm-list.html">Armed Forces Memorial</a>
+    
+    <!-- Allied Special Forces dropdown -->
+    <div class="menu-dropdown">
+      <button class="menu-dropdown-toggle" aria-expanded="false">
+        Allied Special Forces <span class="dropdown-arrow">▼</span>
+      </button>
+      <div class="menu-dropdown-content">
+        <a href="asf-map.html">ASF Map</a>
+        <a href="asf-plaques.html">Browse Plaques</a>
+      </div>
+    </div>
+    
+    <a href="shot-at-dawn.html">Shot at Dawn Memorial</a>
+    <a href="search-by-zone.html">Search by Zone</a>
+    <a href="conflicts-by-year.html">Conflicts by Year</a>
+    <a href="nearby-memorials.html">Nearby Memorials</a>
+    <a href="routes.html">Routes</a>
+    <a href="saved.html">Saved</a>
+    
+    <!-- Settings Link -->
+    <a href="settings.html" class="settings-link">
+      <span class="settings-icon">⚙️</span>
+      <span>Settings</span>
+    </a>
+  </nav>
+  
+  <div id="menu-overlay"></div>
+
+  <!-- Global search button -->
+  <button id="global-search-btn" class="search-toggle" aria-label="Search memorials">🔍</button>
+
+  <!-- Global search overlay -->
+  <div id="global-search-panel" aria-hidden="true">
+    <div class="gsp-inner">
+      <button id="gsp-close" class="gsp-close" aria-label="Close search">✕</button>
+      <input id="global-search-input"
+             type="text"
+             placeholder="Search memorial titles..."
+             autocomplete="off"
+             aria-autocomplete="list"
+             aria-expanded="false">
+      <label class="gsp-desc-label">
+        <input type="checkbox" id="global-search-desc-checkbox">
+        Search description
+      </label>
+      <ul id="global-search-results" role="listbox"></ul>
+    </div>
+  </div>
+
+  <div id="asf-map"></div>
+
+  <div class="map-controls">
+    <button id="show-all-btn">Show All Plaques</button>
+    <button id="browse-list-btn" onclick="location.href='asf-plaques.html'">Browse List</button>
+  </div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+  <script src="../js/app.js"></script>
+  <script src="../js/asf-map.js"></script>
+  <script src="js/gestures.js"></script>
+  <script src="../js/global-search.js"></script>
+  <script src="../js/ios-menu.js"></script>
+</body>
+</html>

@@ -91216,6 +91216,150 @@
     "panel_number": 13
   },
   {
+    "name": "REES GE",
+    "service": "Royal Navy",
+    "date": 1969,
+    "panel": 151,
+    "panel_Loc": "Top",
+    "panel_number": 13
+  },
+    {
+    "name": "FRASER IR",
+    "service": "Royal Navy",
+    "date": 1969,
+    "panel": 151,
+    "panel_Loc": "Top",
+    "panel_number": 13
+  },
+    {
+    "name": "SKRODZKI ZK",
+    "service": "Royal Navy",
+    "date": 1969,
+    "panel": 151,
+    "panel_Loc": "Top",
+    "panel_number": 13
+  },
+    {
+    "name": "PAGE PJ",
+    "service": "Royal Navy",
+    "date": 1969,
+    "panel": 151,
+    "panel_Loc": "Top",
+    "panel_number": 13
+  },
+  {
+    "name": "SKURATKO JM",
+    "service": "ARMY",
+    "date": 1969,
+    "panel": 151,
+    "panel_Loc": "Top",
+    "panel_number": 13
+  },
+  {
+    "name": "TAYLOR M",
+    "service": "ARMY",
+    "date": 1969,
+    "panel": 151,
+    "panel_Loc": "Top",
+    "panel_number": 13
+  },
+  {
+    "name": "ADAMS T",
+    "service": "ARMY",
+    "date": 1969,
+    "panel": 151,
+    "panel_Loc": "Top",
+    "panel_number": 13
+  },
+  {
+    "name": "DALEY J",
+    "service": "ARMY",
+    "date": 1969,
+    "panel": 151,
+    "panel_Loc": "Top",
+    "panel_number": 13
+  },  
+  {
+    "name": "JOHNSON PD",
+    "service": "ARMY",
+    "date": 1969,
+    "panel": 151,
+    "panel_Loc": "Top",
+    "panel_number": 13
+  },
+  {
+    "name": "MARTIN CP",
+    "service": "ARMY",
+    "date": 1969,
+    "panel": 151,
+    "panel_Loc": "Top",
+    "panel_number": 13
+  },  
+  {
+    "name": "CADMAN RE",
+    "service": "ARMY",
+    "date": 1969,
+    "panel": 151,
+    "panel_Loc": "Top",
+    "panel_number": 13
+  },
+  {
+    "name": "HUDSON P",
+    "service": "ARMY",
+    "date": 1969,
+    "panel": 151,
+    "panel_Loc": "Top",
+    "panel_number": 13
+  }, 
+  {
+    "name": "McMAHON JP",
+    "service": "ARMY",
+    "date": 1969,
+    "panel": 151,
+    "panel_Loc": "Top",
+    "panel_number": 13
+  },
+  {
+    "name": "BRADY G",
+    "service": "ARMY",
+    "date": 1969,
+    "panel": 151,
+    "panel_Loc": "Top",
+    "panel_number": 13
+  },  
+  {
+    "name": "SAUNDERS MF",
+    "service": "ARMY",
+    "date": 1969,
+    "panel": 151,
+    "panel_Loc": "Top",
+    "panel_number": 13
+  },
+  {
+    "name": "ROBERTSON E",
+    "service": "ARMY",
+    "date": 1969,
+    "panel": 151,
+    "panel_Loc": "Top",
+    "panel_number": 13
+  },  
+  {
+    "name": "PETTY RJ",
+    "service": "ARMY",
+    "date": 1969,
+    "panel": 151,
+    "panel_Loc": "Top",
+    "panel_number": 13
+  },
+  {
+    "name": "MOSLEY MW",
+    "service": "ARMY",
+    "date": 1969,
+    "panel": 151,
+    "panel_Loc": "Top",
+    "panel_number": 13
+  },
+  {
     "name": "LAND LE",
     "service": "Royal Navy",
     "date": 1970,
@@ -106744,7 +106888,7 @@
     "panel_number": 29
   },
   {
-    "name": "ITTON PR.",
+    "name": "FITTON PR.",
     "service": "Royal Navy",
     "date": 1982,
     "panel": 182,

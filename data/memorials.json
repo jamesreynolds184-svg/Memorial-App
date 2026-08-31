@@ -180,7 +180,7 @@
   {
     "name": "8th Army Memorial",
     "zone": "11",
-    "description": "DESERT RATS\n• Located by Lions Shelter and Gulf War Memorial\n• The 7th Armoured Division was a division of the British Army that saw distinguished service during World War II, where its exploits in the Western Desert Campaign gained it the ‘Desert Rats’ nickname. Since then, the desert rats insignia has been worn by generations of military units, celebrating the kinship and tenacity of those men and women fighting in the desert.\n• The stylised sculpture, whilst representing the Desert Rats insignia, also symbolises armour, both light and heavy.\n• The sculpture sits on a stone plinth, with sloping sides to represent the angles used on some armour and tanks. The sides of the plinth are carved with a sand motif with the words “Desert Rats” engraved and fading in and out of the pattern to suggest movement through time and sand.",
+    "description": "8th Army was a field army formation of the British army established in 1941 until 1945. The army was made up of many soldiers from around the Commonwealth. They fought in the Western Desert Campaign, Tunisia, Sicilian and Italian Campaigns. Special operations units were set up from 8th Army, including Popski's Private Army who have a memorial on our special forces area.",
     "map": "",
     "location": {
       "lat": 52.726219444444446,
@@ -217,7 +217,7 @@
   {
     "name": "Adjutant General's Corps Commemorative Garden",
     "zone": "12",
-    "description": "ADJUTANT GENERAL’S CORPS\n(In front of the Staffords) They have responsibility for administration, pay, education, legal and policing matters relating to Army personnel.\nIt doesn’t sound exciting, but they are often required to fight alongside frontline troops, and of course the British Army would quickly grind to a halt without them.\n (In front of the Staffords) They have responsibility for administration, pay, education, legal and policing matters relating to Army personnel.\nIt doesn’t sound exciting, but they are often required to fight alongside frontline troops, and of course the British Army would quickly grind to a halt without them.",
+    "description": "(In front of the Staffords) They have responsibility for administration, pay, education, legal and policing matters relating to Army personnel.\nIt doesn’t sound exciting, but they are often required to fight alongside frontline troops, and of course the British Army would quickly grind to a halt without them.",
     "map": "",
     "location": {
       "lat": 52.72785833333334,
@@ -1635,7 +1635,7 @@
   {
     "name": "Glider Pilot Regiment Memorial",
     "zone": "1",
-    "description": "Glider Pilot Regiment\nThe Regiment was established in 1942 and remained active until 1957, when it was absorbed into the modern Army Air Corps. The Regiment’s motto was “Nothing is impossible”, as the nature of their one way trips required the aircrews to subsequently join in combat operations on the ground. The Regiment’s highly trained aircrew was also used to great effect in covert activity. In the post war years, the Regiment remained active, undertaking liaison and reconnaissance roles in the Light Aircraft Flights operated by the Army. On 1 September 1957, the Regiment disbanded to create the foundation of what was to become the modern Army Air Corps. The memorial stone is sourced from Gelderland in the Netherlands to acknowledge the Regiment’s major role in the Battle of Arnhem.",
+    "description": "Glider Pilot Regiment\nThe Regiment was established in 1942 and remained active until 1957, when it was absorbed into the modern Army Air Corps. The Regiment’s motto was “Nothing is impossible”, as the nature of their one way trips required the aircrews to subsequently join in combat operations on the ground. The Regiment’s highly trained aircrew was also used to great effect in covert activity. In the post war years, the Regiment remained active, undertaking liaison and reconnaissance roles in the Light Aircraft Flights operated by the Army. On 1 September 1957, the Regiment disbanded to create the foundation of what was to become the modern Army Air Corps.",
     "map": "",
     "location": {
       "lat": 52.72880833333333,
@@ -2254,7 +2254,7 @@
   {
     "name": "King's African Rifles Memorial",
     "zone": "10",
-    "description": "KING’S AFRICAN RIFLES \nTo its left is the memorial for the KING’s AFRICAN RIFLES, whose origins date back to the 1890s. Their first major battle was against the ‘MAD MULLAH’ in Somaliland, which lasted from 1900 – 1920. They also fought the British side in both World Wars but were disbanded in 1964 as their home African countries had by that time gained independence from Britain.",
+    "description": "The KING’s AFRICAN RIFLES, whose origins date back to the 1890s. Their first major battle was against the ‘MAD MULLAH’ in Somaliland, which lasted from 1900 – 1920. They also fought the British side in both World Wars but were disbanded in 1964 as their home African countries had by that time gained independence from Britain.",
     "map": "",
     "location": {
       "lat": 52.72680555555556,
@@ -2691,7 +2691,7 @@
   {
     "name": "Moussey Memorial",
     "zone": "1",
-    "description": "Moussey Memorial",
+    "description": "The Moussey Memorial honours the Citizens of Moussey in the Vosges, France for their covert help and assistance to the members of the 2nd Special Air Service Regiment who served during WW2 during “Operation Loyton” in August & September 1944. The Cross of Lorraine was the symbol of Resistance in France during World War Two. This Cross was designed by the Blacksmith Bromley O’hare. The steel structure has three bars throughout and these represent the French National Motto: Liberty ~Egalite ~ Fraternite. The Colour is Traffic Light Red similar to the Cross on many French Flags during WW2 and that many still do at times of Remembrance. All parts of the Cross were hand-forged, with a stainless steel base, crossbar connections and all fittings. The Cross is set in a small copse of Pine Trees that originally came from a Forest Guards Cottage near Moussey. Around the Cross we have planted Broom and Blue Blossom (Ceanothus).",
     "map": "",
     "location": {
       "lat": 52.73159722222223,
@@ -3138,7 +3138,7 @@
   {
     "name": "Pity of War",
     "zone": "2",
-    "description": "Pity of War",
+    "description": "The memorial features a 6-foot bronze artwork depicting a young child with bound eyes and a silenced mouth, symbolizing the involuntary suffering of non-combatants in war. It was developed by the Pity of War Charitable Trust and permanently unveiled at the NMA in June 2024.",
     "map": "",
     "location": {
       "lat": 52.73177777777778,
@@ -3203,7 +3203,7 @@
   {
     "name": "Popski's Private Army",
     "zone": "1",
-    "description": "Popski’s Private Army\nPopski’s Private Army was founded by Major Vladimir Peniakoff in Cairo in October 1942. On 10 December 1942, it became officially operational as “No. 1 Demolition Squadron, PPA” an 8th Army Special Forces unit formed specifically to attack Field-Marshal Rommel’s fuel supplies, in support of General Montgomery’s offensive at El Alamein. The squadron, which also served in Italy, was disbanded in September 1945 as well as the Long\nRange Desert Group (LRDG) and the Special Air Service (SAS), PPA was the last and smallest of the three main irregular raiding, reconnaissance and intelligence units formed during the North African Campaign. The stone built memorial is a truncated pyramid topped with the PPA astrolabe unit symbol replicated from Popski’s original design which is also echoed in the shape of the surrounding low hedge. The variegated laurel hedge represents the yellow of the deserts of North Africa and the greenery of Italy. Commemorative plaques feature on all four faces of the memorial. The front displays a small plaque showing PPA's astrolabe cap badge, a small plaque commemorating the unveiling on 30 March 2008 (Popski's Birthday), together with the PPA Roll of Honour. To the rear PPA Honours and Awards are listed. The right-hand plaque commemorates the 27th Lancers and all the units who comprised \"Porterforce\" with the Italian Partisans commemorated on the left-hand plaque. In 2010, two plaques telling the story Popski's Private Army were added to the memorial’s entrance. The design of the hedge around the memorial was by Mike Colton. Dedicated in 2008.\nNote: - All the plaques are undergoing refurbishment. (19/2/23)",
+    "description": "Popski’s Private Army\nPopski’s Private Army was founded by Major Vladimir Peniakoff in Cairo in October 1942. On 10 December 1942, it became officially operational as “No. 1 Demolition Squadron, PPA” an 8th Army Special Forces unit formed specifically to attack Field-Marshal Rommel’s fuel supplies, in support of General Montgomery’s offensive at El Alamein. The squadron, which also served in Italy, was disbanded in September 1945 as well as the Long\nRange Desert Group (LRDG) and the Special Air Service (SAS), PPA was the last and smallest of the three main irregular raiding, reconnaissance and intelligence units formed during the North African Campaign. The stone built memorial is a truncated pyramid topped with the PPA astrolabe unit symbol replicated from Popski’s original design which is also echoed in the shape of the surrounding low hedge. The variegated laurel hedge represents the yellow of the deserts of North Africa and the greenery of Italy. Commemorative plaques feature on all four faces of the memorial. The front displays a small plaque showing PPA's astrolabe cap badge, a small plaque commemorating the unveiling on 30 March 2008 (Popski's Birthday), together with the PPA Roll of Honour. To the rear PPA Honours and Awards are listed. The right-hand plaque commemorates the 27th Lancers and all the units who comprised \"Porterforce\" with the Italian Partisans commemorated on the left-hand plaque. In 2010, two plaques telling the story Popski's Private Army were added to the memorial’s entrance. The design of the hedge around the memorial was by Mike Colton. Dedicated in 2008.",
     "map": "",
     "location": {
       "lat": 52.73180277777778,
@@ -3255,7 +3255,7 @@
   {
     "name": "Prison Officers Association (POA)",
     "zone": "2",
-    "description": "Prison Officers Association Memorial\nDedicated to all those who continue to serve the Crown, have served in the Armed Forces and all those lost in service, who joined the trade union via their work within our secure services including; public sector and private sector prisons, immigration centres, youth custody services, escort services and secure psychiatric institutions. The memorial recognises the dangers staŽ who work in these environments place themselves in, whilst serving to protect the public.",
+    "description": "Prison Officers Association Memorial\nDedicated to all those who continue to serve the Crown, have served in the Armed Forces and all those lost in service, who joined the trade union via their work within our secure services including; public sector and private sector prisons, immigration centres, youth custody services, escort services and secure psychiatric institutions. The memorial recognises the dangers staff who work in these environments place themselves in, whilst serving to protect the public.",
     "map": "",
     "location": {
       "lat": 52.73096944444445,
@@ -5675,5 +5675,18 @@
     "lat": 52.72802,
     "lng": -1.72852,
     "id": "445"
+  },
+  {
+    "name": "Elysium Memorial",
+    "zone": "6",
+    "description": "This memorial is dedicated to veterans and members of the armed forces who have died by suicide. \n The organisation's mission is to reduce the risk of suicide by raising awareness of the complexities of mental health faced by those who have served or are still serving. \n ",
+    "map": "",
+    "location": {
+      "lat": 52.732119,
+      "lng": -1.726103
+    },
+    "lat": 52.732119,
+    "lng": -1.7299722222222222,
+    "id": "446"
   }
 ]

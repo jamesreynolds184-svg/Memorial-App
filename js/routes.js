@@ -21,6 +21,7 @@ document.addEventListener('DOMContentLoaded', () => {
   let markersLayer = null;
   let footpathGraph = { nodes: [], adj: new Map() };
   let footpathsLoaded = false;
+  let currentRouteId = null;  // Track which route is currently displayed
   
   // Routing configuration
   const BRIDGE_MAX_METERS = 3;
@@ -115,6 +116,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // Load a custom route
   function loadCustomRoute(route) {
     console.log('Loading custom route:', route.name);
+    currentRouteId = 'custom-' + route.id;
     displayRoute(route.name, `Custom route with ${route.memorials.length} memorials`, route.memorials, true);
   }
   
@@ -122,7 +124,15 @@ document.addEventListener('DOMContentLoaded', () => {
   routeCards.forEach(card => {
     card.addEventListener('click', () => {
       const routeName = card.dataset.route;
+      const comingSoon = card.dataset.comingSoon === 'true';
       console.log('Route card clicked:', routeName);
+      
+      if (comingSoon) {
+        console.log(`${routeName} route - coming soon`);
+        alert(`${routeName.charAt(0).toUpperCase() + routeName.slice(1)} Route coming soon!`);
+        return;
+      }
+      
       if (routeName === 'pink') {
         loadPinkRoute();
       } else if (routeName === 'blue') {
@@ -153,21 +163,25 @@ document.addEventListener('DOMContentLoaded', () => {
   
   // Load Pink Route
   function loadPinkRoute() {
+    currentRouteId = 'pink';
     loadRouteWithPath('pink', 'Pink Route', 'Follow this scenic route through the arboretum');
   }
   
   // Load Blue Route
   function loadBlueRoute() {
+    currentRouteId = 'blue';
     loadRouteWithPath('blue', 'Blue Route', 'Discover memorials along this peaceful path');
   }
   
   // Load Orange Route
   function loadOrangeRoute() {
+    currentRouteId = 'orange';
     loadRouteWithPath('orange', 'Orange Route', 'Explore this historic trail through the arboretum');
   }
   
   // Load Purple Route
   function loadPurpleRoute() {
+    currentRouteId = 'purple';
     loadRouteWithPath('purple', 'Purple Route', 'Journey through remembrance on this thoughtful route');
   }
   
@@ -257,7 +271,7 @@ document.addEventListener('DOMContentLoaded', () => {
       // Add to list
       const li = document.createElement('li');
       const link = document.createElement('a');
-      link.href = `memorial.html?name=${encodeURIComponent(cleanName)}&from=routes`;
+      link.href = `memorial.html?name=${encodeURIComponent(cleanName)}&from=routes&routeId=${encodeURIComponent(currentRouteId || '')}`;
       link.textContent = `${index + 1}. ${cleanName}`;
       link.className = 'route-memorial-link';
       
@@ -395,7 +409,7 @@ document.addEventListener('DOMContentLoaded', () => {
       // Add to list
       const li = document.createElement('li');
       const link = document.createElement('a');
-      link.href = `memorial.html?name=${encodeURIComponent(cleanName)}&from=routes`;
+      link.href = `memorial.html?name=${encodeURIComponent(cleanName)}&from=routes&routeId=${encodeURIComponent(currentRouteId || '')}`;
       link.textContent = `${index + 1}. ${cleanName}`;
       link.className = 'route-memorial-link';
       
@@ -788,5 +802,32 @@ document.addEventListener('DOMContentLoaded', () => {
     const div = document.createElement('div');
     div.textContent = text;
     return div.innerHTML;
+  }
+  
+  // Check for route parameter in URL to auto-load a route
+  const urlParams = new URLSearchParams(window.location.search);
+  const routeParam = urlParams.get('route');
+  if (routeParam) {
+    // Wait for data to load before showing route
+    const checkDataInterval = setInterval(() => {
+      if (memorialsData.length > 0) {
+        clearInterval(checkDataInterval);
+        if (routeParam === 'pink') loadPinkRoute();
+        else if (routeParam === 'blue') loadBlueRoute();
+        else if (routeParam === 'orange') loadOrangeRoute();
+        else if (routeParam === 'purple') loadPurpleRoute();
+        else if (routeParam.startsWith('custom-')) {
+          // Load custom route
+          const customId = routeParam.substring(7); // Remove 'custom-' prefix
+          try {
+            const routes = JSON.parse(localStorage.getItem(CUSTOM_ROUTES_KEY));
+            const route = routes?.find(r => r.id === customId);
+            if (route) loadCustomRoute(route);
+          } catch (err) {
+            console.error('Error loading custom route:', err);
+          }
+        }
+      }
+    }, 100);
   }
 });

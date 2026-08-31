@@ -26,6 +26,41 @@
   });
 })();
 
+// Dropdown menu functionality
+(function(){
+  const dropdownToggles = document.querySelectorAll('.menu-dropdown-toggle');
+  
+  dropdownToggles.forEach(toggle => {
+    toggle.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      
+      const content = toggle.nextElementSibling;
+      const isExpanded = toggle.getAttribute('aria-expanded') === 'true';
+      
+      // Close all other dropdowns
+      dropdownToggles.forEach(otherToggle => {
+        if (otherToggle !== toggle) {
+          otherToggle.setAttribute('aria-expanded', 'false');
+          const otherContent = otherToggle.nextElementSibling;
+          if (otherContent) {
+            otherContent.classList.remove('open');
+          }
+        }
+      });
+      
+      // Toggle current dropdown
+      if (isExpanded) {
+        toggle.setAttribute('aria-expanded', 'false');
+        content.classList.remove('open');
+      } else {
+        toggle.setAttribute('aria-expanded', 'true');
+        content.classList.add('open');
+      }
+    });
+  });
+})();
+
 // Apply saved text size on all pages
 (function() {
   const TEXT_SIZE_KEY = 'nma-text-size';

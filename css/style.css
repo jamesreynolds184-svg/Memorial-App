@@ -146,6 +146,8 @@ body {
   padding-top: calc(env(safe-area-inset-top) + 150px);
   padding-right: 18px;
   padding-bottom: 20px;
+  padding-bottom: calc(constant(safe-area-inset-bottom) + 20px);
+  padding-bottom: calc(env(safe-area-inset-bottom) + 20px);
   padding-left: 18px;
 
   background: rgba(255,255,255,0.92);
@@ -167,6 +169,9 @@ body {
     padding-top: calc(env(safe-area-inset-top) + 90px);
     padding-top: calc(constant(safe-area-inset-top) + 90px);
     padding-top: 90px;
+    padding-bottom: calc(env(safe-area-inset-bottom) + 20px);
+    padding-bottom: calc(constant(safe-area-inset-bottom) + 20px);
+    padding-bottom: 20px;
   }
 }
 
@@ -184,6 +189,60 @@ body {
   color: #fff;
 }
 #menu-items.open { transform: translateX(0); }
+
+/* Dropdown menu styles */
+.menu-dropdown {
+  display: flex;
+  flex-direction: column;
+}
+
+.menu-dropdown-toggle {
+  background: none;
+  border: none;
+  text-decoration: none;
+  font: 15px/1.3 system-ui,sans-serif;
+  color: var(--text);
+  padding: 6px 8px;
+  border-radius: 8px;
+  transition: background-color 0.2s ease, color 0.2s ease;
+  cursor: pointer;
+  text-align: left;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.menu-dropdown-toggle:hover {
+  background: var(--accent);
+  color: #fff;
+}
+
+.dropdown-arrow {
+  font-size: 0.7em;
+  transition: transform 0.2s ease;
+  display: inline-block;
+}
+
+.menu-dropdown-toggle[aria-expanded="true"] .dropdown-arrow {
+  transform: rotate(180deg);
+}
+
+.menu-dropdown-content {
+  display: none;
+  flex-direction: column;
+  padding-left: 16px;
+  gap: 4px;
+  margin-top: 4px;
+}
+
+.menu-dropdown-content.open {
+  display: flex;
+}
+
+.menu-dropdown-content a {
+  font-size: 14px;
+  padding: 4px 8px;
+}
 
 #menu-overlay {
   position: fixed;
@@ -634,6 +693,48 @@ body.home {
 #memorial-list::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.30); border-radius: 6px; }
 #memorial-list::-webkit-scrollbar-thumb:hover { background: rgba(0,0,0,0.42); }
 
+/* Plaque list (Allied Special Forces) - same styling as memorial list */
+#plaque-list {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+#plaque-list li {
+  background: var(--input-bg);
+  border: 1px solid var(--border-color);
+  margin: 0 0 6px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+#plaque-list li:last-child {
+  margin-bottom: 2px;
+}
+
+#plaque-list .mem-link {
+  text-decoration: none;
+  color: var(--text);
+  font-weight: 600;
+  flex: 1;
+}
+
+#plaque-list::-webkit-scrollbar { width: 10px; }
+#plaque-list::-webkit-scrollbar-track { background: rgba(0,0,0,0.08); border-radius: 6px; }
+#plaque-list::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.30); border-radius: 6px; }
+#plaque-list::-webkit-scrollbar-thumb:hover { background: rgba(0,0,0,0.42); }
+
+#plaque-list .empty {
+  text-align: center;
+  padding: 20px;
+  color: var(--text-secondary);
+}
+
 /* Home page centering */
 body.home .hero {
   min-height: 100vh;
@@ -731,6 +832,52 @@ body.memorial-detail-page {
   border-radius: 6px;
 }
 #memorial-detail::-webkit-scrollbar-thumb:hover {
+  background: rgba(0,0,0,0.45);
+}
+
+/* Plaque detail (Allied Special Forces) - same styling as memorial detail */
+#plaque-detail {
+  background: var(--panel-bg);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  border-radius: 14px;
+  box-shadow: 0 10px 26px rgba(0,0,0,0.25);
+  width: 100%;
+  max-width: 860px;
+  margin: 0 auto;
+  height: 100vh;
+  box-sizing: border-box;
+  padding: 20px 24px 28px;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  scroll-behavior: smooth;
+}
+
+#plaque-detail h1 {
+  margin-top: 0;
+}
+
+#plaque-gmap {
+  flex: 0 0 auto;
+  margin-top: 16px;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+}
+
+#plaque-detail::-webkit-scrollbar {
+  width: 10px;
+}
+#plaque-detail::-webkit-scrollbar-track {
+  background: rgba(255,255,255,0.25);
+  border-radius: 6px;
+}
+#plaque-detail::-webkit-scrollbar-thumb {
+  background: rgba(0,0,0,0.30);
+  border-radius: 6px;
+}
+#plaque-detail::-webkit-scrollbar-thumb:hover {
   background: rgba(0,0,0,0.45);
 }
 
@@ -1346,9 +1493,31 @@ body.map-page .search-toggle {
 /* Hide old elements */
 .map-toolbar,
 .map-list,
-.map-count,
-.route-info {
+.map-count {
   display: none !important;
+}
+
+/* Route info panel styling */
+.route-info {
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--panel-bg, rgba(255,255,255,0.95));
+  backdrop-filter: blur(8px);
+  color: var(--text, #222);
+  padding: 12px 18px;
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+  font-size: 14px;
+  line-height: 1.5;
+  z-index: 1001;
+  max-width: 90%;
+  text-align: center;
+}
+
+.route-info[hidden] {
+  display: none;
 }
 
 /* Keep old styles for backwards compatibility */
@@ -1594,12 +1763,16 @@ body.map-page .search-toggle {
   display: none;
   position: fixed;
   bottom: 0;
+  bottom: constant(safe-area-inset-bottom);
+  bottom: env(safe-area-inset-bottom);
   left: 0;
   right: 0;
   background: var(--panel-bg);
   border-top: 1px solid var(--border-color);
   z-index: 9999;
   padding: 8px 0;
+  padding-bottom: calc(8px + constant(safe-area-inset-bottom));
+  padding-bottom: calc(8px + env(safe-area-inset-bottom));
   box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
 }
 
@@ -1630,6 +1803,16 @@ body.map-page .search-toggle {
 
 .mobile-bottom-menu button .icon {
   font-size: 24px;
+}
+
+/* Hide mobile bottom menu when slide-out nav is open */
+body.nav-open .mobile-bottom-menu {
+  display: none !important;
+}
+
+/* Also hide search button when nav menu is open for cleaner UX */
+body.nav-open .search-toggle {
+  display: none;
 }
 
 /* Routes Page Styling */
