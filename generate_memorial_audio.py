@@ -5,7 +5,7 @@ import re
 from pathlib import Path
 
 # ElevenLabs API configuration
-API_KEY = "sk_a7b8e4d45ea71e64fe77eeb4a513f1712e36a1ca48a9f741"
+API_KEY = os.getenv("ELEVENLABS_API_KEY")
 VOICE_ID = "AeRdCCKzvd23BpJoofzx"
 API_URL = f"https://api.elevenlabs.io/v1/text-to-speech/{VOICE_ID}"
 
@@ -81,6 +81,9 @@ def generate_audio(memorial, index):
 
 
 def main():
+    if not API_KEY:
+        raise RuntimeError("Set ELEVENLABS_API_KEY before generating audio.")
+
     # Load memorials data
     print("Loading memorials data...")
     with open("data/memorials.json", "r", encoding="utf-8") as f:

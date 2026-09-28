@@ -49,7 +49,21 @@
 
       // Set title and description
       document.getElementById('plaque-name').textContent = plaque.plaque || 'Unknown Plaque';
-      document.getElementById('plaque-desc').textContent = plaque.description || 'No description available.';
+      const descriptionEl = document.getElementById('plaque-desc');
+      const description = plaque.description || 'No description available.';
+      const remembersMatch = /Mike Colton remembers[:.]?/i.exec(description);
+      if (remembersMatch) {
+        const precedingText = description.slice(0, remembersMatch.index).trimEnd();
+        const followingText = description.slice(remembersMatch.index + remembersMatch[0].length).trimStart();
+        const label = document.createElement('strong');
+        label.textContent = remembersMatch[0];
+
+        descriptionEl.replaceChildren();
+        if (precedingText) descriptionEl.append(document.createTextNode(precedingText));
+        descriptionEl.append(document.createElement('br'), document.createElement('br'), label, document.createElement('br'), document.createTextNode(followingText));
+      } else {
+        descriptionEl.textContent = description;
+      }
       document.getElementById('plaque-garden').textContent = plaque.garden || '';
 
       // Handle photo
