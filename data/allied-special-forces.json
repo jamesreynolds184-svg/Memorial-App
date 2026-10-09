@@ -3,7 +3,11 @@
     "id": "001",
     "plaque": "Allied Special Forces Memorial Grove",
     "description": "Introduction by Mike Colton: Welcome to the Allies of Special Forces Memorial Grove. My name is Mike Colton. The Grove has been created under my guidance for over 23 years now, with all the extensive plantings, added over time depending on finances at the time. \nThe Grove is funded independently by the Friends of the Grove, who raise monies by various means to continue with diverse planting, maintenance and memorials, new memorials, and grounds work. And this is all by unpaid volunteers. None of this is at any cost to the Royal British Legion National Remembrance Gardens. \nBut we are here in support of their spirit of remembrance. If you wish to help with our worthy cause, then a donate facility is available on our website Allied Special Forces Memorial Grove.org The Allied Special Forces Memorial Grove, has been in existence since March 2003. However, the concept was 1st envisaged in January 1999. In 2026, we saw our original management group in operation for over 25 years. \nThe mission over 25 years remains the same with the establishment of a place for remembrance, commemoration, education, and quiet contemplation, in harmony with nature. In November 2023, we received one of the very 1st Kings Award for voluntary service. This is the equivalent of an MBA for our group. \nVisitors can view all the memorials on our extensive website or on this new app.",
-    "garden": ""
+    "garden": "",
+    "location": {
+      "lat": 52.731664,
+      "lng": -1.719978
+    }
   },
   {
     "id": "002",
@@ -97,7 +101,11 @@
     "id": "012",
     "plaque": "Special Forces Signals Association",
     "description": "In memory of all members of S.O.E. who gave their lives for the Liberation of occupied Countries. 1940 - 1945 Dedicated by members of The Special Forces Signals Association",
-    "garden": "Special Operations Garden"
+    "garden": "Special Operations Garden",
+    "location": {
+      "lat": 52.731331,
+      "lng": -1.722881
+    }
   },
   {
     "id": "013",
@@ -727,6 +735,10 @@
     "id": "077",
     "plaque": "Annette Colton",
     "description": "Annette was one of our first volunteers in the Grove and worked here from 2003 until she lost her young life from Aspiration Pneumonia and Granulosa Cell Tumour, Annette's gentle understanding of nature has helped shape this Grove from its early days and continues evermore with the establishment of Annette’s Memorial Way which ends by this memorial. The memorial was referbished by Simon and Blinfords and Don Munro.",
-    "garden": ""
+    "garden": "",
+    "location": {
+      "lat": 52.731872,
+      "lng": -1.721936
+    }
   }
 ]
