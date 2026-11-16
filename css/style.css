@@ -1039,6 +1039,9 @@ body {
   background: rgba(0,0,0,0.15);
   color: var(--text);
 }
+#global-search-results .zone.asf {
+  background: rgba(46,125,50,0.25);
+}
 
 #global-search-results::-webkit-scrollbar { width: 10px; }
 #global-search-results::-webkit-scrollbar-thumb {

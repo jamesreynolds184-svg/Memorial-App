@@ -13,13 +13,21 @@
     "id": "002",
     "plaque": "Special Ops Garden",
     "description": "A Spec Ops Garden is at the start of the Allied Special Forces Memorial Grove. This garden encompasses men and women, agents of the special operations executive, who served in occupied Europe, during World War II, and also various RAF special duties squadrons, and a V Force, a very special V Force, served in Burma. \nMany listeners may not know that the UK Special Forces soldiers served with the United Nations, partisan forces in Korea during that war, during the 1950s. Added to these, are of course, the signals operators, and those helpers who ran escape lines in Europe and beyond. Just a few amazing stories in this one area of the Grove.\n",
-    "garden": ""
+    "garden": "Special Operations Garden",
+    "location": {
+      "lat": 52.731267,
+      "lng": -1.722967
+    }
   },
   {
     "id": "003",
     "plaque": "Vera Atkins SOE",
     "description": "Vera Atkins – Special Operations Executive  1908-2000 During WW2 Romanian born Vera Atkins became an intelligence officer reporting to Colin Gubbins the head of SOE. Her main responsibility was to the agents and in particular the women sent into France as couriers, radio operators and to help train the resistance. After the war she went back into Europe to find out what happened to the women who did not return. They are all honoured on this memorial seat.",
-    "garden": "Special Operations Garden"
+    "garden": "Special Operations Garden",
+    "location": {
+      "lat": 52.73126,
+      "lng": -1.72296
+    }
   },
   {
     "id": "004",
@@ -55,7 +63,11 @@
     "id": "007",
     "plaque": "Isobel Grant Bailey SOE",
     "description": "Isobel served with the Special Operations Executive but her records are embargoed until 2025 at the National Archives.",
-    "garden": "Special Operations Garden"
+    "garden": "Special Operations Garden",
+     "location": {
+      "lat": 52.731267,
+      "lng": -1.722967
+    }
   },
   {
     "id": "008",
@@ -111,7 +123,11 @@
     "id": "013",
     "plaque": "David Sharp United Nations Partisan Forces Korea",
     "description": "On the 25th June 1950, some 75,000 soldiers of the North Korean People’s Army crossed the 38th Parallel (Border Line) and invaded the Republic of South Korea to the South. Western Allies were soon involved in a war fighting the spread of Communism in Asia and as part of this war men from the United Nations Partisan Forces operated behind enemy lines at great risk. These miscellaneous groups worked deep inside North Korea to gather intelligence, conduct raids and sabotage, rescue Prisoners of War and Allied Air Crew that had been shot down. They were specifically tasked to recruit and lead guerilla armies and create confusion in the enemy’s rear. This they did with a great deal of success, even when the Chinese Peoples Volunteer Army joined the conflict on the side of the North Korean Communists. The war eventually ended on 27th July 1953 with tremendous losses on all sides and to the civilian population. This memorial honours all who served and especially: Lieutenant L. S. Adams- Acton MC MiD – Operational Team Leader – Executed after escaping POW Camp 2 – Royal Northumberland Fusiliers/attached to Special Air Service. Sergeant C. H Lane – Special Air Service – Intelligence Sergeant. Sergeant D. M. Sharp BEM – Honour Medal (Republic of Korea) – Army commendation medal for valour (USA) – Royal Northumberland Fusiliers – Tactical Intelligence Liaison Officer. Sergeant J. N. Wells – Bronze Star (USA) – Intelligence Corps – Intelligence Sergeant. Fusilier G Mills – Royal Northumberland Fusiliers – Radio Operator – Killed in Action Mike Colton Remembers:The United Nations Partisan Forces Korea. Listed on this memorial is Sergeant David Sharp. \nDavid was very much alive and attended the dedication service of this memorial in 2016. Sadly, he passed away over Remembrance Weekend that same year in the Officers' Mess at St. Mawgan, Cornwall, aged, at a sprightly 88. \nSt. Mawgan is a tri-service training depot where all UK armed forces undergo a course. Called SERE, which stands for survive, evade, resist, and extract. David Sharp was the last Commonwealth soldier to be released by the Chinese after the Korean War ended. Probably due to his many escapes after capture during the Battle of the Imjin River. \nWe remember him.  ",
-    "garden": "Special Operations Garden"
+    "garden": "Special Operations Garden",
+    "location": {
+      "lat": 52.73131,
+      "lng": -1.72280
+    }
   },
   {
     "id": "014",
@@ -167,7 +183,11 @@
     "id": "019",
     "plaque": "Regimental Sergeant Major Reginald Tayler SRN MBE",
     "description": "WO1 Regimental Sergeant-Major Reginald Tayler – 1938-2004. Royal Army Medical Corps and Medical Support & Training Cell of 22 Special Air Service Regiment 1956 to 1976. “Sister Reg”, as he was affectionally known, was responsible for training the SAS’s Patrol Medics to a very high standard in Bradbury Lines, Hereford and on many operational tours from the Radfan Mountains of Aden to the secret war in Dhofar, Sultanate of Oman 1970-1976. He devised ways of making vital things simple to remember. When faced with a real casualty he taught the SAS Medics to think of: ‘ABC’ – Airway, Breathing & Circulation. This simple aide-memoire has been universally adopted and is now used all over the world to help save lives in First Aid Emergencies. His humour was legendary and Reg is well remembered in the Barrels Public House, Hereford, where the Landlord, Staff and Customers gave this tree and plaque in memory of their absent friend. A kind person “Who Cared and Won”. Faithful in Adversity.   Mike Colton Remembers: Situated beneath a very large Scots pine tree, stands the memorial to Reg Taylor, SRN, state registered nurse, ‘Sister Reg’, as it was effectively known, was my medical aid instructor, whilst on SAS continuation training in the early 1970s. He was very, very well liked at the Barrels pub in Hereford, and the regulars raised funds for this memorial, which stands beside the Scotts Pine tree, which also came from a garden in Hereford. \nReg devised ways of making things simple to remember. And when faced with a real casualty, he taught SAS medics to think about A, B, C, which is check the airway, check the breathing, check the circulation. He was always faithful in adversity. \nWe will always remember him.",
-    "garden": "Friends Garden"
+    "garden": "Friends Garden",
+    "location": {
+      "lat": 52.73134,
+      "lng": -1.72284
+    }
   },
   {
     "id": "020",
@@ -283,7 +303,11 @@
     "id": "031",
     "plaque": "The Dieppe Raid Memorial",
     "description": "The “Operation Jubilee” memorial was originally established in 2007 and now in 2023 has undergone an upgrade with new educational plaques. We have now concentrated on the bravery and successful parts of the Raid. Three of these memorials list the medals that the Allied Military Forces were awarded, except however Jack Nissenthall was not awarded any decoration for his brave actions The design of the memorial consists of 4 plaques honouring 6 Allied Servicemen. To either side we have 2 Canadian Maples. One Holm Oak was added later. The rocks are from a quarry within the grounds of Consall Hall near Leek. They represent the formidable defences of Dieppe. The dark green pine tree in the centre honours the Commando’s. Some of the original heather still exists as symbolic of the Canadian Scottish units that took part. Many other plants fill the space with colour. Mike Colton Remembers: Operation Jubilee.  The raid on Dieppe took place on the 18th and 19th of August, 1942. \nIt was a complete failure. The Operation Jubilee Memorial was originally established in 2007, and in 2023 underwent an upgrade with new educational plaques. We've now concentrated on the bravery and successful parts of the road. \nThree of these memorials list the medals that the Allied military forces were awarded. Except, however, one plaque, that of Jack Nissenhall, who was not awarded any decorations for his brave actions. The design of the memorial consists of 4 plaques honouring 6 allied servicemen. \nTo either side, we have 2 Canadian maples. One holm oak was added later. The rocks are from a quarry within the grounds of Consall Hall near Leek, which we dug up and transported to the arboretum. \nThey represent the formidable defences of Dieppe. The dark green pine tree in the centre honours the commandos.",
-    "garden": "Resistance Garden"
+    "garden": "Resistance Garden",
+    "location": {
+      "lat": 52.73145,
+      "lng": -1.72255
+    }
   },
   {
     "id": "032",
@@ -609,7 +633,11 @@
     "id": "064",
     "plaque": "William John Taff Hughes",
     "description": "William John “Taff” Hughes SQMS G Squadron 22 SAS Regiment and Welsh Guards 1947-1982 Age 34 Lost in the Sea King helicopter crash 19th May 1982 Rest in Peace on this Seat and remember those that helped bring “Freedom from the Sea” for the people of the Falkland Islands. “Taff” is not forgotten by his family, Michael, Kathryn and Kevin. 23rd August 2015. Falklands Memorial Way. Mike Coulter remembers. William John ‘Taff’ Hughes. Known as 'Taff' most of the time, was the Squadron Quartermaster Sergeant of G Squadron, 22 SAS Regiment. \nHe came there from the Welsh Guards. Taff's family wanted a memorial to him in the Grove after he lost his life during the fateful helicopter crash during the Falklands conflict 1982. Friends of the Grove had some metal seat remains from an old tram seat, we didn't have the woodwork around-  but we soon did. So we set about a restoration and added American White Oak to the seat and back. \nNow, on a good winter's day with no leaves on the trees. You can see the Armed Forces Memorial one way, and you were able to watch the lake from the other side, but you can't now. The inscription on the plaque is prominent, ‘Rest in peace on this seat and remember those that helped bring freedom from the sea, for the people of the Falkland Islands’. \nThank you for your service, Taff. Well done.",
-    "garden": "SAS Garden"
+    "garden": "SAS Garden",
+    "location": {
+      "lat": 52.73196,
+      "lng": -1.72169
+    }
   },
   {
     "id": "065",

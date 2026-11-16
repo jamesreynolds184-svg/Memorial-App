@@ -1,6 +1,7 @@
 """
-Compress ASF images aggressively to reduce folder size from ~500MB to ~10MB
-Target: ~200KB per image for 52 images
+Compress ASF images to reduce folder size from ~560MB.
+Uses the same settings that were applied to the zone images
+(see img/zone1): max 1080x1440, JPEG quality 85, optimized.
 """
 import os
 from PIL import Image
@@ -8,14 +9,15 @@ from PIL import Image
 # Path to ASF images
 ASF_FOLDER = '../img/ASF'
 
-# Aggressive compression settings
-MAX_WIDTH = 800      # Reduced from 1080
-MAX_HEIGHT = 800     # Reduced from 1440
-QUALITY = 65         # Reduced from 85 for more compression
+# Same compression settings used for the zone images
+MAX_WIDTH = 1080
+MAX_HEIGHT = 1440
+QUALITY = 85
 
 def compress_image(image_path):
     """
-    Aggressively compress an image to reduce file size.
+    Compress an image to fit within MAX_WIDTH x MAX_HEIGHT.
+    Skips images already within the target dimensions.
     """
     try:
         with Image.open(image_path) as img:
@@ -25,7 +27,12 @@ def compress_image(image_path):
             
             original_size = os.path.getsize(image_path)
             width, height = img.size
-            
+
+            # Skip if already within target dimensions
+            if width <= MAX_WIDTH and height <= MAX_HEIGHT:
+                print(f"- {os.path.basename(image_path)} skipped (already {width}x{height}, {original_size/1024:.1f}KB)")
+                return original_size, original_size
+
             # Calculate new dimensions maintaining aspect ratio
             aspect = width / height
             if width > height:

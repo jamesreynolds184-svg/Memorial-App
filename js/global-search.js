@@ -10,7 +10,9 @@
   // Detect if we're in pages/ subfolder or root
   const inPagesFolder = window.location.pathname.includes('/pages/');
   const dataPath = inPagesFolder ? '../data/memorials.json' : 'data/memorials.json';
+  const asfDataPath = inPagesFolder ? '../data/allied-special-forces.json' : 'data/allied-special-forces.json';
   const memorialPath = inPagesFolder ? 'memorial.html' : 'pages/memorial.html';
+  const asfPlaquePath = inPagesFolder ? 'asf-plaque.html' : 'pages/asf-plaque.html';
   const isMapPage = window.location.pathname.includes('map.html');
 
   let all = [];
@@ -25,10 +27,23 @@
 
   function load() {
     if (loaded) return;
-    fetch(dataPath)
-      .then(r => { if (!r.ok) throw new Error(r.status); return r.json(); })
-      .then(data => {
-        all = (Array.isArray(data) ? data : []).filter(m => m && m.name);
+    Promise.all([
+      fetch(dataPath).then(r => { if (!r.ok) throw new Error(r.status); return r.json(); }),
+      fetch(asfDataPath).then(r => { if (!r.ok) throw new Error(r.status); return r.json(); })
+    ])
+      .then(([memorials, plaques]) => {
+        const memorialItems = (Array.isArray(memorials) ? memorials : [])
+          .filter(m => m && m.name);
+        const asfItems = (Array.isArray(plaques) ? plaques : [])
+          .filter(p => p && p.plaque)
+          .map(p => ({
+            id: p.id,
+            name: p.plaque,
+            description: p.description,
+            garden: p.garden,
+            isASF: true
+          }));
+        all = memorialItems.concat(asfItems);
         all.sort((a,b)=>a.name.localeCompare(b.name));
         loaded = true;
       })
@@ -101,8 +116,13 @@
     for (const m of matches) {
       const li = document.createElement('li');
       const a = document.createElement('a');
-      
-      if (isMapPage) {
+
+      if (m.isASF) {
+        // ASF plaques always navigate to the plaque detail page
+        a.href = `${asfPlaquePath}?id=${encodeURIComponent(m.id)}&from=global-search`;
+        a.textContent = m.name;
+        a.addEventListener('click', () => closePanel());
+      } else if (isMapPage) {
         // On map page, focus the marker instead of navigating
         a.href = '#';
         a.textContent = m.name;
@@ -120,9 +140,14 @@
         a.textContent = m.name;
         a.addEventListener('click', () => closePanel());
       }
-      
+
       li.appendChild(a);
-      if (m.zone) {
+      if (m.isASF) {
+        const badge = document.createElement('span');
+        badge.className = 'zone asf';
+        badge.textContent = 'ASF';
+        li.appendChild(badge);
+      } else if (m.zone) {
         const z = document.createElement('span');
         z.className = 'zone';
         z.textContent = `Z${m.zone}`;

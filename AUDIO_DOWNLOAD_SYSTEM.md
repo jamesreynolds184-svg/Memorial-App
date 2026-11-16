@@ -22,6 +22,12 @@ The app now includes a smart audio download system that manages the 426MB memori
 - If flag is set to 'true', directly plays audio files
 - No re-download required
 
+### ASF Plaque Audio (published separately)
+- ASF plaque pages (`asf-plaque.html`) check for the individual plaque's audio file (`asf_audio/[plaque_id].mp3`) every time "Read aloud" is tapped.
+- If the file is not on the device, the download prompt is shown (once per browser session) and the ZIP is downloaded again — this is how plaque audio published to S3 at a later date reaches installed apps.
+- If the file is still missing after the download (e.g. not yet published), the app falls back to Text-to-Speech.
+- Memorial and ASF audio are stored separately; the shared download code lives in `js/audio-download.js` (loaded before `memorial.js` and `asf-plaque.js`).
+
 ## Platform-Specific Behavior
 
 ### iOS/Android (Capacitor)
@@ -44,7 +50,7 @@ The app now includes a smart audio download system that manages the 426MB memori
 - **URL:** https://nma-app-dlc.s3.eu-north-1.amazonaws.com/memorial_audio.zip
 - **Size:** 426MB
 - **Region:** eu-north-1
-- **Contents:** MP3 files named by memorial ID (e.g., `1.mp3`, `2.mp3`, etc.)
+- **Contents:** MP3 files named by memorial ID in `memorial_audio/` (e.g., `memorial_audio/000.mp3`), plus ASF plaque audio in `asf_audio/` named by plaque ID (e.g., `asf_audio/001.mp3`). The `asf_audio/` folder may not be present until the plaque audio is published — extraction skips whatever is missing.
 
 ## Testing & Debugging
 
@@ -162,14 +168,18 @@ Play audio  Show prompt
 
 ```
 memorial_audio/
-├── 1.mp3
-├── 2.mp3
-├── 3.mp3
+├── 000.mp3
+├── 001.mp3
 ├── ...
 └── [memorial_id].mp3
+asf_audio/
+├── 001.mp3
+├── 002.mp3
+├── ...
+└── [plaque_id].mp3
 ```
 
-Each memorial's audio file is named by its `id` field from `memorials.json`.
+Memorial audio files are named by the `id` field from `memorials.json`. ASF plaque audio files are named by the `id` field from `allied-special-forces.json`. The two sets use separate storage (IndexedDB stores `audioFiles` / `asfAudioFiles` on web; `memorial_audio/` / `asf_audio/` directories on native) because memorial IDs and plaque IDs can overlap (e.g. both use `001`).
 
 ## Maintenance
 

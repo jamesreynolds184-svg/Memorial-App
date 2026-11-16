@@ -199,42 +199,123 @@ function initLeafletPlaqueMap(coords) {
 
   let speaking = false;
   let currentUtterance = null;
+  let audioElement = null;
 
   function stopSpeech() {
-    if (speaking) {
-      window.speechSynthesis.cancel();
-      speaking = false;
-      btn.textContent = 'Read aloud';
-      btn.setAttribute('aria-pressed', 'false');
+    window.speechSynthesis.cancel();
+    if (audioElement) {
+      audioElement.pause();
+      audioElement.currentTime = 0;
+      if (audioElement.src && audioElement.src.startsWith('blob:')) {
+        URL.revokeObjectURL(audioElement.src);
+      }
+      audioElement = null;
     }
+    speaking = false;
+    btn.textContent = 'Read aloud';
+    btn.setAttribute('aria-pressed', 'false');
   }
 
-  function startSpeech() {
-    if (speaking) {
-      stopSpeech();
-      return;
-    }
-
+  function startTTS() {
     const text = `${nameEl.textContent}. ${descEl.textContent}`;
     const utterance = new SpeechSynthesisUtterance(text);
     
     utterance.onend = () => {
-      speaking = false;
-      btn.textContent = 'Read aloud';
-      btn.setAttribute('aria-pressed', 'false');
+      stopSpeech();
     };
 
     utterance.onerror = () => {
-      speaking = false;
-      btn.textContent = 'Read aloud';
-      btn.setAttribute('aria-pressed', 'false');
+      stopSpeech();
     };
 
+    window.speechSynthesis.cancel();
     window.speechSynthesis.speak(utterance);
     speaking = true;
     currentUtterance = utterance;
     btn.textContent = 'Stop reading';
     btn.setAttribute('aria-pressed', 'true');
+  }
+
+  // Try to play the pre-recorded audio for this plaque.
+  // Resolves true if playback started, false to fall back to TTS.
+  function tryPlayPreRecorded(plaqueId) {
+    return getAsfAudioPath(plaqueId).then(audioPath => {
+      if (!audioPath) return false;
+
+      return new Promise(resolve => {
+        let settled = false;
+        const fail = () => {
+          if (settled) return;
+          settled = true;
+          if (audioPath.startsWith('blob:')) URL.revokeObjectURL(audioPath);
+          audioElement = null;
+          resolve(false);
+        };
+
+        audioElement = new Audio(audioPath);
+
+        audioElement.addEventListener('canplaythrough', () => {
+          if (settled) return;
+          speaking = true;
+          btn.textContent = 'Stop reading';
+          btn.setAttribute('aria-pressed', 'true');
+          audioElement.play()
+            .then(() => { settled = true; resolve(true); })
+            .catch(fail);
+        }, { once: true });
+
+        audioElement.addEventListener('ended', () => {
+          stopSpeech();
+        }, { once: true });
+
+        audioElement.addEventListener('error', fail, { once: true });
+
+        audioElement.load();
+      });
+    }).catch(() => false);
+  }
+
+  async function startSpeech() {
+    if (speaking) {
+      stopSpeech();
+      return;
+    }
+
+    const plaque = window.currentPlaque;
+
+    // Pre-recorded audio flow (shared download system in js/audio-download.js)
+    if (plaque && plaque.id && typeof checkAsfAudioAvailable === 'function') {
+      try {
+        let available = await checkAsfAudioAvailable(plaque.id);
+
+        if (!available) {
+          // The plaque audio is published to the same ZIP at a later date, so
+          // a missing file triggers the download again to pick up new audio.
+          // Asked at most once per session to avoid repeated 400MB+ prompts.
+          if (sessionStorage.getItem('asfAudioPrompted') !== 'true') {
+            sessionStorage.setItem('asfAudioPrompted', 'true');
+            const shouldDownload = await showAudioDownloadPrompt(
+              'The audio for this plaque is not on your device yet. Download the audio files to check for it? Cancel uses the device voice instead.'
+            );
+            if (shouldDownload) {
+              const success = await downloadAndExtractAudio();
+              if (success) {
+                available = await checkAsfAudioAvailable(plaque.id);
+              }
+            }
+          }
+        }
+
+        if (available) {
+          const played = await tryPlayPreRecorded(plaque.id);
+          if (played) return;
+        }
+      } catch (err) {
+        console.error('ASF audio flow error, using TTS:', err);
+      }
+    }
+
+    startTTS();
   }
 
   btn.addEventListener('click', () => {
